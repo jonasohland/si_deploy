@@ -28,10 +28,12 @@ const headtracker_1 = require("./headtracker");
 const Logger = __importStar(require("./log"));
 const util = __importStar(require("./util"));
 const log = Logger.get('SERIAL');
+const MINIMUM_SWVERSION = "0.1.0";
 class QuaternionContainer {
     constructor(buf, isFloat, offset) {
         this._is_float = isFloat;
         this._offset = offset;
+        this._buf = buf;
     }
     get() {
         if (this._is_float)
@@ -310,19 +312,21 @@ function invertationToBitmask(inv) {
 var si_gy_values;
 (function (si_gy_values) {
     si_gy_values[si_gy_values["SI_GY_VALUES_MIN"] = 0] = "SI_GY_VALUES_MIN";
-    si_gy_values[si_gy_values["SI_GY_QUATERNION"] = 1] = "SI_GY_QUATERNION";
-    si_gy_values[si_gy_values["SI_GY_SRATE"] = 2] = "SI_GY_SRATE";
-    si_gy_values[si_gy_values["SI_GY_ALIVE"] = 3] = "SI_GY_ALIVE";
-    si_gy_values[si_gy_values["SI_GY_ENABLE"] = 4] = "SI_GY_ENABLE";
-    si_gy_values[si_gy_values["SI_GY_CONNECTED"] = 5] = "SI_GY_CONNECTED";
-    si_gy_values[si_gy_values["SI_GY_FOUND"] = 6] = "SI_GY_FOUND";
-    si_gy_values[si_gy_values["SI_GY_VERSION"] = 7] = "SI_GY_VERSION";
-    si_gy_values[si_gy_values["SI_GY_HELLO"] = 8] = "SI_GY_HELLO";
-    si_gy_values[si_gy_values["SI_GY_RESET"] = 9] = "SI_GY_RESET";
-    si_gy_values[si_gy_values["SI_GY_INV"] = 10] = "SI_GY_INV";
-    si_gy_values[si_gy_values["SI_GY_RESET_ORIENTATION"] = 11] = "SI_GY_RESET_ORIENTATION";
-    si_gy_values[si_gy_values["SI_GY_INT_COUNT"] = 12] = "SI_GY_INT_COUNT";
-    si_gy_values[si_gy_values["SI_GY_VALUES_MAX"] = 13] = "SI_GY_VALUES_MAX";
+    si_gy_values[si_gy_values["SI_GY_ID"] = 1] = "SI_GY_ID";
+    si_gy_values[si_gy_values["SI_GY_QUATERNION_FLOAT"] = 2] = "SI_GY_QUATERNION_FLOAT";
+    si_gy_values[si_gy_values["SI_GY_QUATERNION_INT16"] = 3] = "SI_GY_QUATERNION_INT16";
+    si_gy_values[si_gy_values["SI_GY_SRATE"] = 4] = "SI_GY_SRATE";
+    si_gy_values[si_gy_values["SI_GY_ALIVE"] = 5] = "SI_GY_ALIVE";
+    si_gy_values[si_gy_values["SI_GY_ENABLE"] = 6] = "SI_GY_ENABLE";
+    si_gy_values[si_gy_values["SI_GY_CONNECTED"] = 7] = "SI_GY_CONNECTED";
+    si_gy_values[si_gy_values["SI_GY_FOUND"] = 8] = "SI_GY_FOUND";
+    si_gy_values[si_gy_values["SI_GY_VERSION"] = 9] = "SI_GY_VERSION";
+    si_gy_values[si_gy_values["SI_GY_HELLO"] = 10] = "SI_GY_HELLO";
+    si_gy_values[si_gy_values["SI_GY_RESET"] = 11] = "SI_GY_RESET";
+    si_gy_values[si_gy_values["SI_GY_INV"] = 12] = "SI_GY_INV";
+    si_gy_values[si_gy_values["SI_GY_RESET_ORIENTATION"] = 13] = "SI_GY_RESET_ORIENTATION";
+    si_gy_values[si_gy_values["SI_GY_INT_COUNT"] = 14] = "SI_GY_INT_COUNT";
+    si_gy_values[si_gy_values["SI_GY_VALUES_MAX"] = 15] = "SI_GY_VALUES_MAX";
 })(si_gy_values || (si_gy_values = {}));
 var si_gy_parser_state;
 (function (si_gy_parser_state) {
@@ -352,7 +356,9 @@ var CON_STATE;
 })(CON_STATE || (CON_STATE = {}));
 const si_serial_msg_lengths = [
     0,
+    1,
     16,
+    8,
     1,
     1,
     1,
@@ -382,6 +388,8 @@ class SerialConnection extends events_1.EventEmitter {
     closeSerialPort() {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((res, rej) => {
+                if (!this.serial_port.isOpen)
+                    return res();
                 this.serial_port.close(err => {
                     if (err)
                         rej(err);
@@ -402,7 +410,6 @@ class SerialConnection extends events_1.EventEmitter {
             log.error('Error on serial port: ' + err.message);
         });
         this.serial_port.on('close', err => {
-            log.info('Serial port closed');
             this.emit('close', err);
         });
         this.serial_port.open();
@@ -551,6 +558,7 @@ class SerialHeadtracker extends SerialConnection {
         super();
         this._rqueue = [];
         this._is_ok = false;
+        this._id = 0;
         this.last_int = 0;
         this.last_read_cnt = 0;
         this.serial_init(serial);
@@ -568,22 +576,15 @@ class SerialHeadtracker extends SerialConnection {
                 .then((data) => {
                 this.software_version = `${data.readUInt8(0)}.${data.readUInt8(1)}.${data.readUInt8(2)}`;
                 log.info(`Headtracker software version: ${this.software_version}`);
+                if (semver.compare(this.software_version, MINIMUM_SWVERSION) < 0) {
+                    log.error("Headtracker software version not supported. Please update with --flash-firmware");
+                    throw "Unsupported Software Version";
+                }
+                return this.getValue(si_gy_values.SI_GY_ID);
+            }).then((data) => {
+                this._id = data.readUInt8(0);
+                log.info("Device ID: " + this._id);
                 this._watchdog = setInterval(() => {
-                    /*this.getValue(si_gy_values.SI_GY_INT_COUNT)
-                        .then((data) => {
-
-                            let intc = data.readUInt32LE(0);
-                            let rcnt = data.readUInt32LE(4);
-
-                            let cintc = intc - this.last_int;
-                            let crcnt = rcnt - this.last_read_cnt;
-
-                            this.last_int = intc;
-                            this.last_read_cnt = rcnt;
-
-                            log.info(`Interrupts/s: ${cintc} read ops/s:
-                       ${crcnt}`);
-                        });*/
                     this.notify(si_gy_values.SI_GY_ALIVE)
                         .then(() => {
                         this._is_ok = true;
@@ -672,8 +673,10 @@ class SerialHeadtracker extends SerialConnection {
         return Buffer.alloc(32);
     }
     onValueSet(ty, data) {
-        if (ty == si_gy_values.SI_GY_QUATERNION)
+        if (ty == si_gy_values.SI_GY_QUATERNION_FLOAT)
             this.emit('quat', new QuaternionContainer(data, true, 0));
+        else if (ty == si_gy_values.SI_GY_QUATERNION_INT16)
+            this.emit('quat', new QuaternionContainer(data, false, 0));
     }
     onNotify(ty, data) {
         console.log('NOTIFY: ' + si_gy_values[ty]);

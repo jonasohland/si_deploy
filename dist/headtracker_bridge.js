@@ -20,11 +20,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const dnssd = __importStar(require("dnssd"));
+const events_1 = require("events");
 const serialport_1 = __importDefault(require("serialport"));
 const headtracker_1 = require("./headtracker");
 const headtracker_serial_1 = require("./headtracker_serial");
 const Logger = __importStar(require("./log"));
-const events_1 = require("events");
+const express_1 = __importDefault(require("express"));
 const log = Logger.get('BRIDGE');
 class SIOutputAdapter extends headtracker_serial_1.UDPOutputAdapter {
     constructor() {
@@ -46,12 +47,16 @@ class HeadtrackerBridgeDevice extends events_1.EventEmitter {
         this.output = new SIOutputAdapter();
         this.lhtrk = new headtracker_serial_1.LocalHeadtracker(port, this.output);
         this.lhtrk.on('close', (err) => {
-            log.warn("Headtracker closed");
             this.emit('close');
         });
+        this.lhtrk.on('ready', () => {
+            let sname = `si_htrk_${(this.lhtrk.shtrk._id < 10) ? '0' + this.lhtrk.shtrk._id
+                : this.lhtrk.shtrk._id}`;
+            log.info("Headtracker ready. Adding new mdns advertisement: _htrk._udp." + sname);
+            this._adv = new dnssd.Advertisement(dnssd.udp('_htrk'), 5697, { host: sname, name: sname });
+            this._adv.start();
+        });
         this.output.setRemote('127.0.0.1', 9999);
-        this._adv = new dnssd.Advertisement(dnssd.udp('_htrk'), 5697, { host: 'si_htrk_01' });
-        this._adv.start();
     }
     reconnect(port) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -60,8 +65,12 @@ class HeadtrackerBridgeDevice extends events_1.EventEmitter {
         });
     }
     destroy() {
+        if (this._adv)
+            this._adv.stop(false, () => {
+                log.info("Advertisement for " + this.path + " removed");
+            });
         this.lhtrk.destroy().catch((err) => {
-            log.warn("Could not close port: " + err);
+            log.warn('Could not close port: ' + err);
         });
     }
 }
@@ -69,6 +78,8 @@ exports.HeadtrackerBridgeDevice = HeadtrackerBridgeDevice;
 class HeadtrackerBridge {
     constructor() {
         this._devs = [];
+        this._app = express_1.default();
+        this._app.get("headtracker");
     }
     findDeviceForPath(p) {
         return this._devs.find(d => d.path === p);
