@@ -28,6 +28,8 @@ const headtracker_serial_1 = require("./headtracker_serial");
 const { cyan } = chalk_1.default;
 const log = Logger.get('HEADTR');
 const socket_io_1 = __importDefault(require("socket.io"));
+const showfiles_1 = require("./showfiles");
+const sfman = new showfiles_1.ShowfileManager();
 const htrk_devices = [];
 class DummyOutputAdapter extends headtracker_serial_1.OutputAdapter {
     process(q) {
@@ -99,7 +101,7 @@ function runLatencyTest(p, options) {
 }
 function runNormalMode(p, options) {
     let wss = socket_io_1.default(45040);
-    let headtracking = new headtracking_1.Headtracking(8887, wss);
+    let headtracking = new headtracking_1.Headtracking(8887, wss, sfman);
     let adapter;
     if (options.preset) {
         if (options.preset == 'IEM') {

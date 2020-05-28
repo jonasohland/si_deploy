@@ -28,7 +28,7 @@ var HTRKMsgState;
     HTRKMsgState[HTRKMsgState["READY"] = 2] = "READY";
 })(HTRKMsgState || (HTRKMsgState = {}));
 class NetworkHeadtracker extends headtracker_1.Headtracker {
-    constructor(server, id, addr, port, local_port, netif) {
+    constructor(server, id, addr, port, netif) {
         super();
         this.remote = {};
         this.local = {};
@@ -37,7 +37,6 @@ class NetworkHeadtracker extends headtracker_1.Headtracker {
         this.remote.port = port;
         this.remote.id = id;
         this.dumping = false;
-        this.local.port = local_port;
         this.local.netif = netif;
         this.socket = dgram_1.createSocket('udp4');
         this.server = server;
@@ -56,8 +55,10 @@ class NetworkHeadtracker extends headtracker_1.Headtracker {
         log.error(e);
     }
     _onListening() {
+        this.local.port = this.socket.address().port;
+        this.local.netif = this.socket.address().address;
         if (this._state(HTRKDevState.CONNECTING)) {
-            log.info(`Listening for headtracking unit #${this.remote.id} on port ${this.remote.port}`);
+            log.info(`Listening for headtracking unit #${this.remote.id} at port ${this.remote.port}`);
             this.response_timeout
                 = setTimeout(this._onResponseTimeout.bind(this), 2000);
             this._setState(HTRKDevState.INITIALIZING);
@@ -130,9 +131,8 @@ class NetworkHeadtracker extends headtracker_1.Headtracker {
     _connect() {
         if (this._state(HTRKDevState.CONNECTED))
             return;
-        log.info(`Binding socket to ${this.local.netif}:${this.local.port}`);
         this._setState(HTRKDevState.CONNECTING);
-        this.socket.bind(this.local.port, this.local.netif);
+        this.socket.bind();
     }
     _disconnect() {
         this._setState(HTRKDevState.DISCONNECTED);

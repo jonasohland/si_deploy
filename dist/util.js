@@ -7,8 +7,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const os = __importStar(require("os"));
 const cp = __importStar(require("child_process"));
+const os = __importStar(require("os"));
 function applyMixins(derivedCtor, baseCtors) {
     baseCtors.forEach(baseCtor => {
         Object.getOwnPropertyNames(baseCtor.prototype).forEach(name => {
@@ -39,4 +39,23 @@ function arrayDiff(base, excl) {
     return ecpy;
 }
 exports.arrayDiff = arrayDiff;
+function localNetinfo() {
+    return new Promise((res, rej) => {
+        if (os.type() == "Darwin") {
+        }
+    });
+}
+exports.localNetinfo = localNetinfo;
+const interfaces = os.networkInterfaces();
+const local_interfaces = [];
+Object.keys(interfaces).forEach(function (ifname) {
+    var alias = 0;
+    interfaces[ifname].forEach(function (iface) {
+        if ('IPv4' != iface.family || iface.internal)
+            return;
+        local_interfaces.push(iface);
+        ++alias;
+    });
+});
+exports.LocalInterfaces = local_interfaces;
 //# sourceMappingURL=util.js.map

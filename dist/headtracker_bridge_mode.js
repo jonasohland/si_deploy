@@ -19,23 +19,18 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const serialport_1 = __importDefault(require("serialport"));
-const Logger = __importStar(require("./log"));
-const terminal_kit_1 = require("terminal-kit");
 const chalk_1 = __importDefault(require("chalk"));
-const usb_detection_1 = __importDefault(require("usb-detection"));
-const util = __importStar(require("./util"));
 const events_1 = require("events");
+const serialport_1 = __importDefault(require("serialport"));
+const terminal_kit_1 = require("terminal-kit");
+const usb_detection_1 = __importDefault(require("usb-detection"));
 const headtracker_bridge_1 = require("./headtracker_bridge");
-const log = Logger.get("BRIDGE");
-const ulog = Logger.get("USBHST");
+const Logger = __importStar(require("./log"));
+const util = __importStar(require("./util"));
+const log = Logger.get('BRIDGE');
+const ulog = Logger.get('USBHST');
 const { cyan } = chalk_1.default;
-const findable_devices = [
-    {
-        vid: "6790",
-        pid: "29987"
-    }
-];
+const findable_devices = [{ vid: '6790', pid: '29987' }];
 class USBDetector extends events_1.EventEmitter {
     constructor() {
         super(...arguments);
@@ -43,32 +38,32 @@ class USBDetector extends events_1.EventEmitter {
         this._devlist_refresh_cnt = 0;
     }
     start() {
-        ulog.info("Looking for usb-serial devices...");
+        ulog.info('Looking for usb-serial devices...');
         usb_detection_1.default.startMonitoring();
         findable_devices.forEach(dev => {
             usb_detection_1.default.on(`add:${dev.vid}:${dev.pid}`, this._dev_found_retry.bind(this));
             usb_detection_1.default.on(`remove:${dev.vid}:${dev.pid}`, this._dev_remove.bind(this));
         });
-        serialport_1.default.list().then((devs) => {
+        serialport_1.default.list().then(devs => {
             this._cached_paths = devs.map(d => d.path);
             this._cached_paths.forEach(this._add_device.bind(this));
         });
     }
     _remove_device(path) {
-        ulog.warn(path + " removed");
+        ulog.warn(path + ' removed');
         this.emit('remove' + path);
     }
     _add_device(path) {
         let m = path.match(/usbserial|ttyUSB/g);
         if (!m || m.length != 1)
             return;
-        ulog.info("Found new device: " + path);
+        ulog.info('Found new device: ' + path);
         this.emit('add', path);
     }
     _dev_found_retry(dev) {
         return __awaiter(this, void 0, void 0, function* () {
             if (++this._devlist_refresh_cnt >= 10)
-                return ulog.error("Could not register new device");
+                return ulog.error('Could not register new device');
             let paths = (yield serialport_1.default.list()).map(l => l.path);
             let diff = util.arrayDiff(this._cached_paths, paths);
             if (!(diff.length))
@@ -91,7 +86,7 @@ function findPort(index) {
     return __awaiter(this, void 0, void 0, function* () {
         return serialport_1.default.list().then(ports => {
             if (ports.length < index || index < 1) {
-                log.error("No port found for index " + index);
+                log.error('No port found for index ' + index);
                 exit(1);
             }
             else
@@ -113,7 +108,7 @@ terminal_kit_1.terminal.on('key', (name) => {
 function listPorts() {
     return __awaiter(this, void 0, void 0, function* () {
         return serialport_1.default.list().then(ports => {
-            console.log("The following serial ports are available on your device [index] - [port]:");
+            console.log('The following serial ports are available on your device [index] - [port]:');
             console.log();
             ports.forEach((p, i) => {
                 console.log(`${cyan('' + (i + 1))} - ${p.path}`);
@@ -124,8 +119,8 @@ function listPorts() {
 function selectPort() {
     return __awaiter(this, void 0, void 0, function* () {
         return serialport_1.default.list().then(ports => {
-            return terminal_kit_1.terminal.singleColumnMenu(ports.map(p => p.path)).promise
-                .then(res => {
+            return terminal_kit_1.terminal.singleColumnMenu(ports.map(p => p.path))
+                .promise.then(res => {
                 console.log();
                 return res.selectedText;
             });
@@ -133,10 +128,10 @@ function selectPort() {
     });
 }
 function start(path, options) {
-    log.info("Opening port " + path);
+    log.info('Opening port ' + path);
     let p = new serialport_1.default(path, { autoOpen: false, baudRate: 115200 });
     p.on('open', err => {
-        log.info("Port is now open");
+        log.info('Port is now open');
         if (err) {
             log.error(`Could not open port ${path}, error: ${err.message}`);
             exit(20);
@@ -148,7 +143,7 @@ function default_1(port, options) {
     return __awaiter(this, void 0, void 0, function* () {
         if (options.listPorts)
             return listPorts().then(exit);
-        log.info("Starting up Spatial Intercom Headtracker Bridge");
+        log.info('Starting up Spatial Intercom Headtracker Bridge');
         const bridge = new headtracker_bridge_1.HeadtrackerBridge();
         if (!port) {
             if (options.auto) {
@@ -159,9 +154,11 @@ function default_1(port, options) {
                 return;
             }
             else {
-                console.log("Please select a serial port (↑↓, Enter to confirm): ");
-                return selectPort().then(port => start(port, options)).catch(err => {
-                    log.error("Could not select serial port " + err);
+                console.log('Please select a serial port (↑↓, Enter to confirm): ');
+                return selectPort()
+                    .then(port => start(port, options))
+                    .catch(err => {
+                    log.error('Could not select serial port ' + err);
                     exit(1);
                 });
             }

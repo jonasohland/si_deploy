@@ -11,15 +11,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const dnssd_1 = __importDefault(require("dnssd"));
-const events_1 = __importDefault(require("events"));
 const Logger = __importStar(require("./log"));
 const headtracker_network_1 = require("./headtracker_network");
 const headtracker_1 = require("./headtracker");
+const showfiles_1 = require("./showfiles");
 // import mkbonjour, { Bonjour, Browser } from 'bonjour-hap';
 let comCheckInterval = 10000;
 const log = Logger.get('HTK');
-class Headtracking extends events_1.default {
-    constructor(port, interf, netif) {
+class Headtracking extends showfiles_1.ShowfileTarget {
+    constructor(port, interf, man, netif) {
         super();
         this.trackers = [];
         this.local_interface = netif;
@@ -31,6 +31,7 @@ class Headtracking extends events_1.default {
         this.browser.on('serviceDown', this.serviceRemoved.bind(this));
         this.browser.start();
         let self = this;
+        man.register(this);
         this.server.on('connection', socket => {
             socket.on('htrk.update.req', () => {
                 self.updateRemote(socket);
@@ -63,11 +64,20 @@ class Headtracking extends events_1.default {
                 .resetOrientation());
         });
     }
+    onShowfileLoad(s) {
+        log.info("");
+    }
+    onEmptyShowfileCreate(s) {
+        // nothing to do here
+    }
+    targetName() {
+        return "headtracking";
+    }
     serviceFound(service) {
         log.info('Found new headtracking service on ' + service.addresses[0]);
         let id = Number.parseInt(service.host.substr(8, 2));
         console.log(service);
-        let htrk = new headtracker_network_1.NetworkHeadtracker(this.server, id, service.addresses[0], service.port, Math.floor(Math.random() * 10000) + 5000, this.local_interface);
+        let htrk = new headtracker_network_1.NetworkHeadtracker(this.server, id, service.addresses[0], service.port, this.local_interface);
         htrk.start();
         this.addHeadtracker(htrk, id, service.addresses[0]);
     }

@@ -18,6 +18,7 @@ const discovery = __importStar(require("./discovery"));
 const Logger = __importStar(require("./log"));
 const Inputs = __importStar(require("./inputs"));
 const users_1 = require("./users");
+const showfiles_1 = require("./showfiles");
 const express_1 = __importDefault(require("express"));
 const log = Logger.get('SRV');
 class SpatialIntercomServer {
@@ -31,13 +32,14 @@ class SpatialIntercomServer {
                 log.info("Webserver running");
             });
         }
+        this.showfileman = new showfiles_1.ShowfileManager();
         this.advertiser = discovery.getServerAdvertiser(config.interface);
         this.webinterface_advertiser = discovery.getWebinterfaceAdvertiser(config.web_interface);
         this.server = socket_io_1.default(45045);
         this.webif_server = socket_io_1.default(45040);
         this.audio_device_manager = new AudioDevices.AudioDeviceManager(this.webif_server, this.instances);
         this.inputs = new Inputs.InputManager(this.webif_server, this.audio_device_manager);
-        this.headtracking = new Headtracking.Headtracking(33032, this.webif_server, config.interface);
+        this.headtracking = new Headtracking.Headtracking(33032, this.webif_server, this.showfileman, config.interface);
         this.users = new users_1.UsersManager(this.webif_server, this.inputs, this.headtracking);
         this.server.on('connection', this.newInstanceFound.bind(this));
         this.advertiser.start();
