@@ -28,7 +28,7 @@ const headtracker_1 = require("./headtracker");
 const Logger = __importStar(require("./log"));
 const util = __importStar(require("./util"));
 const log = Logger.get('SERIAL');
-const MINIMUM_SWVERSION = "0.1.0";
+const MINIMUM_SWVERSION = "0.2.0";
 class QuaternionContainer {
     constructor(buf, isFloat, offset) {
         this._is_float = isFloat;
@@ -414,7 +414,7 @@ class SerialConnection extends events_1.EventEmitter {
         this.serial_port.on('close', err => {
             this.emit('close', err);
         });
-        this.serial_port.open();
+        // this.serial_port.open();
     }
     serialNotify(val) {
         this._serial_write_message(Buffer.alloc(si_serial_msg_lengths[val], 0), val, si_gy_message_types.SI_GY_NOTIFY);
@@ -791,6 +791,7 @@ class LocalHeadtracker extends headtracker_1.Headtracker {
         this.shtrk.setValue(si_gy_values.SI_GY_INV, Buffer.alloc(1, invertationToBitmask(inv)));
     }
     resetOrientation() {
+        log.info("Resetting orienation on headtracker " + this.shtrk._id);
         this.shtrk.setValue(si_gy_values.SI_GY_RESET_ORIENTATION, Buffer.alloc(1, 1));
     }
     applyNetworkSettings(settings) {
@@ -809,6 +810,7 @@ class LocalHeadtracker extends headtracker_1.Headtracker {
     }
     calibrate() {
         return __awaiter(this, void 0, void 0, function* () {
+            log.info("Calibrating headtracker " + this.shtrk._id);
             return this.shtrk.setValue(si_gy_values.SI_GY_CALIBRATE, Buffer.alloc(1, 7));
         });
     }

@@ -25,12 +25,54 @@ const serialport_1 = __importDefault(require("serialport"));
 const terminal_kit_1 = require("terminal-kit");
 const chalk_1 = __importDefault(require("chalk"));
 const headtracker_serial_1 = require("./headtracker_serial");
+const dgram = __importStar(require("dgram"));
+const osc = __importStar(require("osc-min"));
 const { cyan } = chalk_1.default;
 const log = Logger.get('HEADTR');
 const socket_io_1 = __importDefault(require("socket.io"));
 const showfiles_1 = require("./showfiles");
 const sfman = new showfiles_1.ShowfileManager();
 const htrk_devices = [];
+class OSCController {
+    constructor(ht, options) {
+        this.port = Number.parseInt(options.ctrlPort);
+        this.ht = ht;
+        this.sock = dgram.createSocket('udp4');
+        this.sock.bind(this.port, this.onBound.bind(this));
+        this.sock.on("message", this.onMessage.bind(this));
+    }
+    onBound() {
+        log.info("Listening for control messages on port " + this.port);
+    }
+    onMessage(buf, addrinf) {
+        let packet = osc.fromBuffer(buf);
+        if (packet.oscType == "message") {
+            if (packet.address == "/calibrate") {
+                log.info("Received '/calibrate' message");
+                this.ht.trackers.forEach(t => t.calibrate());
+            }
+            else if (packet.address == "/reset-orientation") {
+                log.info("Received '/reset-orientation' message");
+                this.ht.trackers.forEach(t => t.resetOrientation());
+            }
+            else if (packet.address == "/start") {
+                this.ht.trackers.forEach(t => t.enableTx());
+            }
+            else if (packet.address == "/stop") {
+                this.ht.trackers.forEach(t => t.disableTx());
+            }
+            else if (packet.address == "/srate") {
+                console.log(packet);
+                if (packet.args.length == 1) {
+                    let sratep = packet.args[0];
+                    if (!(sratep.type === 'integer'))
+                        log.error("Fick dich Till");
+                    this.ht.trackers.forEach(t => t.setSamplerate(sratep.value));
+                }
+            }
+        }
+    }
+}
 class DummyOutputAdapter extends headtracker_serial_1.OutputAdapter {
     process(q) {
         console.log(q);
@@ -102,6 +144,8 @@ function runLatencyTest(p, options) {
 function runNormalMode(p, options) {
     let wss = socket_io_1.default(45040);
     let headtracking = new headtracking_1.Headtracking(8887, wss, sfman);
+    if (options.oscControl)
+        new OSCController(headtracking, options);
     let adapter;
     if (options.preset) {
         if (options.preset == 'IEM') {

@@ -241,6 +241,9 @@ class NetworkHeadtracker extends headtracker_1.Headtracker {
         this.resetting_orientation = true;
         this._updateDevice();
     }
+    calibrate() {
+        log.warn("Calibrate-stub called");
+    }
     applyNetworkSettings(settings) {
         if (settings.id)
             this.local.conf.setDeviceID(settings.id);
