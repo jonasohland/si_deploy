@@ -326,7 +326,8 @@ var si_gy_values;
     si_gy_values[si_gy_values["SI_GY_INV"] = 12] = "SI_GY_INV";
     si_gy_values[si_gy_values["SI_GY_RESET_ORIENTATION"] = 13] = "SI_GY_RESET_ORIENTATION";
     si_gy_values[si_gy_values["SI_GY_INT_COUNT"] = 14] = "SI_GY_INT_COUNT";
-    si_gy_values[si_gy_values["SI_GY_VALUES_MAX"] = 15] = "SI_GY_VALUES_MAX";
+    si_gy_values[si_gy_values["SI_GY_CALIBRATE"] = 15] = "SI_GY_CALIBRATE";
+    si_gy_values[si_gy_values["SI_GY_VALUES_MAX"] = 16] = "SI_GY_VALUES_MAX";
 })(si_gy_values || (si_gy_values = {}));
 var si_gy_parser_state;
 (function (si_gy_parser_state) {
@@ -370,6 +371,7 @@ const si_serial_msg_lengths = [
     1,
     1,
     8,
+    1,
     0
 ];
 const SI_SERIAL_SYNC_CODE = 0x23;
@@ -704,6 +706,10 @@ class LocalHeadtracker extends headtracker_1.Headtracker {
         this.shtrk.init().then(() => {
             this.emit('update');
             this.emit('ready');
+            log.info("Calibrating...");
+            this.calibrate().then(() => {
+                log.info("Calibration started. Please dont move the device for 10 seconds");
+            });
         });
         this.shtrk.on('quat', (q) => {
             this.output.process(q);
@@ -800,6 +806,11 @@ class LocalHeadtracker extends headtracker_1.Headtracker {
     }
     setStreamDest(addr, port) {
         log.error('Cannot set stream destination on serial headtracker');
+    }
+    calibrate() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.shtrk.setValue(si_gy_values.SI_GY_CALIBRATE, Buffer.alloc(1, 7));
+        });
     }
 }
 exports.LocalHeadtracker = LocalHeadtracker;
