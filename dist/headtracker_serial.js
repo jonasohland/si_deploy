@@ -596,7 +596,7 @@ class SerialHeadtracker extends SerialConnection {
                         log.warn('Lost connection to Headtracker');
                         this._is_ok = false;
                     });
-                }, 1000, this);
+                }, 20000, this);
             }).catch(err => {
                 log.error(`Could not initialize device ${this.serial_port.path}. Error: ${err}`);
                 this.emit('close', err);
@@ -811,6 +811,7 @@ class LocalHeadtracker extends headtracker_1.Headtracker {
     calibrate() {
         return __awaiter(this, void 0, void 0, function* () {
             log.info("Calibrating headtracker " + this.shtrk._id);
+            setTimeout(() => log.info("Calibration done"), 10000);
             return this.shtrk.setValue(si_gy_values.SI_GY_CALIBRATE, Buffer.alloc(1, 7));
         });
     }
