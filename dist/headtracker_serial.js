@@ -596,7 +596,7 @@ class SerialHeadtracker extends SerialConnection {
                         log.warn('Lost connection to Headtracker');
                         this._is_ok = false;
                     });
-                }, 20000, this);
+                }, 15000, this);
             }).catch(err => {
                 log.error(`Could not initialize device ${this.serial_port.path}. Error: ${err}`);
                 this.emit('close', err);
@@ -648,7 +648,7 @@ class SerialHeadtracker extends SerialConnection {
                     break;
             }
             req.tcnt++;
-            if (req.tcnt > 40)
+            if (req.tcnt > 100)
                 req.reject('Timeout');
         };
         req.tm = setInterval(reqfn, 120, this);
