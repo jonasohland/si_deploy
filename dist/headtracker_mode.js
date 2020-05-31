@@ -62,12 +62,27 @@ class OSCController {
                 this.ht.trackers.forEach(t => t.disableTx());
             }
             else if (packet.address == "/srate") {
-                console.log(packet);
                 if (packet.args.length == 1) {
                     let sratep = packet.args[0];
                     if (!(sratep.type === 'integer'))
-                        log.error("Fick dich Till");
+                        return log.error("Fick dich Till");
                     this.ht.trackers.forEach(t => t.setSamplerate(sratep.value));
+                }
+            }
+            else if (packet.address == '/invert') {
+                if (packet.args.length == 1) {
+                    let argp = packet.args[0];
+                    if (argp.type == 'string') {
+                        let str = argp.value;
+                        let axs = str.split("");
+                        let inv = {
+                            x: axs.indexOf('x') != -1,
+                            y: axs.indexOf('y') != -1,
+                            z: axs.indexOf('z') != -1
+                        };
+                        console.log(inv);
+                        this.ht.trackers.forEach(t => t.setInvertation(inv));
+                    }
                 }
             }
         }
