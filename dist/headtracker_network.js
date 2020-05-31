@@ -243,6 +243,9 @@ class NetworkHeadtracker extends headtracker_1.Headtracker {
     }
     calibrate() {
         log.warn("Calibrate-stub called");
+        return new Promise((res) => {
+            res();
+        });
     }
     applyNetworkSettings(settings) {
         if (settings.id)

@@ -28,7 +28,7 @@ const headtracker_1 = require("./headtracker");
 const Logger = __importStar(require("./log"));
 const util = __importStar(require("./util"));
 const log = Logger.get('SERIAL');
-const MINIMUM_SWVERSION = "0.2.0";
+const MINIMUM_SWVERSION = "0.2.1";
 class QuaternionContainer {
     constructor(buf, isFloat, offset) {
         this._is_float = isFloat;
@@ -680,6 +680,8 @@ class SerialHeadtracker extends SerialConnection {
             this.emit('quat', new QuaternionContainer(data, true, 0));
         else if (ty == si_gy_values.SI_GY_QUATERNION_INT16)
             this.emit('quat', new QuaternionContainer(data, false, 0));
+        else if (ty == si_gy_values.SI_GY_CALIBRATE)
+            this.emit('calib', data.readUInt8(0));
     }
     onNotify(ty, data) {
         console.log('NOTIFY: ' + si_gy_values[ty]);
@@ -697,6 +699,9 @@ exports.SerialHeadtracker = SerialHeadtracker;
 class LocalHeadtracker extends headtracker_1.Headtracker {
     constructor(port, out) {
         super();
+        this._calib_loops = 0;
+        this._calib_target = 0;
+        this._calib_step = 0;
         this._ltc = {
             results: [],
         };
@@ -706,10 +711,6 @@ class LocalHeadtracker extends headtracker_1.Headtracker {
         this.shtrk.init().then(() => {
             this.emit('update');
             this.emit('ready');
-            log.info("Calibrating...");
-            this.calibrate().then(() => {
-                log.info("Calibration started. Please dont move the device for 10 seconds");
-            });
         });
         this.shtrk.on('quat', (q) => {
             this.output.process(q);
@@ -717,6 +718,7 @@ class LocalHeadtracker extends headtracker_1.Headtracker {
         this.shtrk.on('close', err => {
             this.emit('close', err);
         });
+        this.shtrk.on('calib', this._calibration_cb.bind(this));
     }
     flashNewestFirmware(nanobootloader) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -746,6 +748,14 @@ class LocalHeadtracker extends headtracker_1.Headtracker {
                 this._ltc_run();
             });
         });
+    }
+    _calibration_cb(prog) {
+        if (this._calib_prog_cb)
+            this._calib_prog_cb((prog + 1) / this._calib_target, this._calib_step);
+        if ((prog + 1) == this._calib_target) {
+            if (++this._calib_step == 2)
+                this._calib_res();
+        }
     }
     _ltc_run() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -808,11 +818,17 @@ class LocalHeadtracker extends headtracker_1.Headtracker {
     setStreamDest(addr, port) {
         log.error('Cannot set stream destination on serial headtracker');
     }
-    calibrate() {
+    calibrate(loops, prog_cb) {
         return __awaiter(this, void 0, void 0, function* () {
+            this._calib_prog_cb = prog_cb;
+            this._calib_target = loops || 32;
+            this._calib_step = 0;
             log.info("Calibrating headtracker " + this.shtrk._id);
-            setTimeout(() => log.info("Calibration done"), 10000);
-            return this.shtrk.setValue(si_gy_values.SI_GY_CALIBRATE, Buffer.alloc(1, 7));
+            return new Promise((res, rej) => {
+                this._calib_res = res;
+                this._calib_rej = rej;
+                this.shtrk.setValue(si_gy_values.SI_GY_CALIBRATE, Buffer.alloc(1, this._calib_target));
+            });
         });
     }
 }

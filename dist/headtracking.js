@@ -17,7 +17,7 @@ const headtracker_1 = require("./headtracker");
 const showfiles_1 = require("./showfiles");
 // import mkbonjour, { Bonjour, Browser } from 'bonjour-hap';
 let comCheckInterval = 10000;
-const log = Logger.get('HTK');
+const log = Logger.get('HTKHST');
 class Headtracking extends showfiles_1.ShowfileTarget {
     constructor(port, interf, man, netif) {
         super();
@@ -128,7 +128,7 @@ class Headtracking extends showfiles_1.ShowfileTarget {
         })
             .filter(v => v != null);
         // clang-format on
-        console.log(tracker_update);
+        // log.info("Update webinterface")
         if (socket)
             socket.emit('htrk.update', tracker_update);
         else
