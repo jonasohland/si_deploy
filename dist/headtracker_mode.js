@@ -48,9 +48,13 @@ class OSCController {
         let packet = osc.fromBuffer(buf);
         if (packet.oscType == "message") {
             if (packet.address == "/calibrate") {
+                let loops = 32;
+                let a = packet.args[0];
+                if (a && a.type == "integer")
+                    loops = a.value;
                 log.info("Received '/calibrate' message");
                 let pg = terminal_kit_1.terminal.progressBar({ title: "Calibrating Gyro", percent: true });
-                this.ht.trackers.forEach(t => t.calibrate(16, (prog, step) => {
+                this.ht.trackers.forEach(t => t.calibrate(loops, (prog, step) => {
                     pg.update(prog);
                     if (prog == 1) {
                         pg = terminal_kit_1.terminal.progressBar({ title: "Calibrating Acc", percent: true });
