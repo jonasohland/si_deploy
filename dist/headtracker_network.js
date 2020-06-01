@@ -247,6 +247,12 @@ class NetworkHeadtracker extends headtracker_1.Headtracker {
             res();
         });
     }
+    beginInit() {
+        return undefined;
+    }
+    finishInit() {
+        return undefined;
+    }
     applyNetworkSettings(settings) {
         if (settings.id)
             this.local.conf.setDeviceID(settings.id);

@@ -28,7 +28,7 @@ const headtracker_1 = require("./headtracker");
 const Logger = __importStar(require("./log"));
 const util = __importStar(require("./util"));
 const log = Logger.get('SERIAL');
-const MINIMUM_SWVERSION = "0.2.1";
+const MINIMUM_SWVERSION = '0.3.0';
 class QuaternionContainer {
     constructor(buf, isFloat, offset) {
         this._is_float = isFloat;
@@ -327,7 +327,9 @@ var si_gy_values;
     si_gy_values[si_gy_values["SI_GY_RESET_ORIENTATION"] = 13] = "SI_GY_RESET_ORIENTATION";
     si_gy_values[si_gy_values["SI_GY_INT_COUNT"] = 14] = "SI_GY_INT_COUNT";
     si_gy_values[si_gy_values["SI_GY_CALIBRATE"] = 15] = "SI_GY_CALIBRATE";
-    si_gy_values[si_gy_values["SI_GY_VALUES_MAX"] = 16] = "SI_GY_VALUES_MAX";
+    si_gy_values[si_gy_values["SI_GY_INIT_BEGIN"] = 16] = "SI_GY_INIT_BEGIN";
+    si_gy_values[si_gy_values["SI_GY_INIT_FINISH"] = 17] = "SI_GY_INIT_FINISH";
+    si_gy_values[si_gy_values["SI_GY_VALUES_MAX"] = 18] = "SI_GY_VALUES_MAX";
 })(si_gy_values || (si_gy_values = {}));
 var si_gy_parser_state;
 (function (si_gy_parser_state) {
@@ -371,6 +373,8 @@ const si_serial_msg_lengths = [
     1,
     1,
     8,
+    1,
+    1,
     1,
     0
 ];
@@ -578,15 +582,17 @@ class SerialHeadtracker extends SerialConnection {
                 .then((data) => {
                 this.software_version = `${data.readUInt8(0)}.${data.readUInt8(1)}.${data.readUInt8(2)}`;
                 log.info(`Headtracker software version: ${this.software_version}`);
-                if (semver.compare(this.software_version, MINIMUM_SWVERSION) < 0) {
-                    log.error("Headtracker software version not supported. Please update with --flash-firmware");
-                    throw "Unsupported Software Version";
+                if (semver.compare(this.software_version, MINIMUM_SWVERSION)
+                    < 0) {
+                    log.error('Headtracker software version not supported. Please update with --flash-firmware');
+                    throw 'Unsupported Software Version';
                 }
                 return this.getValue(si_gy_values.SI_GY_ID);
-            }).then((data) => {
+            })
+                .then((data) => {
                 // keep only bottom 6 bits
                 this._id = (data.readUInt8(0) & 64) - 1;
-                log.info("Device ID: " + this._id);
+                log.info('Device ID: ' + this._id);
                 this._watchdog = setInterval(() => {
                     this.notify(si_gy_values.SI_GY_ALIVE)
                         .then(() => {
@@ -597,7 +603,8 @@ class SerialHeadtracker extends SerialConnection {
                         this._is_ok = false;
                     });
                 }, 15000, this);
-            }).catch(err => {
+            })
+                .catch(err => {
                 log.error(`Could not initialize device ${this.serial_port.path}. Error: ${err}`);
                 this.emit('close', err);
             });
@@ -607,7 +614,7 @@ class SerialHeadtracker extends SerialConnection {
         return __awaiter(this, void 0, void 0, function* () {
             clearInterval(this._watchdog);
             if (this._req_current)
-                this._req_current.reject("Instance destroyed");
+                this._req_current.reject('Instance destroyed');
             while (this._rqueue.length)
                 this._rqueue.shift().reject('Instance destroyed');
             return this.closeSerialPort();
@@ -801,8 +808,14 @@ class LocalHeadtracker extends headtracker_1.Headtracker {
         this.shtrk.setValue(si_gy_values.SI_GY_INV, Buffer.alloc(1, invertationToBitmask(inv)));
     }
     resetOrientation() {
-        log.info("Resetting orienation on headtracker " + this.shtrk._id);
+        log.info('Resetting orienation on headtracker ' + this.shtrk._id);
         this.shtrk.setValue(si_gy_values.SI_GY_RESET_ORIENTATION, Buffer.alloc(1, 1));
+    }
+    beginInit() {
+        return this.shtrk.getValue(si_gy_values.SI_GY_INIT_BEGIN, Buffer.alloc(1, 1));
+    }
+    finishInit() {
+        return this.shtrk.getValue(si_gy_values.SI_GY_INIT_FINISH, Buffer.alloc(1, 1));
     }
     applyNetworkSettings(settings) {
         log.error('Cannot set network settings on serial headtracker');
@@ -823,7 +836,7 @@ class LocalHeadtracker extends headtracker_1.Headtracker {
             this._calib_prog_cb = prog_cb;
             this._calib_target = loops || 32;
             this._calib_step = 0;
-            log.info("Calibrating headtracker " + this.shtrk._id);
+            log.info('Calibrating headtracker ' + this.shtrk._id);
             return new Promise((res, rej) => {
                 this._calib_res = res;
                 this._calib_rej = rej;
