@@ -46,6 +46,7 @@ class SIOutputAdapter extends headtracker_serial_1.UDPOutputAdapter {
 class HeadtrackerBridgeDevice extends events_1.EventEmitter {
     constructor(port) {
         super();
+        port.open();
         this.path = port.path;
         this.output = new SIOutputAdapter();
         this.lhtrk = new headtracker_serial_1.LocalHeadtracker(port, this.output);

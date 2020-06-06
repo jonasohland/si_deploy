@@ -231,6 +231,29 @@ function runNormalMode(p, options) {
     });
     headtracking.addHeadtracker(ht, 99, "local");
 }
+function setIdMode(port, id) {
+    let dev = new headtracker_serial_1.LocalHeadtracker(port, new DummyOutputAdapter());
+    dev.on('ready', () => __awaiter(this, void 0, void 0, function* () {
+        if (dev.shtrk._id == id) {
+            log.info("New id is old id. Nothing to do here.");
+            exit(0);
+            return;
+        }
+        log.info("Setting new ID: " + id);
+        yield dev.setID(id);
+        log.info('Done. Checking...');
+        let newid = yield dev.getID();
+        log.info('Headtracker returned: ' + newid);
+        if (newid == id) {
+            log.info("Looks good!");
+            exit(0);
+        }
+        else {
+            log.error("Fail");
+            exit(1);
+        }
+    }));
+}
 function start(path, options) {
     log.info("Opening port " + path);
     let p = new serialport_1.default(path, { autoOpen: false, baudRate: 115200 });
@@ -244,6 +267,8 @@ function start(path, options) {
             return runFlashMode(p, options);
         if (options.testLatency)
             return runLatencyTest(p, options);
+        if (options.setId || options.setId != null)
+            return setIdMode(p, options.setId);
         runNormalMode(p, options);
     });
     p.open();

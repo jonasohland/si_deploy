@@ -591,7 +591,7 @@ class SerialHeadtracker extends SerialConnection {
             })
                 .then((data) => {
                 // keep only bottom 6 bits
-                this._id = (data.readUInt8(0) & 64) - 1;
+                this._id = data.readUInt8(0);
                 log.info('Device ID: ' + this._id);
                 this._watchdog = setInterval(() => {
                     this.notify(si_gy_values.SI_GY_ALIVE)
@@ -783,6 +783,18 @@ class LocalHeadtracker extends headtracker_1.Headtracker {
             // log.info(`Run# ${this._ltc.cnt - 50} latency: ${res.toFixed(3)}ms ${
             //    (this._ltc.cnt <= 50) ? '(warmup)' : ''}`);
             setTimeout(this._ltc_run.bind(this), 30);
+        });
+    }
+    setID(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let buf = Buffer.alloc(1);
+            buf.writeUInt8(id, 0);
+            return this.shtrk.setValue(si_gy_values.SI_GY_ID, buf);
+        });
+    }
+    getID() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return (yield this.shtrk.getValue(si_gy_values.SI_GY_ID)).readUInt8(0);
         });
     }
     setSamplerate(sr) {
