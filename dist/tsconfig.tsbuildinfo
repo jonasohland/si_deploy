@@ -706,7 +706,7 @@
         "signature": "522c60f6e6fea8c7a6ed6864ce5a7972d66f35d1e9629d3366d5aed33975fe0f"
       },
       "../src/headtracker_serial.ts": {
-        "version": "289b5b1cccc131c1cb8d622b28121e67bc963fe9e6bfba0d90231bdb072a6aac",
+        "version": "55e2e38b76a5988d47c87dc71d0db0d288e7041946eef9cb84c85dcd846e4e93",
         "signature": "d1722335589be0a24e377e1e12d9ff3d2b78ef2a2354ecc6a411b18fde20bc69"
       },
       "../src/headtracker_bridge.ts": {

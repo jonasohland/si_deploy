@@ -66,9 +66,12 @@ class UDPOutputAdapter extends OutputAdapter {
         this.port = port;
     }
     sendData(data) {
+        if (!this._cts)
+            return this.slow();
         if (!this.addr)
             return;
         this.socket.send(data, this.port, this.addr, (err, bytes) => {
+            this._cts = true;
             if (err) {
                 log.warn("Send error");
                 this.slow();
