@@ -87,35 +87,17 @@ export abstract class UDPOutputAdapter extends OutputAdapter {
 
     sendData(data: Buffer)
     {
-        if (!this._cts)
-            return;
-
         if (!this.addr)
             return;
 
-        this._bytes_to_send += data.length;
-
         this.socket.send(
             data, this.port, this.addr, (err: Error, bytes: number) => {
-                this._bytes_to_send -= bytes;
-
-                if(Math.random() < 0.01)
-                    err = new Error("lel");
-
                 if (err) {
                     log.warn("Send error")
-                    this._bytes_to_send = 0;
                     this.slow()
-                    this._cts = true;
-                }
-                else if (this._bytes_to_send != 0) {
-                    log.warn("Too slow" + this._bytes_to_send)
-                    this.slow();
-                }
-                else {
+                } else { 
                     if (this._slow)
                         this.emit('speedup');
-                    this._cts = true;
                 }
             });
     }
