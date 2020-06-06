@@ -55,6 +55,10 @@ exports.OutputAdapter = OutputAdapter;
 class UDPOutputAdapter extends OutputAdapter {
     constructor() {
         super();
+        this._cts = true;
+        this._bytes_to_send = 0;
+        this._slow = false;
+        log.info("Socket created");
         this.socket = dgram.createSocket('udp4');
     }
     setRemote(addr, port) {
@@ -62,9 +66,38 @@ class UDPOutputAdapter extends OutputAdapter {
         this.port = port;
     }
     sendData(data) {
+        if (!this._cts)
+            return;
         if (!this.addr)
             return;
-        this.socket.send(data, this.port, this.addr);
+        this._bytes_to_send += data.length;
+        this.socket.send(data, this.port, this.addr, (err, bytes) => {
+            this._bytes_to_send -= bytes;
+            if (Math.random() < 0.01)
+                err = new Error("lel");
+            if (err) {
+                log.warn("Send error");
+                this._bytes_to_send = 0;
+                this.slow();
+                this._cts = true;
+            }
+            else if (this._bytes_to_send != 0) {
+                log.warn("Too slow" + this._bytes_to_send);
+                this.slow();
+            }
+            else {
+                if (this._slow)
+                    this.emit('speedup');
+                this._cts = true;
+            }
+        });
+    }
+    fullspeed() {
+        this._slow = false;
+    }
+    slow() {
+        this.emit("slowdown");
+        this._slow = true;
     }
 }
 exports.UDPOutputAdapter = UDPOutputAdapter;
@@ -709,6 +742,8 @@ class LocalHeadtracker extends headtracker_1.Headtracker {
         this._calib_loops = 0;
         this._calib_target = 0;
         this._calib_step = 0;
+        this._req_speed = -1;
+        this._act_speed = 0;
         this._ltc = {
             results: [],
         };
@@ -725,7 +760,24 @@ class LocalHeadtracker extends headtracker_1.Headtracker {
         this.shtrk.on('close', err => {
             this.emit('close', err);
         });
+        this.output.on('slowdown', this._slowdown.bind(this));
+        this.output.on('speedup', this._speedup.bind(this));
         this.shtrk.on('calib', this._calibration_cb.bind(this));
+    }
+    _slowdown() {
+        let newsr = 1 + Math.floor(this._act_speed / 2);
+        this._set_sr(newsr);
+        log.warn("Emitting packets to fast. Slowing down to " + newsr);
+    }
+    _speedup() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let newsr = 1 + this._act_speed + Math.floor((this._req_speed - this._act_speed) / 4);
+            log.info("Speeding up to " + newsr + "/" + this._req_speed);
+            yield this._set_sr((newsr > this._req_speed) ? this._req_speed : newsr);
+            if (this._act_speed == this._req_speed
+                && this.output instanceof UDPOutputAdapter)
+                this.output.fullspeed();
+        });
     }
     flashNewestFirmware(nanobootloader) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -798,8 +850,28 @@ class LocalHeadtracker extends headtracker_1.Headtracker {
         });
     }
     setSamplerate(sr) {
-        console.log('set srate' + sr);
-        this.shtrk.setValue(si_gy_values.SI_GY_SRATE, Buffer.alloc(1, sr));
+        return __awaiter(this, void 0, void 0, function* () {
+            log.info("New speed requested: " + sr);
+            if (this._req_speed = -1) {
+                this._req_speed = sr;
+                return this._set_sr(sr);
+            }
+            this._req_speed = sr;
+            if (this.output instanceof UDPOutputAdapter) {
+                if (this._req_speed == this._act_speed)
+                    return this._set_sr(sr);
+                this._speedup();
+            }
+            else
+                return this._set_sr(sr);
+        });
+    }
+    _set_sr(sr) {
+        return __awaiter(this, void 0, void 0, function* () {
+            log.info("Setting new speed: " + sr);
+            yield this.shtrk.setValue(si_gy_values.SI_GY_SRATE, Buffer.alloc(1, sr));
+            this._act_speed = sr;
+        });
     }
     enableTx() {
         return this.shtrk.setValue(si_gy_values.SI_GY_ENABLE, Buffer.alloc(1, 1));
