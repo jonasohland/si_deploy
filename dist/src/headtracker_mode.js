@@ -8,6 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -15,18 +18,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const headtracking_1 = require("./headtracking");
-const Logger = __importStar(require("./log"));
-const serialport_1 = __importDefault(require("serialport"));
-const terminal_kit_1 = require("terminal-kit");
 const chalk_1 = __importDefault(require("chalk"));
-const headtracker_serial_1 = require("./headtracker_serial");
 const dgram = __importStar(require("dgram"));
 const osc = __importStar(require("osc-min"));
+const serialport_1 = __importDefault(require("serialport"));
+const terminal_kit_1 = require("terminal-kit");
+const headtracker_serial_1 = require("./headtracker_serial");
+const headtracking_1 = require("./headtracking");
+const Logger = __importStar(require("./log"));
 const { cyan } = chalk_1.default;
 const log = Logger.get('HEADTR');
 const socket_io_1 = __importDefault(require("socket.io"));
@@ -39,50 +39,53 @@ class OSCController {
         this.ht = ht;
         this.sock = dgram.createSocket('udp4');
         this.sock.bind(this.port, this.onBound.bind(this));
-        this.sock.on("message", this.onMessage.bind(this));
+        this.sock.on('message', this.onMessage.bind(this));
     }
     onBound() {
-        log.info("Listening for control messages on port " + this.port);
+        log.info('Listening for control messages on port ' + this.port);
     }
     onMessage(buf, addrinf) {
         let packet = osc.fromBuffer(buf);
-        if (packet.oscType == "message") {
-            if (packet.address == "/calibrate") {
+        if (packet.oscType == 'message') {
+            if (packet.address == '/calibrate') {
                 let loops = 32;
                 let a = packet.args[0];
-                if (a && a.type == "integer")
+                if (a && a.type == 'integer')
                     loops = a.value;
-                log.info("Received '/calibrate' message");
-                let pg = terminal_kit_1.terminal.progressBar({ title: "Calibrating Gyro", percent: true });
+                log.info('Received \'/calibrate\' message');
+                let pg = terminal_kit_1.terminal.progressBar({ title: 'Calibrating Gyro', percent: true });
                 this.ht.trackers.forEach(t => t.calibrate(loops, (prog, step) => {
                     pg.update(prog);
                     if (prog == 1) {
-                        pg = terminal_kit_1.terminal.progressBar({ title: "Calibrating Acc", percent: true });
+                        pg = terminal_kit_1.terminal.progressBar({
+                            title: 'Calibrating Acc',
+                            percent: true
+                        });
                     }
                 }).then(() => {
                     pg.update(1);
                     setTimeout(() => {
                         pg.stop();
                         console.log();
-                        log.info("Calibration done!");
+                        log.info('Calibration done!');
                     }, 500);
                 }));
             }
-            else if (packet.address == "/reset-orientation") {
-                log.info("Received '/reset-orientation' message");
+            else if (packet.address == '/reset-orientation') {
+                log.info('Received \'/reset-orientation\' message');
                 this.ht.trackers.forEach(t => t.resetOrientation());
             }
-            else if (packet.address == "/start") {
+            else if (packet.address == '/start') {
                 this.ht.trackers.forEach(t => t.enableTx());
             }
-            else if (packet.address == "/stop") {
+            else if (packet.address == '/stop') {
                 this.ht.trackers.forEach(t => t.disableTx());
             }
-            else if (packet.address == "/srate") {
+            else if (packet.address == '/srate') {
                 if (packet.args.length == 1) {
                     let sratep = packet.args[0];
                     if (!(sratep.type === 'integer'))
-                        return log.error("Fick dich Till");
+                        return log.error('Fick dich Till');
                     this.ht.trackers.forEach(t => t.setSamplerate(sratep.value));
                 }
             }
@@ -91,7 +94,7 @@ class OSCController {
                     let argp = packet.args[0];
                     if (argp.type == 'string') {
                         let str = argp.value;
-                        let axs = str.split("");
+                        let axs = str.split('');
                         let inv = {
                             x: axs.indexOf('x') != -1,
                             y: axs.indexOf('y') != -1,
@@ -104,17 +107,17 @@ class OSCController {
             }
             else if (packet.address == '/begin_init') {
                 this.ht.trackers.forEach(t => {
-                    log.info("Beginning initialization");
+                    log.info('Beginning initialization');
                     t.beginInit().then(() => {
-                        log.info("OK. Nod down and proceed to next step");
+                        log.info('OK. Nod down and proceed to next step');
                     });
                 });
             }
             else if (packet.address == '/end_init') {
                 this.ht.trackers.forEach(t => {
-                    log.info("Finish initialization");
+                    log.info('Finish initialization');
                     t.finishInit().then(() => {
-                        log.info("Initialization done");
+                        log.info('Initialization done');
                     });
                 });
             }
@@ -130,7 +133,7 @@ function findPort(index) {
     return __awaiter(this, void 0, void 0, function* () {
         return serialport_1.default.list().then(ports => {
             if (ports.length < index || index < 1) {
-                log.error("No port found for index " + index);
+                log.error('No port found for index ' + index);
                 exit(1);
             }
             else
@@ -152,7 +155,7 @@ terminal_kit_1.terminal.on('key', (name) => {
 function listPorts() {
     return __awaiter(this, void 0, void 0, function* () {
         return serialport_1.default.list().then(ports => {
-            console.log("The following serial ports are available on your device [index] - [port]:");
+            console.log('The following serial ports are available on your device [index] - [port]:');
             console.log();
             ports.forEach((p, i) => {
                 console.log(`${cyan('' + (i + 1))} - ${p.path}`);
@@ -163,8 +166,8 @@ function listPorts() {
 function selectPort() {
     return __awaiter(this, void 0, void 0, function* () {
         return serialport_1.default.list().then(ports => {
-            return terminal_kit_1.terminal.singleColumnMenu(ports.map(p => p.path)).promise
-                .then(res => {
+            return terminal_kit_1.terminal.singleColumnMenu(ports.map(p => p.path))
+                .promise.then(res => {
                 console.log();
                 return res.selectedText;
             });
@@ -174,9 +177,11 @@ function selectPort() {
 function runFlashMode(p, options) {
     let htrk = new headtracker_serial_1.LocalHeadtracker(p, new DummyOutputAdapter());
     htrk.on('ready', () => {
-        htrk.flashNewestFirmware(options.bootloader).then(() => {
+        htrk.flashNewestFirmware(options.bootloader)
+            .then(() => {
             exit(0);
-        }).catch(err => {
+        })
+            .catch(err => {
             exit(1);
         });
     });
@@ -200,7 +205,7 @@ function runNormalMode(p, options) {
             adapter = new headtracker_serial_1.IEMOutputAdapter();
         }
         else {
-            log.error("Preset " + options.preset + " not found");
+            log.error('Preset ' + options.preset + ' not found');
             exit(1);
         }
     }
@@ -217,11 +222,11 @@ function runNormalMode(p, options) {
     adapter.setRemote(options.host, options.port);
     if (!(options.preset)) {
         if (options.quaternionAddr) {
-            let addrs = options.quaternionAddr.split(",");
+            let addrs = options.quaternionAddr.split(',');
             adapter.setQuatAddresses(addrs);
         }
         if (options.eulerAddr) {
-            let addrs = options.eulerAddr.split(",");
+            let addrs = options.eulerAddr.split(',');
             adapter.setEulerAddresses(addrs);
         }
     }
@@ -229,36 +234,36 @@ function runNormalMode(p, options) {
     ht.on('close', () => {
         exit();
     });
-    headtracking.addHeadtracker(ht, 99, "local");
+    headtracking.addHeadtracker(ht, 99, 'local');
 }
 function setIdMode(port, id) {
     let dev = new headtracker_serial_1.LocalHeadtracker(port, new DummyOutputAdapter());
     dev.on('ready', () => __awaiter(this, void 0, void 0, function* () {
         if (dev.shtrk._id == id) {
-            log.info("New id is old id. Nothing to do here.");
+            log.info('New id is old id. Nothing to do here.');
             exit(0);
             return;
         }
-        log.info("Setting new ID: " + id);
+        log.info('Setting new ID: ' + id);
         yield dev.setID(id);
         log.info('Done. Checking...');
         let newid = yield dev.getID();
         log.info('Headtracker returned: ' + newid);
         if (newid == id) {
-            log.info("Looks good!");
+            log.info('Looks good!');
             exit(0);
         }
         else {
-            log.error("Fail");
+            log.error('Fail');
             exit(1);
         }
     }));
 }
 function start(path, options) {
-    log.info("Opening port " + path);
+    log.info('Opening port ' + path);
     let p = new serialport_1.default(path, { autoOpen: false, baudRate: 115200 });
     p.on('open', err => {
-        log.info("Port is now open");
+        log.info('Port is now open');
         if (err) {
             log.error(`Could not open port ${path}, error: ${err.message}`);
             exit(1);
@@ -282,9 +287,11 @@ function default_1(port, options) {
                 return;
             }
             else {
-                console.log("Please select a serial port (↑↓, Enter to confirm): ");
-                return selectPort().then(port => start(port, options)).catch(err => {
-                    log.error("Could not select serial port " + err);
+                console.log('Please select a serial port (↑↓, Enter to confirm): ');
+                return selectPort()
+                    .then(port => start(port, options))
+                    .catch(err => {
+                    log.error('Could not select serial port ' + err);
                     exit(1);
                 });
             }

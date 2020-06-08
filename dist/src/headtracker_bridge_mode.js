@@ -47,7 +47,7 @@ class USBDetector extends events_1.EventEmitter {
         serialport_1.default.list().then(devs => {
             this._cached_paths = devs.map(d => d.path);
             this._cached_paths.forEach(this._add_device.bind(this));
-        });
+        }).catch(err => ulog.error("Failed to list Serial ports: " + err));
     }
     _remove_device(path) {
         ulog.warn(path + ' removed');
@@ -62,7 +62,7 @@ class USBDetector extends events_1.EventEmitter {
     }
     _dev_found_retry(dev) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (++this._devlist_refresh_cnt >= 10)
+            if (++this._devlist_refresh_cnt >= 40)
                 return ulog.error('Could not register new device');
             let paths = (yield serialport_1.default.list()).map(l => l.path);
             let diff = util.arrayDiff(this._cached_paths, paths);

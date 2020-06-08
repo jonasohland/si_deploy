@@ -29,8 +29,6 @@ export declare abstract class UDPOutputAdapter extends OutputAdapter {
     constructor();
     setRemote(addr: string, port: number): void;
     sendData(data: Buffer): void;
-    fullspeed(): void;
-    slow(): void;
 }
 export declare class OSCOutputAdapter extends UDPOutputAdapter {
     output_q: boolean;
@@ -140,14 +138,15 @@ export declare class SerialHeadtracker extends SerialConnection {
     last_int: number;
     last_read_cnt: number;
     init(): Promise<void>;
+    private _alive_check;
     destroy(): Promise<unknown>;
     isOnline(): boolean;
     setValue(ty: si_gy_values, data: Buffer): Promise<void>;
     getValue(ty: si_gy_values, data?: Buffer): Promise<Buffer>;
     notify(ty: si_gy_values): Promise<void>;
-    _start_request(req: HeadtrackerSerialReq): void;
-    _new_request(req: HeadtrackerSerialReq): void;
-    _end_request(data?: Buffer): void;
+    private _start_request;
+    private _new_request;
+    private _end_request;
     onValueRequest(ty: si_gy_values): Buffer;
     onValueSet(ty: si_gy_values, data: Buffer): void;
     onNotify(ty: si_gy_values, data: Buffer): void;
@@ -164,8 +163,6 @@ export declare class LocalHeadtracker extends Headtracker {
     _calib_target: number;
     _calib_step: number;
     _calib_prog_cb: (prog: number, step: number) => void;
-    _req_speed: number;
-    _act_speed: number;
     _ltc: {
         results: number[];
         cnt?: number;
@@ -173,8 +170,6 @@ export declare class LocalHeadtracker extends Headtracker {
         err?: () => void;
     };
     constructor(port: SerialPort, out: OutputAdapter);
-    _slowdown(): void;
-    _speedup(): Promise<void>;
     flashNewestFirmware(nanobootloader: string): Promise<void>;
     checkLatency(): Promise<unknown>;
     _calibration_cb(prog: number): void;

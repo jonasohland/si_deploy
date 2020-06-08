@@ -17,8 +17,21 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Logger = __importStar(require("./log"));
+const showfiles_1 = require("./showfiles");
 const log = Logger.get('INP');
-class Input {
+class Input extends showfiles_1.ShowfileRecord {
+    plain() {
+        let r = {};
+        Object.assign(r, this);
+        return r;
+    }
+    restore(data) {
+        this.build(data);
+    }
+    save() { }
+    build(data) {
+        Object.assign(this, data);
+    }
 }
 exports.Input = Input;
 class InputManager {
@@ -43,7 +56,7 @@ class InputManager {
                 nodes: nodes,
                 inputs: this.nodes.map(nd => {
                     return {
-                        id: nd.si.id, inputs: nd.inputs
+                        id: nd.si.id, inputs: nd.inputs.map(i => i.plain())
                     };
                 })
             });
@@ -61,12 +74,14 @@ class InputManager {
                 this.nodes.push({ si: ins, inputs: [], max_id: 0 });
             nodeAndInput = this.nodes.find(ni => ni.si.id == input.nodeid);
             log.info(`Added new Input to node ${nodeAndInput.si.name} (chs: ${chs.length}, name: ${input.name})`);
-            nodeAndInput.inputs.push({
+            let i = new Input();
+            i.build({
                 name: input.name,
                 channels: chs,
                 format: input.format,
                 id: ++nodeAndInput.max_id
             });
+            nodeAndInput.inputs.push(i);
             this.updateInterface(this.server);
         });
     }

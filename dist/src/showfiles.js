@@ -10,29 +10,76 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const dependency_graph_1 = require("dependency-graph");
 const events_1 = require("events");
 const fs = __importStar(require("fs"));
-const os = __importStar(require("os"));
+const files_1 = require("./files");
+const uuid_1 = require("uuid");
 const logger = __importStar(require("./log"));
 const log = logger.get("SHFILE");
-function showfileDir(subdir) {
-    return os.homedir() + '/Spatial\ Intercom' + ((subdir) ? '/' + subdir : '');
-}
 class ShowfileTarget extends events_1.EventEmitter {
     beforeShowfileLoad() { }
     afterShowfileLoad() { }
 }
 exports.ShowfileTarget = ShowfileTarget;
+class ShowfileRecord {
+}
+exports.ShowfileRecord = ShowfileRecord;
+class ShowfileSection {
+    constructor(name) {
+        if (name) {
+            this._uid = uuid_1.v4();
+            this._name = name;
+            this._records = [];
+        }
+    }
+    name() {
+        return this._name;
+    }
+    id() {
+        return this._uid;
+    }
+    plain() {
+        return {
+            records: this._records.map(r => r.plain()),
+            name: this._name,
+            uid: this._uid
+        };
+    }
+}
+exports.ShowfileSection = ShowfileSection;
 class Showfile {
-    constructor() { }
-    getSection(name) { }
+    constructor() {
+        this._sections = [];
+    }
+    init() {
+        this._created = (new Date(Date.now())).toISOString();
+    }
+    getSectionByName(name) {
+        return this._sections.find(sect => name == sect.name());
+    }
+    getSectionById(id) {
+        return this._sections.find(sect => id == sect.id());
+    }
+    replace(id, sect) {
+        let idx = this._sections.findIndex(s => id == sect.id());
+        if (idx != -1)
+            this._sections.splice(idx, 1);
+        this._sections.push(sect);
+        return idx != -1;
+    }
+    toString() {
+        return JSON.stringify({
+            sections: this._sections.map(s => s.plain()),
+            created: this._created
+        });
+    }
 }
 exports.Showfile = Showfile;
 class ShowfileManager {
     constructor() {
         this.targets = [];
-        if (!fs.existsSync(showfileDir()))
-            fs.mkdirSync(showfileDir());
-        if (!fs.existsSync(showfileDir('showfiles')))
-            fs.mkdirSync(showfileDir('showfiles'));
+        if (!fs.existsSync(files_1.showfileDir()))
+            fs.mkdirSync(files_1.showfileDir());
+        if (!fs.existsSync(files_1.showfileDir('showfiles')))
+            fs.mkdirSync(files_1.showfileDir('showfiles'));
     }
     register(t, dependencies) {
         let name = t.targetName();
@@ -42,8 +89,8 @@ class ShowfileManager {
         log.info("Registered new module '" + name + "'");
     }
     createEmptyShow(name) {
-        fs.mkdirSync(showfileDir('showfiles/' + name));
-        fs.writeFileSync(showfileDir(`showfiles/${name}/show.json`), '{}');
+        fs.mkdirSync(files_1.showfileDir('showfiles/' + name));
+        fs.writeFileSync(files_1.showfileDir(`showfiles/${name}/show.json`), '{}');
     }
     loadShowfile() {
         let s = new Showfile();

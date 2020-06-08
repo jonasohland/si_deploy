@@ -7,9 +7,33 @@ export declare abstract class ShowfileTarget extends EventEmitter {
     abstract onEmptyShowfileCreate(s: Showfile): void;
     afterShowfileLoad(): void;
 }
+export declare abstract class ShowfileRecord {
+    _name: string;
+    _data: any;
+    _uid: string;
+    abstract plain(): any;
+    abstract restore(data: any): void;
+    abstract save(): any;
+    abstract build(data: any): void;
+}
+export declare class ShowfileSection {
+    private _name;
+    private _uid;
+    private _records;
+    constructor(name?: string);
+    name(): string;
+    id(): string;
+    plain(): any;
+}
 export declare class Showfile {
+    _sections: ShowfileSection[];
+    _created: string;
     constructor();
-    getSection(name: string): void;
+    init(): void;
+    getSectionByName(name: string): ShowfileSection;
+    getSectionById(id: string): ShowfileSection;
+    replace(id: string, sect: ShowfileSection): boolean;
+    toString(): string;
 }
 export declare class ShowfileManager {
     targets: ShowfileTarget[];

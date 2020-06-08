@@ -94,9 +94,9 @@ export declare class HeadtrackerDataPacket {
     constructor(id: number, vals: [number, number, number, number]);
     static check(m: Buffer): void;
     static fromBuffer(m: Buffer): void;
-    toBuffer(): Buffer;
-    static newPacketFromFloatLEData(b: Buffer, dataoffs: number, id: number): Buffer;
-    static newPackerFromInt16Data(b: Buffer, dataoffs: number, id: number): Buffer;
+    toBuffer(seq: number): Buffer;
+    static newPacketFromFloatLEData(b: Buffer, dataoffs: number, id: number, seq: number): Buffer;
+    static newPackerFromInt16Data(b: Buffer, dataoffs: number, id: number, seq: number): Buffer;
     getQuaternion(): Quaternion;
     getEuler(): EulerAngles;
 }

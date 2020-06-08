@@ -24,6 +24,7 @@ program.command('server')
     .option('-n, --node-name <node name>')
     .option('-p, --port <port>')
     .option('-z, --webserver-port <port>')
+    .option('-l, --log-level <loglvl>', 'Set the log level')
     .option('--no-webserver')
     .action(server_mode_1.default);
 program.command('node')

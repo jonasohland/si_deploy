@@ -33,14 +33,20 @@ class SIOutputAdapter extends headtracker_serial_1.UDPOutputAdapter {
     constructor() {
         super(...arguments);
         this.id = 0;
+        this._seq = 0;
+    }
+    seq() {
+        if (++this._seq > 65535)
+            this._seq = 0;
+        return this._seq;
     }
     process(q) {
         log.info('Output Quaternion.');
         let { buffer, offset } = q.data();
         if (q.float())
-            this.sendData(headtracker_1.HeadtrackerDataPacket.newPacketFromFloatLEData(buffer, offset, this.id));
+            this.sendData(headtracker_1.HeadtrackerDataPacket.newPacketFromFloatLEData(buffer, offset, this.id, this.seq()));
         else
-            this.sendData(headtracker_1.HeadtrackerDataPacket.newPackerFromInt16Data(buffer, offset, this.id));
+            this.sendData(headtracker_1.HeadtrackerDataPacket.newPackerFromInt16Data(buffer, offset, this.id, this.seq()));
     }
 }
 class HeadtrackerBridgeDevice extends events_1.EventEmitter {

@@ -9,7 +9,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const server_config = __importStar(require("./server_config"));
 const server_1 = require("./server");
+const log = __importStar(require("./log"));
 function default_1(options) {
+    if (options.logLevel != null)
+        log.setLogLVL(options.logLevel);
     server_config.loadServerConfigFile();
     const server = new server_1.SpatialIntercomServer(server_config.merge(options));
 }

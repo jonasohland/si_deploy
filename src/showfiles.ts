@@ -2,15 +2,12 @@ import {DepGraph} from 'dependency-graph';
 import {EventEmitter} from 'events';
 import * as fs from 'fs';
 import * as os from 'os';
+import { showfileDir } from './files'
+import { v4 as uuid } from 'uuid';
 
 import * as logger from './log';
 
 const log = logger.get("SHFILE");
-
-function showfileDir(subdir?: string)
-{
-    return os.homedir() + '/Spatial\ Intercom' + ((subdir) ? '/' + subdir : '');
-}
 
 
 export abstract class ShowfileTarget extends EventEmitter {
@@ -23,11 +20,94 @@ export abstract class ShowfileTarget extends EventEmitter {
     afterShowfileLoad() {}
 }
 
+export abstract class ShowfileRecord {
+
+    _name: string;
+    _data: any;
+
+    _uid: string;
+
+    abstract plain(): any;
+    abstract restore(data: any): void;
+    abstract save(): any;
+    abstract build(data: any): void;
+}
+
+export class ShowfileSection {
+
+    private _name: string;
+    private _uid: string;
+    private _records: ShowfileRecord[];
+
+    constructor(name?: string)
+    {
+        if(name){
+            this._uid = uuid();
+            this._name = name;
+            this._records = [];
+        }
+    }
+
+    name()
+    {
+        return this._name;
+    }
+
+    id()
+    {
+        return this._uid;
+    }
+
+    plain(): any
+    {
+        return {
+            records: this._records.map(r => r.plain()),
+            name: this._name,
+            uid: this._uid
+        }
+    }
+}
+
 export class Showfile {
+
+    _sections: ShowfileSection[] = [];
+    _created: string;
 
     constructor() {}
 
-    getSection(name: string) {}
+    init()
+    {
+        this._created = (new Date(Date.now())).toISOString();
+    }
+
+    getSectionByName(name: string): ShowfileSection
+    {
+        return this._sections.find(sect => name == sect.name());
+    }
+
+    getSectionById(id: string): ShowfileSection
+    {
+        return this._sections.find(sect => id == sect.id());
+    }
+
+    replace(id: string, sect: ShowfileSection): boolean
+    {
+        let idx = this._sections.findIndex(s => id == sect.id());
+
+        if(idx != -1)
+            this._sections.splice(idx, 1);
+        
+        this._sections.push(sect);
+        return idx != -1;
+    }
+
+    toString(): string
+    {
+        return JSON.stringify({
+            sections: this._sections.map(s => s.plain()),
+            created: this._created
+        });
+    }
 }
 
 export class ShowfileManager {
