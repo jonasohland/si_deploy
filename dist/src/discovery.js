@@ -8,12 +8,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const dnssd = __importStar(require("dnssd"));
-function getWebinterfaceAdvertiser(netif) {
-    return new dnssd.Advertisement(dnssd.tcp('http'), 8090, { interface: netif, name: "Spatial Intercom Manager" });
+function getWebinterfaceAdvertiser(port, netif) {
+    return new dnssd.Advertisement(dnssd.tcp('http'), port, { interface: netif, name: "Spatial Intercom Manager" });
 }
 exports.getWebinterfaceAdvertiser = getWebinterfaceAdvertiser;
-function getServerAdvertiser(netif) {
-    return new dnssd.Advertisement(dnssd.tcp('si-server'), 45045, { interface: netif });
+function getServerAdvertiser(port, netif) {
+    return new dnssd.Advertisement(dnssd.tcp('si-server'), port, { interface: netif });
 }
 exports.getServerAdvertiser = getServerAdvertiser;
 function getServerBrowser(netif) {

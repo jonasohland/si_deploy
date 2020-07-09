@@ -5,9 +5,9 @@ import winston, { add } from 'winston'
 import * as AudioDevices from './audio_devices'
 import * as DSP from './dsp'
 import * as VST from './vst';
-import * as DSPModules from './dsp_modules'
-import * as IPC from './ipc'
 import * as Logger from './log'
+import { Connection } from './communication'
+import { TimecodeNode } from './timecode';
 
 const log    = Logger.get('MGT');
 const netlog = Logger.get('NET');
@@ -27,17 +27,18 @@ export interface InstanceNetworkInformations {
     htrk_port: string;
 }
 
-export class SpatialIntercomInstance {
+export class SIDSPNode {
 
     name: string;
     id: string;
     io: io.Socket;
     graph: DSP.Graph;
-    dsp: IPC.Connection;
-    vst: VST.Manager;
+    connection: Connection;
+    vst: VST.VSTScanner;
     devices: AudioDevices.Manager;
     service_browser: mdns.Browser;
     addresses: string[];
+    tc: TimecodeNode;
 
     constructor(nodename: string, nid: string, local: boolean, addrs: string[], dsp?: io.Socket)
     {
@@ -45,22 +46,13 @@ export class SpatialIntercomInstance {
         this.id = nid;
         this.addresses = addrs;
 
-        if (local)
-            this.dsp = new IPC.LocalConnection('default');
-        else {
-            this.dsp = new IPC.RemoteConnection(dsp);
-        }
+        this.devices = new AudioDevices.Manager(this.connection);
+        this.tc = new TimecodeNode(this.connection);
 
-        this.graph = new DSP.Graph(this.dsp);
-        this.devices = new AudioDevices.Manager(this.dsp);
-        this.vst = new VST.Manager(this.dsp);
+        this.connection.begin();
 
-
-        this.dsp.begin();
-
-        this.dsp.on('connection', () => {
-            this.graph.sync();
-            this.vst.refreshPluginList();
+        this.connection.on('connection', () => {
+            this.vst.waitPluginsScanned();
             this.graph.setInputNode(64);
             this.graph.setOutputNode(64);
         });

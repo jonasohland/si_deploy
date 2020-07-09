@@ -3,7 +3,8 @@ import io from 'socket.io';
 import * as AudioDevices from './audio_devices';
 import * as DSP from './dsp';
 import * as VST from './vst';
-import * as IPC from './ipc';
+import { Connection } from './communication';
+import { TimecodeNode } from './timecode';
 export declare class InstanceID {
     hash: number;
     txt: string;
@@ -16,15 +17,16 @@ export interface InstanceNetworkInformations {
     ws_port: string;
     htrk_port: string;
 }
-export declare class SpatialIntercomInstance {
+export declare class SIDSPNode {
     name: string;
     id: string;
     io: io.Socket;
     graph: DSP.Graph;
-    dsp: IPC.Connection;
-    vst: VST.Manager;
+    connection: Connection;
+    vst: VST.VSTScanner;
     devices: AudioDevices.Manager;
     service_browser: mdns.Browser;
     addresses: string[];
+    tc: TimecodeNode;
     constructor(nodename: string, nid: string, local: boolean, addrs: string[], dsp?: io.Socket);
 }

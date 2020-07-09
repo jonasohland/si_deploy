@@ -8,36 +8,27 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const AudioDevices = __importStar(require("./audio_devices"));
-const DSP = __importStar(require("./dsp"));
-const VST = __importStar(require("./vst"));
-const IPC = __importStar(require("./ipc"));
 const Logger = __importStar(require("./log"));
+const timecode_1 = require("./timecode");
 const log = Logger.get('MGT');
 const netlog = Logger.get('NET');
 class InstanceID {
 }
 exports.InstanceID = InstanceID;
-class SpatialIntercomInstance {
+class SIDSPNode {
     constructor(nodename, nid, local, addrs, dsp) {
         this.name = nodename;
         this.id = nid;
         this.addresses = addrs;
-        if (local)
-            this.dsp = new IPC.LocalConnection('default');
-        else {
-            this.dsp = new IPC.RemoteConnection(dsp);
-        }
-        this.graph = new DSP.Graph(this.dsp);
-        this.devices = new AudioDevices.Manager(this.dsp);
-        this.vst = new VST.Manager(this.dsp);
-        this.dsp.begin();
-        this.dsp.on('connection', () => {
-            this.graph.sync();
-            this.vst.refreshPluginList();
+        this.devices = new AudioDevices.Manager(this.connection);
+        this.tc = new timecode_1.TimecodeNode(this.connection);
+        this.connection.begin();
+        this.connection.on('connection', () => {
+            this.vst.waitPluginsScanned();
             this.graph.setInputNode(64);
             this.graph.setOutputNode(64);
         });
     }
 }
-exports.SpatialIntercomInstance = SpatialIntercomInstance;
+exports.SIDSPNode = SIDSPNode;
 //# sourceMappingURL=instance.js.map

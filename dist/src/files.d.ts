@@ -1,1 +1,1 @@
-export declare function showfileDir(subdir?: string): string;
+export declare function configFileDir(subdir?: string): string;

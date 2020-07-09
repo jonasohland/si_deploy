@@ -10,59 +10,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const instance_1 = require("./instance");
-const AudioDevices = __importStar(require("./audio_devices"));
-const socket_io_1 = __importDefault(require("socket.io"));
-const Headtracking = __importStar(require("./headtracking"));
-const discovery = __importStar(require("./discovery"));
+const audio_devices_1 = require("./audio_devices");
+const communication_1 = require("./communication");
 const Logger = __importStar(require("./log"));
-const Inputs = __importStar(require("./inputs"));
-const users_1 = require("./users");
-const showfiles_1 = require("./showfiles");
-const express_1 = __importDefault(require("express"));
-const log = Logger.get('SRV');
-class SpatialIntercomServer {
+const web_interface_1 = __importDefault(require("./web_interface"));
+const data_1 = require("./data");
+const dsp_node_1 = require("./dsp_node");
+const log = Logger.get('SERVER');
+class SpatialIntercomServer extends data_1.Server {
     constructor(config) {
-        this.instances = [];
-        let self = this;
-        this.app = express_1.default();
-        this.app.use(express_1.default.static(`${__dirname}/../../interface/dist`));
-        if (config.webserver) {
-            this.app.listen(8090, () => {
-                log.info("Webserver running");
-            });
-        }
-        this.showfileman = new showfiles_1.ShowfileManager();
-        this.advertiser = discovery.getServerAdvertiser(config.interface);
-        this.webinterface_advertiser = discovery.getWebinterfaceAdvertiser(config.web_interface);
-        this.server = socket_io_1.default(45045);
-        this.webif_server = socket_io_1.default(45040);
-        this.audio_device_manager = new AudioDevices.AudioDeviceManager(this.webif_server, this.instances);
-        this.inputs = new Inputs.InputManager(this.webif_server, this.audio_device_manager);
-        this.headtracking = new Headtracking.Headtracking(33032, this.webif_server, this.showfileman, config.interface);
-        this.users = new users_1.UsersManager(this.webif_server, this.inputs, this.headtracking);
-        this.server.on('connection', this.newInstanceFound.bind(this));
-        this.advertiser.start();
-        this.webinterface_advertiser.start();
+        let webif = new web_interface_1.default(config);
+        super(new communication_1.SIServerWSServer(config), webif);
+        this.webif = webif;
+        this.audio_devices = new audio_devices_1.AudioDevices();
+        this.add(this.audio_devices);
     }
-    newInstanceFound(socket) {
-        let self = this;
-        socket.on('disconnect', (reason) => {
-            self.instanceLeft(socket);
-        });
-        socket.on('__name', (name, id, addresses) => {
-            log.info("New instanced registered with name: " + name);
-            let new_instance = new instance_1.SpatialIntercomInstance(name, id, false, addresses, socket);
-            self.instances.push({
-                instance: new_instance,
-                socket: socket,
-                is_remote: true
-            });
-        });
-        socket.emit('__name');
+    createNode(id) {
+        if (id.type == communication_1.NODE_TYPE.DSP_NODE)
+            return new dsp_node_1.DSPNode(id);
     }
-    instanceLeft(socket) {
-        let old = this.instances.splice(this.instances.indexOf(this.instances.find(ins => ins.socket == socket)), 1);
+    destroyNode(node) {
     }
 }
 exports.SpatialIntercomServer = SpatialIntercomServer;

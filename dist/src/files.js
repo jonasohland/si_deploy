@@ -8,8 +8,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const os = __importStar(require("os"));
-function showfileDir(subdir) {
+function configFileDir(subdir) {
     return os.homedir() + '/Spatial\ Intercom' + ((subdir) ? '/' + subdir : '');
 }
-exports.showfileDir = showfileDir;
+exports.configFileDir = configFileDir;
 //# sourceMappingURL=files.js.map

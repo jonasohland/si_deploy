@@ -8,6 +8,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const cp = __importStar(require("child_process"));
+const ip_1 = require("ip");
 const os = __importStar(require("os"));
 function applyMixins(derivedCtor, baseCtors) {
     baseCtors.forEach(baseCtor => {
@@ -41,11 +42,15 @@ function arrayDiff(base, excl) {
 exports.arrayDiff = arrayDiff;
 function localNetinfo() {
     return new Promise((res, rej) => {
-        if (os.type() == "Darwin") {
+        if (os.type() == 'Darwin') {
         }
     });
 }
 exports.localNetinfo = localNetinfo;
+function defaultIF(name) {
+    return (name ? name : '0.0.0.0');
+}
+exports.defaultIF = defaultIF;
 const interfaces = os.networkInterfaces();
 const local_interfaces = [];
 Object.keys(interfaces).forEach(function (ifname) {
@@ -58,4 +63,33 @@ Object.keys(interfaces).forEach(function (ifname) {
     });
 });
 exports.LocalInterfaces = local_interfaces;
+function getMatchingLocalInterface(addr) {
+    return exports.LocalInterfaces.filter(ifs => {
+        addr.forEach(a => {
+            if (ip_1.subnet(a, ifs.netmask) == ip_1.subnet(ifs.address, ifs.netmask))
+                return true;
+        });
+        return false;
+    });
+}
+exports.getMatchingLocalInterface = getMatchingLocalInterface;
+function ignore(...any) {
+    // do nothing (magical.....)
+}
+exports.ignore = ignore;
+function promisifyEventWithTimeout(eventemitter, event, timeout = 10000) {
+    return new Promise((res, rej) => {
+        const handler = (val) => {
+            clearTimeout(tmt);
+            eventemitter.removeListener(event, handler);
+            res(val);
+        };
+        const tmt = setTimeout(() => {
+            rej('Timeout');
+            eventemitter.removeListener(event, handler);
+        }, timeout);
+        eventemitter.on(event, handler);
+    });
+}
+exports.promisifyEventWithTimeout = promisifyEventWithTimeout;
 //# sourceMappingURL=util.js.map

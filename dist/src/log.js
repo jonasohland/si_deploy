@@ -14,9 +14,12 @@ const chalk_1 = __importDefault(require("chalk"));
 const winston_1 = __importDefault(require("winston"));
 const winston_transport_1 = __importDefault(require("winston-transport"));
 const files = __importStar(require("./files"));
-const cformat = winston_1.default.format.printf(({ level, message, label, timestamp }) => {
+const cformat = winston_1.default.format.printf(({ level, message, label, timestamp, tc }) => {
     let c;
     switch (level) {
+        case 'verbose':
+            c = chalk_1.default.blue;
+            break;
         case 'error':
             c = chalk_1.default.red;
             break;
@@ -26,11 +29,14 @@ const cformat = winston_1.default.format.printf(({ level, message, label, timest
         case 'info':
             c = chalk_1.default.cyan;
             break;
+        case 'notice':
+            c = chalk_1.default.greenBright;
+            break;
         default:
             c = (str) => str;
             break;
     }
-    return `[${c(label)}] ${new Date(timestamp).toLocaleTimeString()}: ${message}`;
+    return `[${c(chalk_1.default.bold(label))}] TC: ${c(chalk_1.default.bold(tc))} RT: ${c(chalk_1.default.bold(new Date(timestamp).toLocaleTimeString()))} MSG: ${c(message)}`;
 });
 class RemoteConsoleTransport extends winston_transport_1.default {
     constructor() {
@@ -54,18 +60,34 @@ class RemoteConsoleTransport extends winston_transport_1.default {
         callback();
     }
 }
+const tcreader = {};
 const log_lvl = {
     v: process.env.SI_LOG_LVL || 'info'
 };
 const transports = [];
 let log = {};
-const logfilename = files.showfileDir('logs/')
+const tcformat = winston_1.default.format((info, options) => {
+    if (tcreader.rd) {
+        if (tcreader.rd._running)
+            info.tc = tcreader.rd._currenttc;
+        else
+            info.tc = 'stopped';
+    }
+    else
+        info.tc = 'stopped';
+    return info;
+});
+const logfilename = files.configFileDir('logs/')
     + new Date(Date.now()).toISOString().replace(/[.,:]/g, '_')
     + '.log';
 function _init() {
     log.l = get('LOGGER', true);
-    log.l.info('Writing logs to ' + logfilename);
+    log.l.debug('Writing logs to ' + logfilename);
 }
+function setLogDevice(tcr) {
+    tcreader.rd = tcr;
+}
+exports.setLogDevice = setLogDevice;
 function setLogLVL(lvl) {
     const lvls = ['crit', 'error', 'warning', 'notice', 'info', 'debug'];
     if (lvl >= lvls.length || lvl < 0) {
@@ -84,12 +106,12 @@ function get(module_name, init) {
         log.l.debug('Initializing logger for ' + module_name);
     let cslt = new winston_1.default.transports.Console({
         level: log_lvl.v,
-        format: winston_1.default.format.combine(winston_1.default.format.label({ label: module_name }), winston_1.default.format.timestamp(), cformat),
+        format: winston_1.default.format.combine(tcformat(), winston_1.default.format.label({ label: module_name }), winston_1.default.format.timestamp(), cformat),
     });
     let filet = new winston_1.default.transports.File({
         filename: logfilename,
         level: 'debug',
-        format: winston_1.default.format.json()
+        format: winston_1.default.format.combine(tcformat(), winston_1.default.format.json(), winston_1.default.format.timestamp())
     });
     transports.push(cslt);
     return winston_1.default.createLogger({ transports: [cslt, filet] });

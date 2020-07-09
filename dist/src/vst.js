@@ -17,25 +17,23 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Logger = __importStar(require("./log"));
+const data_1 = require("./data");
 const log = Logger.get("VST");
-class Manager {
-    constructor(con) {
+class VSTScanner extends data_1.NodeModule {
+    constructor() {
+        super('vst-scanner');
         this.knownPlugins = [];
-        this.requester = con.getRequester("vst");
-        let self = this;
-        this.requester.connection.on("connection", () => {
-            log.info("Refreshing Plugin List");
-            self.knownPlugins.length = 0;
-            /* self.refreshPluginList().catch(err => {
-                log.error("Could not refresh plugin list: " + err);
-            }).then(() => {
-                log.info("Found a total of " + this.knownPlugins.length + " Plugins");
-            });*/
-        });
     }
-    refreshPluginList() {
+    destroy() {
+    }
+    init() {
+    }
+    start(remote) {
+        this.requester = remote.getRequester("vst");
+    }
+    waitPluginsScanned() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.requester.requestTmt('scan-vst', 100000);
+            yield this.requester.requestTmt('wait-scanned', 60000);
             let list = yield this.requester.request('list-vst');
             if (Array.isArray(list.data))
                 this.knownPlugins = list.data;
@@ -51,5 +49,5 @@ class Manager {
         return this.knownPlugins.find(p => p.name == name);
     }
 }
-exports.Manager = Manager;
+exports.VSTScanner = VSTScanner;
 //# sourceMappingURL=vst.js.map

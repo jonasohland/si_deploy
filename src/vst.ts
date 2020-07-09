@@ -1,5 +1,7 @@
 import * as ipc from './ipc'
 import * as Logger from './log'
+import { Requester, Connection } from './communication';
+import { NodeModule } from './data';
 
 const log = Logger.get("VST");
 
@@ -12,35 +14,30 @@ export interface PluginDescription {
     version: string;
 }
 
-export class Manager {
-
-    knownPlugins: PluginDescription[] = [];
-    requester: ipc.Requester;
-
-    constructor(con: ipc.Connection)
+export class VSTScanner extends NodeModule {
+    
+    destroy()
     {
-        this.requester = con.getRequester("vst");
-
-        let self = this;
-
-        this.requester.connection.on("connection", () => {
-            
-            log.info("Refreshing Plugin List");
-
-            self.knownPlugins.length = 0;
-            
-            /* self.refreshPluginList().catch(err => {
-                log.error("Could not refresh plugin list: " + err);
-            }).then(() => {
-                log.info("Found a total of " + this.knownPlugins.length + " Plugins");
-            });*/
-
-        });
     }
 
-    async refreshPluginList() {
+    init(): void {
+    }
 
-        await this.requester.requestTmt('scan-vst', 100000);
+    start(remote: Connection): void {
+        this.requester = remote.getRequester("vst");
+    }
+
+    knownPlugins: PluginDescription[] = [];
+    requester: Requester;
+
+    constructor()
+    {
+        super('vst-scanner');
+    }
+
+    async waitPluginsScanned() {
+
+        await this.requester.requestTmt('wait-scanned', 60000);
 
         let list = await this.requester.request('list-vst');
     

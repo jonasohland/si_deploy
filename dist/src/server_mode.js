@@ -13,7 +13,7 @@ const log = __importStar(require("./log"));
 function default_1(options) {
     if (options.logLevel != null)
         log.setLogLVL(options.logLevel);
-    server_config.loadServerConfigFile();
+    server_config.loadServerConfigFile(options.config);
     const server = new server_1.SpatialIntercomServer(server_config.merge(options));
 }
 exports.default = default_1;

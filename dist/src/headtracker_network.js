@@ -39,7 +39,7 @@ class NetworkHeadtracker extends headtracker_1.Headtracker {
         this.dumping = false;
         this.local.netif = netif;
         this.socket = dgram_1.createSocket('udp4');
-        this.server = server;
+        this.webif = server;
         this.socket.on('close', this._onClose.bind(this));
         this.socket.on('error', this._onError.bind(this));
         this.socket.on('listening', this._onListening.bind(this));
@@ -78,7 +78,7 @@ class NetworkHeadtracker extends headtracker_1.Headtracker {
                 }
             }
             if (this._state() == HTRKDevState.TIMEOUT) {
-                this.server.emit('htrk.reconnected', p.deviceID());
+                this.webif.io.emit('htrk.reconnected', p.deviceID());
                 log.info(`Headtracker ${p.deviceID()} reconnected`);
                 this._setState(HTRKDevState.BUSY);
                 this._updateRemote();
@@ -93,7 +93,7 @@ class NetworkHeadtracker extends headtracker_1.Headtracker {
                  * The current configuration was saved to the device
                  * @event Headtracker#saved
                  */
-                this.server.emit('htrk.saved', this.remote.conf.deviceID());
+                this.webif.io.emit('htrk.saved', this.remote.conf.deviceID());
                 this._updateRemote();
                 return this._updateDeviceNow();
             }
@@ -121,7 +121,7 @@ class NetworkHeadtracker extends headtracker_1.Headtracker {
         if (this._state() != HTRKDevState.TIMEOUT) {
             log.info('Headtracking unit timed out');
             this._setState(HTRKDevState.TIMEOUT);
-            this.server.emit('htrk.disconnected', (this.remote.conf) ? this.remote.conf.deviceID() : 'unknown');
+            this.webif.io.emit('htrk.disconnected', (this.remote.conf) ? this.remote.conf.deviceID() : 'unknown');
             this._updateRemote();
         }
         this.response_timeout
@@ -147,7 +147,7 @@ class NetworkHeadtracker extends headtracker_1.Headtracker {
                     prs: m.isStateFlagSet(headtracker_1.HeadtrackerStateFlags.GY_PRESENT),
                     rdy: m.isStateFlagSet(headtracker_1.HeadtrackerStateFlags.GY_RDY)
                 };
-                this.server.emit('htrk.gyro.changed', msg);
+                this.webif.io.emit('htrk.gyro.changed', msg);
             }
         }
         this.remote.conf = m;
@@ -242,7 +242,7 @@ class NetworkHeadtracker extends headtracker_1.Headtracker {
         this._updateDevice();
     }
     calibrate() {
-        log.warn("Calibrate-stub called");
+        log.warn('Calibrate-stub called');
         return new Promise((res) => {
             res();
         });
@@ -293,7 +293,8 @@ class NetworkHeadtracker extends headtracker_1.Headtracker {
         clearTimeout(this.check_alive_timeout);
     }
     isOnline() {
-        return this._state(HTRKDevState.CONNECTED || HTRKDevState.BUSY);
+        return this._state(HTRKDevState.CONNECTED
+            || HTRKDevState.BUSY);
     }
     start() {
         this._connect();

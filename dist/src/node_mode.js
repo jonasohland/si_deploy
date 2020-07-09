@@ -6,16 +6,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const mid = __importStar(require("node-machine-id"));
 const os = __importStar(require("os"));
-const socket_io_client_1 = __importDefault(require("socket.io-client"));
-const discovery = __importStar(require("./discovery"));
+const communication_1 = require("./communication");
 const IPC = __importStar(require("./ipc"));
 const server_config = __importStar(require("./server_config"));
+const dsp_process_1 = require("./dsp_process");
+const data_1 = require("./data");
 const local_addresses = [];
 const ifaces = os.networkInterfaces();
 Object.keys(ifaces).forEach(function (ifname) {
@@ -28,21 +25,14 @@ Object.keys(ifaces).forEach(function (ifname) {
     });
 });
 function default_1(options) {
-    server_config.loadServerConfigFile();
-    let ipc_bridge;
-    let socket;
+    server_config.loadServerConfigFile(options.config);
     const config = server_config.merge(options);
-    const browser = discovery.getServerBrowser(config.interface);
-    browser.on('serviceUp', (service) => {
-        let serveraddr = `ws://${service.addresses[0]}:${service.port}`;
-        socket = socket_io_client_1.default(serveraddr, { reconnectionDelayMax: 1000 });
-        socket.on('__name', () => {
-            let id = mid.machineIdSync();
-            socket.emit('__name', os.hostname(), id, local_addresses);
-        });
-        ipc_bridge = new IPC.IPCBridge(socket, serveraddr, 'default');
-    });
-    browser.start();
+    const ipc = new IPC.IPCServer();
+    const wsclient = new communication_1.SINodeWSClient(config, ipc);
+    const dspp = new dsp_process_1.LocalNodeController(config, ipc);
+    const state = new data_1.NodeDataStorage(config);
+    wsclient.addWSInterceptor(dspp);
+    wsclient.addWSInterceptor(state);
 }
 exports.default = default_1;
 //# sourceMappingURL=node_mode.js.map

@@ -1,7 +1,7 @@
 /// <reference types="node" />
-/// <reference types="socket.io" />
 import { Socket } from 'dgram';
 import { Headtracker, HeadtrackerInvertation, HeadtrackerNetworkSettings, HeadtrackerConfigPacket } from './headtracker';
+import WebInterface from './web_interface';
 declare enum HTRKDevState {
     INITIALIZING = 0,
     CONNECTED = 1,
@@ -36,8 +36,8 @@ export declare class NetworkHeadtracker extends Headtracker {
     response_timeout: NodeJS.Timeout;
     check_alive_timeout: NodeJS.Timeout;
     socket: Socket;
-    server: SocketIO.Server;
-    constructor(server: SocketIO.Server, id: number, addr: string, port: number, netif?: string);
+    webif: WebInterface;
+    constructor(server: WebInterface, id: number, addr: string, port: number, netif?: string);
     _onClose(): void;
     _onError(e: Error): void;
     _onListening(): void;

@@ -2,10 +2,13 @@ import * as mdns from 'dnssd'
 import * as mid from 'node-machine-id'
 import * as os from 'os';
 import io from 'socket.io-client'
-
+import { SINodeWSClient } from './communication'
 import * as discovery from './discovery'
 import * as IPC from './ipc'
 import * as server_config from './server_config'
+import { LocalNodeController } from './dsp_process';
+import { log } from 'winston';
+import { NodeDataStorage } from './data';
 
 const local_addresses = <string[]>[];
 
@@ -22,26 +25,14 @@ Object.keys(ifaces).forEach(function(ifname) {
 
 export default function(options: any)
 {
-    server_config.loadServerConfigFile();
-
-    let ipc_bridge: IPC.IPCBridge;
-    let socket: SocketIOClient.Socket;
+    server_config.loadServerConfigFile(options.config);
 
     const config  = server_config.merge(options);
-    const browser = discovery.getServerBrowser(config.interface);
 
-    browser.on('serviceUp', (service: mdns.Service) => {
-        let serveraddr = `ws://${service.addresses[0]}:${service.port}`
-
-        socket = io(serveraddr, { reconnectionDelayMax : 1000 });
-
-        socket.on('__name', () => {
-            let id = mid.machineIdSync();
-            socket.emit('__name', os.hostname(), id, local_addresses);
-        });
-
-        ipc_bridge = new IPC.IPCBridge(socket, serveraddr, 'default');
-    });
-
-    browser.start();
+    const ipc = new IPC.IPCServer();
+    const wsclient = new SINodeWSClient(config, ipc);
+    const dspp = new LocalNodeController(config, ipc);
+    const state = new NodeDataStorage(config);
+    wsclient.addWSInterceptor(dspp);
+    wsclient.addWSInterceptor(state);
 }

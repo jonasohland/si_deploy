@@ -24,12 +24,12 @@ const dgram = __importStar(require("dgram"));
 const osc = __importStar(require("osc-min"));
 const serialport_1 = __importDefault(require("serialport"));
 const terminal_kit_1 = require("terminal-kit");
+const web_interface_1 = __importDefault(require("./web_interface"));
 const headtracker_serial_1 = require("./headtracker_serial");
 const headtracking_1 = require("./headtracking");
 const Logger = __importStar(require("./log"));
 const { cyan } = chalk_1.default;
 const log = Logger.get('HEADTR');
-const socket_io_1 = __importDefault(require("socket.io"));
 const showfiles_1 = require("./showfiles");
 const sfman = new showfiles_1.ShowfileManager();
 const htrk_devices = [];
@@ -195,8 +195,7 @@ function runLatencyTest(p, options) {
     });
 }
 function runNormalMode(p, options) {
-    let wss = socket_io_1.default(45040);
-    let headtracking = new headtracking_1.Headtracking(8887, wss, sfman);
+    let headtracking = new headtracking_1.Headtracking(new web_interface_1.default(options), sfman);
     if (options.oscControl)
         new OSCController(headtracking, options);
     let adapter;

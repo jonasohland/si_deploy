@@ -15,13 +15,17 @@ const ini_1 = __importDefault(require("ini"));
 const net = __importStar(require("net"));
 const os = __importStar(require("os"));
 const Logger = __importStar(require("./log"));
-const log = Logger.get('CFG');
+const log = Logger.get('CONFIG');
 const _config_path = os.userInfo().homedir + '/.spatial_intercom';
 let _config_file = {};
-function loadServerConfigFile() {
-    if (fs.existsSync(_config_path)) {
+function loadServerConfigFile(config_file) {
+    let configfile = config_file || _config_path;
+    if (fs.existsSync(configfile)) {
         log.info('Loading configuration file from ' + _config_path);
         _config_file = ini_1.default.parse(fs.readFileSync(_config_path).toString());
+    }
+    else {
+        log.warn("No config file found at " + configfile);
     }
 }
 exports.loadServerConfigFile = loadServerConfigFile;
@@ -39,7 +43,6 @@ function getInterface(option, interfaces) {
     else
         log.error('Could not find network interface ' + option);
 }
-function parseWebserverOptions() { }
 function merge(cmd_opts) {
     let output = {};
     if (!_config_file.network)
@@ -58,10 +61,10 @@ function merge(cmd_opts) {
             : getInterface(webif_opt, netifs);
     output.node_name = getNodeName(cmd_opts);
     output.webserver = cmd_opts.webserver;
-    output.server_port = Number.parseInt(cmd_opts.port) ||
+    output.server_port = Number.parseInt(cmd_opts.port) || Number.parseInt(process.env.SI_SERVER_PORT) ||
         Number.parseInt(_config_file.network.port) || 45545;
-    output.webserver_port = Number.parseInt(cmd_opts.webserverPort) ||
-        Number.parseInt(_config_file.network.webserver_port) || 80;
+    output.webserver_port = Number.parseInt(cmd_opts.webserverPort) || Number.parseInt(process.env.SI_WEBSERVER_PORT) ||
+        Number.parseInt(_config_file.network.webserver_port) || 8090;
     // console.log(_config_file.network);
     // console.log(output);
     return output;

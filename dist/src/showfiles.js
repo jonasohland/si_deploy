@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -10,38 +19,95 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const dependency_graph_1 = require("dependency-graph");
 const events_1 = require("events");
 const fs = __importStar(require("fs"));
-const files_1 = require("./files");
 const uuid_1 = require("uuid");
+const files_1 = require("./files");
 const logger = __importStar(require("./log"));
-const log = logger.get("SHFILE");
+const log = logger.get('SHOWFL');
 class ShowfileTarget extends events_1.EventEmitter {
-    beforeShowfileLoad() { }
-    afterShowfileLoad() { }
+    constructor() {
+        super(...arguments);
+        this._sections = [];
+    }
+    beforeShowfileLoad() {
+    }
+    afterShowfileLoad() {
+    }
+    addSection(section) {
+        if (this._sections.findIndex(sc => sc.showfileSectionName()
+            == section.showfileSectionName())
+            != -1)
+            return log.error('Will not add section '
+                + section.showfileSectionName()
+                + '. Section already in target');
+        log.debug(`Registered new section '${section.showfileSectionName()}' in module '${this.targetName()}'`);
+        this._sections.push(section);
+    }
+    doLoadShowfile(sf) {
+        this._sections.forEach(s => {
+            let data = sf.getSectionDataByName(s.showfileSectionName());
+            if (data)
+                s.restoreSection(data);
+            else
+                log.warn('No data for section ' + s.showfileSectionName());
+        });
+    }
+    showfileTargetData() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return {
+                sections: yield Promise.all(this._sections.map(s => s.showfileSectionData())),
+                name: this.targetName()
+            };
+        });
+    }
 }
 exports.ShowfileTarget = ShowfileTarget;
 class ShowfileRecord {
+    constructor(name) {
+        this._name = name;
+        this._uid = uuid_1.v4();
+    }
+    doSave() {
+        return __awaiter(this, void 0, void 0, function* () {
+            log.debug('Saving record \'' + this._name + '\'');
+            return {
+                data: yield this.plain(),
+                uid: this._uid,
+                name: this._name
+            };
+        });
+    }
 }
 exports.ShowfileRecord = ShowfileRecord;
 class ShowfileSection {
     constructor(name) {
+        this._records = [];
         if (name) {
             this._uid = uuid_1.v4();
             this._name = name;
             this._records = [];
         }
     }
-    name() {
+    addRecord(s) {
+        log.debug('Add new record \'' + s._name + '\' to section \''
+            + this.showfileSectionName() + '\'');
+        this._records.push(s);
+    }
+    showfileSectionName() {
         return this._name;
     }
-    id() {
+    showfileSectionId() {
         return this._uid;
     }
-    plain() {
-        return {
-            records: this._records.map(r => r.plain()),
-            name: this._name,
-            uid: this._uid
-        };
+    showfileSectionData() {
+        return __awaiter(this, void 0, void 0, function* () {
+            log.debug('Retrieving data from showfile section \'' + this._name
+                + '\'');
+            return {
+                records: yield Promise.all(this._records.map(r => r.doSave())),
+                name: this._name,
+                uid: this._uid
+            };
+        });
     }
 }
 exports.ShowfileSection = ShowfileSection;
@@ -52,45 +118,42 @@ class Showfile {
     init() {
         this._created = (new Date(Date.now())).toISOString();
     }
-    getSectionByName(name) {
-        return this._sections.find(sect => name == sect.name());
+    getSectionDataByName(name) {
+        return this._sections.find(sect => name == sect.name);
     }
     getSectionById(id) {
-        return this._sections.find(sect => id == sect.id());
-    }
-    replace(id, sect) {
-        let idx = this._sections.findIndex(s => id == sect.id());
-        if (idx != -1)
-            this._sections.splice(idx, 1);
-        this._sections.push(sect);
-        return idx != -1;
-    }
-    toString() {
-        return JSON.stringify({
-            sections: this._sections.map(s => s.plain()),
-            created: this._created
-        });
+        return this._sections.find(sect => id == sect.uid);
     }
 }
 exports.Showfile = Showfile;
 class ShowfileManager {
     constructor() {
         this.targets = [];
-        if (!fs.existsSync(files_1.showfileDir()))
-            fs.mkdirSync(files_1.showfileDir());
-        if (!fs.existsSync(files_1.showfileDir('showfiles')))
-            fs.mkdirSync(files_1.showfileDir('showfiles'));
+        if (!fs.existsSync(files_1.configFileDir()))
+            fs.mkdirSync(files_1.configFileDir());
+        if (!fs.existsSync(files_1.configFileDir('showfiles')))
+            fs.mkdirSync(files_1.configFileDir('showfiles'));
     }
     register(t, dependencies) {
         let name = t.targetName();
         if (dependencies)
             this.dependencies.push(...dependencies.map(dep => [name, dep]));
         this.targets.push(t);
-        log.info("Registered new module '" + name + "'");
+        log.debug('Registered new module \'' + name + '\'');
     }
     createEmptyShow(name) {
-        fs.mkdirSync(files_1.showfileDir('showfiles/' + name));
-        fs.writeFileSync(files_1.showfileDir(`showfiles/${name}/show.json`), '{}');
+        fs.mkdirSync(files_1.configFileDir('showfiles/' + name));
+        fs.writeFileSync(files_1.configFileDir(`showfiles/${name}/show.json`), '{}');
+    }
+    storeShowfile() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let data = yield Promise.all(this.targets.map(tgt => tgt.showfileTargetData()));
+            }
+            catch (err) {
+                log.error('Could not save showfile: ' + err);
+            }
+        });
     }
     loadShowfile() {
         let s = new Showfile();
@@ -102,7 +165,7 @@ class ShowfileManager {
             this.targets.find(t => t.targetName() == tgt).beforeShowfileLoad();
         });
         load_seq.forEach(tgt => {
-            this.targets.find(t => t.targetName() == tgt).onShowfileLoad(s);
+            this.targets.find(t => t.targetName() == tgt).doLoadShowfile(s);
         });
         load_seq.forEach(tgt => {
             this.targets.find(t => t.targetName() == tgt).afterShowfileLoad();

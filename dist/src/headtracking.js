@@ -19,11 +19,11 @@ const showfiles_1 = require("./showfiles");
 let comCheckInterval = 10000;
 const log = Logger.get('HTKHST');
 class Headtracking extends showfiles_1.ShowfileTarget {
-    constructor(port, interf, man, netif) {
+    constructor(interf, man, netif) {
         super();
         this.trackers = [];
         this.local_interface = netif;
-        this.server = interf;
+        this.webif = interf;
         this.browser = new dnssd_1.default.Browser(dnssd_1.default.udp('_htrk'), {
             interface: netif,
         });
@@ -32,7 +32,7 @@ class Headtracking extends showfiles_1.ShowfileTarget {
         this.browser.start();
         let self = this;
         man.register(this);
-        this.server.on('connection', socket => {
+        this.webif.io.on('connection', socket => {
             socket.on('htrk.update.req', () => {
                 self.updateRemote(socket);
             });
@@ -77,7 +77,7 @@ class Headtracking extends showfiles_1.ShowfileTarget {
         log.info('Found new headtracking service on ' + service.addresses[0]);
         let id = Number.parseInt(service.host.substr(8, 2));
         console.log(service);
-        let htrk = new headtracker_network_1.NetworkHeadtracker(this.server, id, service.addresses[0], service.port, this.local_interface);
+        let htrk = new headtracker_network_1.NetworkHeadtracker(this.webif, id, service.addresses[0], service.port, this.local_interface);
         htrk.start();
         this.addHeadtracker(htrk, id, service.addresses[0]);
     }
@@ -90,7 +90,7 @@ class Headtracking extends showfiles_1.ShowfileTarget {
         }
         this.trackers.push(trk);
         log.info("Add Headtracker at " + address);
-        this.server.emit('htrk.connected', id, address);
+        this.webif.io.emit('htrk.connected', id, address);
     }
     serviceRemoved(service) { }
     getHeadtracker(id) {
@@ -132,7 +132,7 @@ class Headtracking extends showfiles_1.ShowfileTarget {
         if (socket)
             socket.emit('htrk.update', tracker_update);
         else
-            this.server.emit('htrk.update', tracker_update);
+            this.webif.io.emit('htrk.update', tracker_update);
     }
 }
 exports.Headtracking = Headtracking;

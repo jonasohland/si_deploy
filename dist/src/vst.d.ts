@@ -1,4 +1,5 @@
-import * as ipc from './ipc';
+import { Requester, Connection } from './communication';
+import { NodeModule } from './data';
 export interface PluginDescription {
     category: string;
     display_name: string;
@@ -7,11 +8,14 @@ export interface PluginDescription {
     platform_id: string;
     version: string;
 }
-export declare class Manager {
+export declare class VSTScanner extends NodeModule {
+    destroy(): void;
+    init(): void;
+    start(remote: Connection): void;
     knownPlugins: PluginDescription[];
-    requester: ipc.Requester;
-    constructor(con: ipc.Connection);
-    refreshPluginList(): Promise<boolean>;
+    requester: Requester;
+    constructor();
+    waitPluginsScanned(): Promise<boolean>;
     isPluginInList(name: string): boolean;
     findPlugin(name: string): PluginDescription;
 }

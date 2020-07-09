@@ -1,5 +1,5 @@
 import commander from 'commander';
-export declare function loadServerConfigFile(): void;
+export declare function loadServerConfigFile(config_file?: string): void;
 export declare function merge(cmd_opts: commander.Command): {
     interface?: string;
     web_interface?: string;

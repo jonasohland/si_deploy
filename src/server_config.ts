@@ -5,17 +5,23 @@ import * as net from 'net';
 import * as os from 'os';
 
 import * as Logger from './log';
+import { profileEnd } from 'console';
 
-const log = Logger.get('CFG');
+const log = Logger.get('CONFIG');
 
 const _config_path = os.userInfo().homedir + '/.spatial_intercom';
 let _config_file: any = {};
 
-export function loadServerConfigFile() {
+export function loadServerConfigFile(config_file?: string) {
 
-    if (fs.existsSync(_config_path)) {
+    let configfile = config_file || _config_path
+
+    if (fs.existsSync(configfile)) {
         log.info('Loading configuration file from ' + _config_path);
         _config_file = ini.parse(fs.readFileSync(_config_path).toString());
+    } else 
+    {
+        log.warn("No config file found at " + configfile);
     }
 }
 
@@ -38,7 +44,6 @@ function getInterface(option: string, interfaces: any)
         log.error('Could not find network interface ' + option);
 }
 
-function parseWebserverOptions() {}
 
 export function merge(cmd_opts: commander.Command)
 {
@@ -75,11 +80,11 @@ export function merge(cmd_opts: commander.Command)
     output.node_name = getNodeName(cmd_opts);
     output.webserver = cmd_opts.webserver;
 
-    output.server_port = Number.parseInt(cmd_opts.port) || 
-                            Number.parseInt(_config_file.network.port) || 45545
+    output.server_port = Number.parseInt(cmd_opts.port) || Number.parseInt(process.env.SI_SERVER_PORT) ||
+                            Number.parseInt(_config_file.network.port) || 45545
 
-    output.webserver_port = Number.parseInt(cmd_opts.webserverPort) || 
-                            Number.parseInt(_config_file.network.webserver_port) || 80
+    output.webserver_port = Number.parseInt(cmd_opts.webserverPort) || Number.parseInt(process.env.SI_WEBSERVER_PORT) ||
+                            Number.parseInt(_config_file.network.webserver_port) || 8090
 
     // console.log(_config_file.network);
     // console.log(output);

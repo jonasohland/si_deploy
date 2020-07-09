@@ -1,23 +1,22 @@
 import { Bus, Connection, Graph, Module, NativeNode } from './dsp';
-import * as IPC from './ipc';
 import { OwnedInput, User } from './users';
 export declare class BasicSpatializer extends NativeNode {
     constructor(name: string);
     remoteAttached(): void;
     setAzimuthDeg(value: number): Promise<void>;
     setElevationDeg(value: number): Promise<void>;
-    setElevation(rad: number): Promise<IPC.Message>;
-    setAzimuth(rad: number): Promise<IPC.Message>;
-    setStereoWidthDegs(value: number): Promise<IPC.Message>;
+    setElevation(rad: number): Promise<import("./communication").Message>;
+    setAzimuth(rad: number): Promise<import("./communication").Message>;
+    setStereoWidthDegs(value: number): Promise<import("./communication").Message>;
 }
 export declare class AdvancedSpatializer extends NativeNode {
     constructor(name: string);
     remoteAttached(): void;
     setAzimuthDeg(value: number): Promise<void>;
     setElevationDeg(value: number): Promise<void>;
-    setElevation(rad: number): Promise<IPC.Message>;
-    setAzimuth(rad: number): Promise<IPC.Message>;
-    setStereoWidthDegs(value: number): Promise<IPC.Message>;
+    setElevation(rad: number): Promise<import("./communication").Message>;
+    setAzimuth(rad: number): Promise<import("./communication").Message>;
+    setStereoWidthDegs(value: number): Promise<import("./communication").Message>;
 }
 export declare class BasicBinauralDecoder extends NativeNode {
     constructor(name: string);
@@ -26,7 +25,7 @@ export declare class BasicBinauralDecoder extends NativeNode {
 export declare class AdvancedBinauralDecoder extends NativeNode {
     constructor(name: string);
     remoteAttached(): void;
-    setHeadtrackerId(id: number): Promise<IPC.Message>;
+    setHeadtrackerId(id: number): Promise<import("./communication").Message>;
     getHeadtrackerId(): Promise<number>;
 }
 export declare abstract class SpatializationModule extends Module {
@@ -90,7 +89,7 @@ export declare class BasicUserModule extends Module {
     constructor(user: User);
     input(graph: Graph): Bus;
     output(graph: Graph): Bus;
-    assignHeadtracker(id: number): Promise<IPC.Message>;
+    assignHeadtracker(id: number): Promise<import("./communication").Message>;
     graphChanged(graph: Graph): void;
     build(graph: Graph): void;
     destroy(graph: Graph): void;

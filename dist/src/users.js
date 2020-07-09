@@ -75,15 +75,15 @@ class User {
 }
 exports.User = User;
 class UsersManager extends events_1.default {
-    constructor(server, inputs, htrks) {
+    constructor(webif, inputs, htrks) {
         super();
         this.users = [];
         this.max_id = 0;
         let self = this;
-        this.server = server;
+        this.webif = webif;
         this.inputs = inputs;
         this.htrks = htrks;
-        this.server.on('connection', socket => {
+        this.webif.io.on('connection', socket => {
             socket.on('users.update', () => {
                 self.updateInterface(socket);
             });
@@ -104,26 +104,25 @@ class UsersManager extends events_1.default {
         });
     }
     addUser(userdata) {
-        let ins = this.inputs.devices.instances.find(ins => ins.instance.id
+        let ins = this.inputs.devices.instances.find(ins => ins.id
             == userdata.nodeid);
-        let user = new User(ins.instance, userdata.username);
+        let user = new User(ins, userdata.username);
         user.advanced = false;
         user.inputs = [];
         user.id = ++this.max_id;
         user.outputChannels = userdata.channels;
         let nodeAndUsers = this.users.find(n => n.si.id == userdata.nodeid);
         if (nodeAndUsers == undefined)
-            this.users.push({ si: ins.instance, users: [] });
+            this.users.push({ si: ins, users: [] });
         nodeAndUsers = this.users.find(n => n.si.id == userdata.nodeid);
         nodeAndUsers.users.push(user);
         let dspModule = new dsp_modules_1.BasicUserModule(user);
-        ins.instance.graph.addModule(dspModule);
-        ins.instance.graph.sync();
-        this.updateInterface(this.server);
+        ins.graph.addModule(dspModule);
+        // ins.graph.sync();
+        this.updateInterface(this.webif.io);
     }
     updateInterface(socket) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("Update Interface");
             let update_users = [];
             let update_aux = [];
             this.users.forEach(node => update_users.push({
@@ -174,7 +173,7 @@ class UsersManager extends events_1.default {
                 let node = this.inputs.nodes.find(n => n.si.id == data.nid);
                 if (el.dspModule) {
                     node.si.graph.removeModule(el.dspModule);
-                    node.si.graph.sync();
+                    // node.si.graph.sync();
                 }
                 return false;
             }
@@ -192,11 +191,11 @@ class UsersManager extends events_1.default {
                 else
                     input_mod = new dsp_modules_1.BasicSpatializerModule(dinp, usr);
                 node.si.graph.addModule(input_mod);
-                node.si.graph.sync();
+                // node.si.graph.sync();
                 log.info(`Added input ${dinp.input.name} added to user ${usr.name}`);
             }
         });
-        this.updateInterface(this.server);
+        this.updateInterface(this.webif.io);
     }
     switchSpatializationMode(usr_id, nid) {
         let node = this.users.find(us => us.si.id == nid);
@@ -214,7 +213,7 @@ class UsersManager extends events_1.default {
                 new_module = new dsp_modules_1.BasicSpatializerModule(input, usr);
             graph.addModule(new_module);
         });
-        graph.sync();
+        // graph.sync();
     }
     setInputMuted(usr_id, nid, iid, mute) {
         let usr = this.findUser(nid, usr_id);
@@ -248,14 +247,12 @@ class UsersManager extends events_1.default {
     assignHeadtracker(userId, nid, htrkId) {
         let node = this.users.find(n => n.si.id == nid);
         let usr = node.users.find(us => us.id == userId);
-        console.log(htrkId);
         usr.htrk = htrkId;
         if (usr.dspModule)
             usr.dspModule.assignHeadtracker(htrkId);
         let trk = this.htrks.trackers.find(htrk => htrk.remote.conf.deviceID() == htrkId);
         if (trk) {
             return (trk.setStreamDest(node.si.addresses[0], 45667));
-            log.error('Could not find a matching subnet for node and Headtracker');
         }
         else {
             log.error('Headtracker not found');
@@ -264,7 +261,6 @@ class UsersManager extends events_1.default {
     setReflections(usr_id, nid, value) {
         let node = this.users.find(n => n.si.id == nid);
         let usr = node.users.find(us => us.id == usr_id);
-        console.log("Reflections: " + value);
         if (!usr.advanced)
             return;
         usr.inputs.forEach(input => {
@@ -274,7 +270,6 @@ class UsersManager extends events_1.default {
     setRoomCharacter(usr_id, nid, value) {
         let node = this.users.find(n => n.si.id == nid);
         let usr = node.users.find(us => us.id == usr_id);
-        console.log("Character: " + value);
         if (!usr.advanced)
             return;
         usr.inputs.forEach(input => {

@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -364,17 +355,12 @@ class Module {
 }
 exports.Module = Module;
 class Graph {
-    constructor(process) {
+    constructor(vst) {
         this.nodes = [];
         this.connections = [];
         this.modules = [];
         this.node_count = 1;
-        this.process = process;
-        this.remote = this.process.getRequester('graph');
-        let self = this;
-        this.process.on('connection', () => {
-            self.remote.request('reset').catch(err => log.error(err));
-        });
+        this.vst = vst;
     }
     addNode(node) {
         let node_id = this.node_count;
@@ -382,7 +368,7 @@ class Graph {
         node._set_nodeid(node_id);
         this.nodes.push(node);
         if (node instanceof NativeNode)
-            node.attachEventListener(this.process);
+            node.attachEventListener(this.connection);
         return node_id;
     }
     addConnection(connection) {
@@ -450,27 +436,10 @@ class Graph {
             removed.destroy(this);
         return removed;
     }
-    sync() {
-        return __awaiter(this, void 0, void 0, function* () {
-            let self = this;
-            return new Promise((resolve, reject) => {
-                log.info('Syncing graph with DSP process');
-                self.remote.request('set', this._export())
-                    .then(() => {
-                    log.info('Done Syncing');
-                    resolve();
-                })
-                    .catch(err => {
-                    log.error('Could not sync graph: ' + err.message);
-                    reject();
-                });
-            });
-        });
-    }
     rebuild() {
         this.modules.forEach(mod => mod.graphChanged(this));
     }
-    _export() {
+    _export_graph() {
         let out = {
             nodes: this.nodes.map(n => {
                 let obj = {};

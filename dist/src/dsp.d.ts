@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import { EventEmitter } from 'events';
-import * as IPC from './ipc';
+import * as COM from './communication';
+import { VSTScanner } from './vst';
 export declare enum PortTypes {
     Any = 0,
     Mono = 1,
@@ -133,11 +134,11 @@ export declare class PluginNode extends Node {
 }
 export declare abstract class NativeNode extends Node {
     processor_type: string;
-    connection: IPC.Connection;
-    remote: IPC.Requester;
+    connection: COM.Connection;
+    remote: COM.Requester;
     native_event_name: string;
     constructor(name: string, native_node_type: string);
-    attachEventListener(con: IPC.Connection): void;
+    attachEventListener(con: COM.Connection): void;
     abstract remoteAttached(): void;
 }
 export declare abstract class Module {
@@ -154,9 +155,10 @@ export declare class Graph {
     connections: Connection[];
     modules: Module[];
     node_count: number;
-    remote: IPC.Requester;
-    process: IPC.Connection;
-    constructor(process: IPC.Connection);
+    connection: COM.Connection;
+    remote: COM.Requester;
+    vst: VSTScanner;
+    constructor(vst: VSTScanner);
     addNode(node: Node): number;
     addConnection(connection: Connection): void;
     removeNode(node: number): Node;
@@ -172,9 +174,8 @@ export declare class Graph {
     addModule(mod: Module): void;
     hasModule(mod: Module): boolean;
     removeModule(mod: Module): Module;
-    sync(): Promise<void>;
     rebuild(): void;
-    _export(): {
+    _export_graph(): {
         nodes: any[];
         connections: Connection[];
     };

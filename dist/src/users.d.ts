@@ -6,6 +6,7 @@ import { BasicUserModule, SpatializationModule } from './dsp_modules';
 import * as Inputs from './inputs';
 import * as Instance from './instance';
 import { Headtracking } from './headtracking';
+import WebInterface from './web_interface';
 export interface OwnedInput {
     id: number;
     input: Inputs.Input;
@@ -22,7 +23,7 @@ interface WEBIFNewUserData {
     channels: Audio.Channel[];
 }
 export interface NodeAndUsers {
-    si: Instance.SpatialIntercomInstance;
+    si: Instance.SIDSPNode;
     users: User[];
 }
 export declare class User {
@@ -36,7 +37,7 @@ export declare class User {
     reflections: number;
     room_character: number;
     dspModule?: BasicUserModule;
-    constructor(instance: Instance.SpatialIntercomInstance, name: string);
+    constructor(instance: Instance.SIDSPNode, name: string);
     setInputMuted(iid: number, muted: boolean): void;
     setInputAzm(iid: number, val: number): void;
     setInputElv(iid: number, val: number): void;
@@ -45,11 +46,11 @@ export declare class User {
 }
 export declare class UsersManager extends EventEmitter {
     users: NodeAndUsers[];
-    server: SocketIO.Server;
+    webif: WebInterface;
     inputs: Inputs.InputManager;
     htrks: Headtracking;
     max_id: number;
-    constructor(server: SocketIO.Server, inputs: Inputs.InputManager, htrks: Headtracking);
+    constructor(webif: WebInterface, inputs: Inputs.InputManager, htrks: Headtracking);
     addUser(userdata: WEBIFNewUserData): void;
     updateInterface(socket: SocketIO.Server | SocketIO.Socket): Promise<void>;
     userInputsChanged(data: {

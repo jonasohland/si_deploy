@@ -1,14 +1,16 @@
 import * as cp from 'child_process';
 import {copyFile} from 'fs';
+import {subnet} from 'ip';
+import {isIP} from 'net';
 import * as os from 'os';
+import {EventEmitter} from 'serialport';
 
 export function applyMixins(derivedCtor: any, baseCtors: any[])
 {
     baseCtors.forEach(baseCtor => {
         Object.getOwnPropertyNames(baseCtor.prototype).forEach(name => {
             Object.defineProperty(
-                derivedCtor.prototype,
-                name,
+                derivedCtor.prototype, name,
                 Object.getOwnPropertyDescriptor(baseCtor.prototype, name));
         });
     });
@@ -41,25 +43,66 @@ export function arrayDiff<T>(base: Array<T>, excl: Array<T>): Array<T>
 }
 
 
-export function localNetinfo(): Promise<{if: string, mask: number}[]>
+export function localNetinfo(): Promise<{if : string, mask : number}[]>
 {
     return new Promise((res, rej) => {
-        if(os.type() == "Darwin") {
-
+        if (os.type() == 'Darwin') {
         }
     })
 }
 
-const interfaces = os.networkInterfaces();
+export function defaultIF(name?: string)
+{
+    return (name ? name : '0.0.0.0');
+}
+
+const interfaces                                  = os.networkInterfaces();
 const local_interfaces: os.NetworkInterfaceInfo[] = [];
 
 Object.keys(interfaces).forEach(function(ifname) {
     var alias = 0;
     interfaces[ifname].forEach(function(iface) {
-        if ('IPv4' != iface.family || iface.internal) return;
+        if ('IPv4' != iface.family || iface.internal)
+            return;
         local_interfaces.push(iface);
         ++alias;
     });
 });
 
 export const LocalInterfaces = local_interfaces;
+
+export function getMatchingLocalInterface(addr: string[])
+{
+    return LocalInterfaces.filter(ifs => {
+        addr.forEach(a => {
+            if (subnet(a, ifs.netmask) == subnet(ifs.address, ifs.netmask))
+                return true;
+        })
+        return false;
+    })
+}
+
+export function ignore(...any: any)
+{
+    // do nothing (magical.....)
+}
+
+export function promisifyEventWithTimeout<EventReturnValueType>(
+    eventemitter: EventEmitter, event: string,
+    timeout: number = 10000): Promise<EventReturnValueType>
+{
+    return new Promise((res, rej) => {
+        const handler = (val: EventReturnValueType) => {
+            clearTimeout(tmt);
+            eventemitter.removeListener(event, handler);
+            res(val);
+        };
+
+        const tmt = setTimeout(() => {
+            rej('Timeout');
+            eventemitter.removeListener(event, handler);
+        }, timeout);
+
+        eventemitter.on(event, handler);
+    });
+}
