@@ -739,7 +739,6 @@ export class NodeDataStorage extends NodeMessageInterceptor {
 
     async handleMessage(msg: Message, from_ipc: boolean)
     {
-        console.log(msg);
         switch (msg.field) {
             case 'update-object':
                 return this.updateObject(<UpdateObjectMessage>msg.data);
@@ -815,8 +814,6 @@ export class NodeDataStorage extends NodeMessageInterceptor {
 
         msg.modules.forEach(
             mod => this._check_module(output, mod.name, mod.data));
-
-        console.log(output);
 
         return output;
     }
