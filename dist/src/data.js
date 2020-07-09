@@ -505,7 +505,6 @@ class NodeDataStorage extends communication_1.NodeMessageInterceptor {
     }
     handleMessage(msg, from_ipc) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(msg);
             switch (msg.field) {
                 case 'update-object':
                     return this.updateObject(msg.data);
@@ -565,7 +564,6 @@ class NodeDataStorage extends communication_1.NodeMessageInterceptor {
         log.info('Comparing internal node data to incoming refs');
         let output = { modules: [], registers: [], objects: [] };
         msg.modules.forEach(mod => this._check_module(output, mod.name, mod.data));
-        console.log(output);
         return output;
     }
     _check_module(out, name, modref) {

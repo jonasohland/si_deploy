@@ -522,7 +522,7 @@
         "signature": "ad015745dadccdbcfad819c08bb54af1e4ce899f015b108ee0c6d3b45f55f988"
       },
       "../src/data.ts": {
-        "version": "37faa5694393aa232113049dd515df2715017a288c0c63a85cbacf69c683a8ce",
+        "version": "644a73ffcec981421f5bc6339defdfcfd2c374d8db9a2e06dc63e9166c8750ee",
         "signature": "289e084f7ae3c74d4fcf4a58bcbfaaedd1b2489028245fa2a1de8fc9eb5be2f7"
       },
       "../node_modules/dependency-graph/lib/index.d.ts": {
@@ -852,7 +852,6 @@
           "typings/*"
         ]
       },
-      "watch": true,
       "configFilePath": "../tsconfig.json"
     },
     "referencedMap": {
@@ -4504,11 +4503,11 @@
       "../src/dsp.ts",
       "../src/dsp_process.ts",
       "../src/node_mode.ts",
-      "../src/data.ts",
       "../node_modules/dependency-graph/lib/index.d.ts",
       "../src/showfiles.ts",
       "../src/inputs.ts",
       "../src/dsp_node.ts",
+      "../src/audio_devices.ts",
       "../src/instance.ts",
       "../src/ipc.ts",
       "../src/audio.ts",
@@ -4581,7 +4580,7 @@
       "../node_modules/@types/checksum/index.d.ts",
       "../node_modules/@types/minimatch/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/audio_devices.ts"
+      "../src/data.ts"
     ]
   },
   "version": "3.7.3"
