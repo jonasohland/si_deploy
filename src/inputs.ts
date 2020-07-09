@@ -1,4 +1,4 @@
-import {AudioDeviceManager, Channel} from './audio_devices';
+import {Channel} from './audio_devices';
 import {SIServerWSSession} from './communication';
 import {
     ManagedNodeStateListRegister,
@@ -80,17 +80,17 @@ export class InputManager extends ShowfileTarget {
     }
 
     nodes: NodeAndInputs[];
-    devices: AudioDeviceManager;
+    // devices: AudioDeviceManager;
     webif: WebInterface;
 
-    constructor(webif: WebInterface, audioDevMan: AudioDeviceManager,
+    constructor(webif: WebInterface, audioDevMan: any,
                 sfm: ShowfileManager)
     {
         super();
 
         let self = this;
 
-        this.devices = audioDevMan;
+        // this.devices = audioDevMan;
         this.nodes   = [];
 
         this.webif = webif;
@@ -109,7 +109,7 @@ export class InputManager extends ShowfileTarget {
 
     async updateInterface(sock: SocketIO.Socket|SocketIO.Server)
     {
-        let nodes = await this.devices.getAllChannelLists();
+        /*let nodes = await this.devices.getAllChannelLists();
 
         sock.emit('inputs.update', {
             nodes : nodes,
@@ -118,12 +118,12 @@ export class InputManager extends ShowfileTarget {
                     id: nd.si.id, inputs: nd.inputs.map(i => i.plain())
                 }
             })
-        });
+        });*/
     }
 
     async addInput(input: any)
     {
-        let ins = this.devices.instances.find(ins => ins.id == input.nodeid);
+        /* let ins = this.devices.instances.find(ins => ins.id == input.nodeid);
 
         let chlist = await ins.devices.getChannelList();
 
@@ -151,7 +151,7 @@ export class InputManager extends ShowfileTarget {
 
         nodeAndInput.inputs.push(i);
 
-        this.updateInterface(this.webif.io);
+        this.updateInterface(this.webif.io);*/
     }
 }
 

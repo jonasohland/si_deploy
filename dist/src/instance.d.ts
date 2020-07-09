@@ -1,6 +1,5 @@
 import * as mdns from 'dnssd';
 import io from 'socket.io';
-import * as AudioDevices from './audio_devices';
 import * as DSP from './dsp';
 import * as VST from './vst';
 import { Connection } from './communication';
@@ -10,7 +9,6 @@ export declare class InstanceID {
     txt: string;
 }
 export interface InstanceStatusInformation {
-    audiostatus: AudioDevices.Status;
 }
 export interface InstanceNetworkInformations {
     v4_addr: string;
@@ -24,7 +22,6 @@ export declare class SIDSPNode {
     graph: DSP.Graph;
     connection: Connection;
     vst: VST.VSTScanner;
-    devices: AudioDevices.Manager;
     service_browser: mdns.Browser;
     addresses: string[];
     tc: TimecodeNode;

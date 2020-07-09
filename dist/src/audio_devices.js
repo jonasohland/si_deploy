@@ -8,9 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -19,9 +16,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const events_1 = __importDefault(require("events"));
-const Logger = __importStar(require("./log"));
 const data_1 = require("./data");
+const Logger = __importStar(require("./log"));
 const log = Logger.get('AUDDEV');
 class AudioDeviceConfiguration {
     constructor() {
@@ -34,298 +30,6 @@ class AudioDeviceConfiguration {
     }
 }
 exports.AudioDeviceConfiguration = AudioDeviceConfiguration;
-class Manager {
-    constructor(con) {
-        this.input_devices = [];
-        this.output_devices = [];
-        this.ich_names = [];
-        this.och_names = [];
-        this.config = new AudioDeviceConfiguration();
-        this.channel_list_fresh = false;
-        this.remote = con.getRequester('devmgmt');
-        this.dsp = con.getRequester('dsp');
-        let self = this;
-    }
-    refresh() {
-        return __awaiter(this, void 0, void 0, function* () {
-            let devices = yield this.remote.request('device-list');
-            this.input_devices = devices.data.inputs;
-            this.output_devices = devices.data.outputs;
-            let input_device = yield this.remote.request('input-device');
-            let output_device = yield this.remote.request('output-device');
-            if (input_device.data && input_device.data.length)
-                this.config.input_device = input_device.data;
-            if (output_device.data && output_device.data.length)
-                this.config.output_device = output_device.data;
-            if (this.config.input_device.length
-                && this.config.output_device.length) {
-                let channels = yield this.remote.request('device-channels');
-                console.log(channels);
-            }
-            let is_open = yield this.isOpen();
-            let dsp_enabled = (yield this.dsp.request('is-enabled')).data;
-            let srate = (yield this.remote.request('samplerate')).data;
-            let bsize = (yield this.remote.request('buffersize')).data;
-            this.config.buffersize = bsize;
-            this.config.samplerate = srate;
-            this.status = {
-                nodename: 'unknown',
-                id: 'unknown',
-                audioInputDevice: this.config.input_device,
-                audioOutputDevice: this.config.output_device,
-                samplerate: this.config.samplerate,
-                buffersize: this.config.buffersize,
-                options: {
-                    audioIns: this.input_devices,
-                    audioOuts: this.output_devices,
-                    buffersizes: [32, 64, 128, 256, 512, 1024],
-                    samplerates: [44100, 48000]
-                },
-                dspUse: 0,
-                latency: 0,
-                device_open: is_open ? true : false,
-                dsp_on: (dsp_enabled) ? true : false
-            };
-        });
-    }
-    refreshDSPLoad() {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.status.dspUse
-                = (yield this.remote.request('dsp-load')).data;
-        });
-    }
-    setConfig() {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.channel_list_fresh = false;
-            yield this.refresh();
-            yield this.remote.set('samplerate', this.config.samplerate);
-            yield this.remote.set('buffersize', this.config.buffersize);
-            yield this.remote.set('input-device', this.config.input_device);
-            yield this.remote.set('output-device', this.config.output_device);
-        });
-    }
-    setInputDevice(dev) {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.channel_list_fresh = false;
-            return this.remote.set('input-device', dev);
-        });
-    }
-    setOutputDevice(dev) {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.channel_list_fresh = false;
-            return this.remote.set('output-device', dev);
-        });
-    }
-    setSamplerate(rate) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let was_open = yield this.isOpen();
-            if (was_open)
-                yield this.close();
-            let ret = yield this.remote.set('samplerate', rate);
-            if (was_open)
-                yield this.open();
-            return ret;
-        });
-    }
-    setBuffersize(size) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let was_open = yield this.isOpen();
-            if (was_open)
-                yield this.close();
-            let ret = yield this.remote.set('buffersize', size);
-            if (was_open)
-                yield this.open();
-            return ret;
-        });
-    }
-    open() {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.channel_list_fresh = false;
-            return this.remote.set('open', true);
-        });
-    }
-    close() {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.channel_list_fresh = false;
-            return this.remote.set('open', false);
-        });
-    }
-    isOpen() {
-        return __awaiter(this, void 0, void 0, function* () {
-            let is_open = yield this.remote.request('open');
-            return is_open.data ? true : false;
-        });
-    }
-    enable() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.dsp.set('is-enabled', true);
-        });
-    }
-    disable() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.dsp.set('is-enabled', false);
-        });
-    }
-    isEnabled() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.dsp.request('is-enabled');
-        });
-    }
-    getChannelList() {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (this.channel_list_fresh)
-                return this.channel_list_cache;
-            let channels = (yield this.remote.request('device-channels'))
-                .data;
-            channels.inputs = channels.inputs.map((ch, i) => {
-                return {
-                    name: ch, i: i
-                };
-            });
-            channels.outputs = channels.outputs.map((ch, i) => {
-                return {
-                    name: ch, i: i
-                };
-            });
-            this.channel_list_cache = channels;
-            this.channel_list_fresh = true;
-            return channels;
-        });
-    }
-}
-exports.Manager = Manager;
-class AudioDeviceManager extends events_1.default {
-    constructor(server, instances) {
-        super();
-        let self = this;
-        this.instances = instances;
-        server.io.on('connection', (socket) => {
-            socket.on('audiosettings.update', this.handleUpdateRequest.bind(self, socket));
-            socket.on('audiosettings.inputdevice.set', (node, device) => {
-                log.info('New input device requested for node ' + node
-                    + ': ' + device);
-                self.instances.find(ins => ins.name == node)
-                    .devices.setInputDevice(device)
-                    .then(() => {
-                    console.log('device set.');
-                    socket.emit('audiosettings.operation.done');
-                });
-            });
-            socket.on('audiosettings.outputdevice.set', (node, device) => {
-                log.info('New output device requested for node '
-                    + node + ': ' + device);
-                self.instances.find(ins => ins.name == node)
-                    .devices.setOutputDevice(device)
-                    .then(() => {
-                    socket.emit('audiosettings.operation.done');
-                });
-            });
-            socket.on('audiosettings.buffersize.set', (node, buffersize) => {
-                log.info('New buffersize requested for node ' + node
-                    + ': ' + buffersize);
-                self.instances.find(ins => ins.name == node)
-                    .devices.setBuffersize(buffersize)
-                    .then(() => {
-                    socket.emit('audiosettings.operation.done');
-                });
-            });
-            socket.on('audiosettings.samplerate.set', (node, samplerate) => {
-                log.info('New samplerate requested for node ' + node
-                    + ': ' + samplerate);
-                self.instances.find(ins => ins.name == node)
-                    .devices.setSamplerate(samplerate)
-                    .then(() => {
-                    socket.emit('audiosettings.operation.done');
-                });
-            });
-            socket.on('audiosettings.dsp.enabled', (node, is_enabled) => {
-                log.info('Setting new DSP Status for node ' + node + ':'
-                    + ((is_enabled) ? 'enabled' : 'disabled'));
-                const confirm = (msg) => {
-                    socket.emit('audiosettings.operation.done');
-                };
-                const do_catch = (err) => {
-                    log.error(err);
-                };
-                if (is_enabled)
-                    self.instances.find(ins => ins.name == node)
-                        .devices.enable()
-                        .then(confirm)
-                        .catch(do_catch);
-                else
-                    self.instances.find(ins => ins.name == node)
-                        .devices.disable()
-                        .then(confirm)
-                        .catch(do_catch);
-            });
-            socket.on('audiosettings.device.open', (node, is_open) => {
-                log.info('Setting device open status for node ' + node + ':'
-                    + ((is_open) ? 'enabled' : 'disabled'));
-                const confirm = (msg) => {
-                    socket.emit('audiosettings.operation.done');
-                };
-                const do_catch = (err) => {
-                    log.error(err);
-                };
-                if (is_open)
-                    self.instances.find(ins => ins.name == node)
-                        .devices.open()
-                        .then(confirm)
-                        .catch(do_catch);
-                else
-                    self.instances.find(ins => ins.name == node)
-                        .devices.close()
-                        .then(confirm)
-                        .catch(do_catch);
-            });
-            socket.on('audiosettings.dspuse', () => {
-                this.instances.forEach(ins => {
-                    ins.devices.refreshDSPLoad()
-                        .then(() => {
-                        socket.emit('audiosettings.dspuse', {
-                            id: ins.id,
-                            value: ins.devices.status.dspUse
-                        });
-                    })
-                        .catch(err => log.error(err));
-                });
-            });
-        });
-    }
-    handleUpdateRequest(socket) {
-        log.info('Refreshing audio device data');
-        this.refreshAllDevices()
-            .then((data) => {
-            socket.emit('audiosettings.update.done', data);
-        })
-            .catch(err => log.error(err));
-    }
-    refreshAllDevices() {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield Promise.all(this.instances.map(ins => ins.devices.refresh()));
-            return this.instances.map(ins => {
-                console.log(ins.name);
-                let status = ins.devices.status;
-                status.nodename = ins.name;
-                status.id = ins.id;
-                return status;
-            });
-        });
-    }
-    getAllChannelLists() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return Promise.all(this.instances.map(function (ins) {
-                return __awaiter(this, void 0, void 0, function* () {
-                    return {
-                        id: ins.id, name: ins.name,
-                        channels: yield ins.devices.getChannelList()
-                    };
-                });
-            }));
-        });
-    }
-}
-exports.AudioDeviceManager = AudioDeviceManager;
 class NodeSelectedAudioDeviceSettings extends data_1.ManagedNodeStateObject {
     constructor(ctrl, input, output) {
         super();
@@ -380,12 +84,33 @@ class NodeAudioDeviceSettings extends data_1.ManagedNodeStateMapRegister {
         this.controller = ctrl;
     }
     hasSettings() {
-        return (this._objects["io-devices"] != null) && (this._objects["playback-settings"] != null);
+        return (this._objects['io-devices'] != null)
+            && (this._objects['playback-settings'] != null);
     }
     default() {
-        log.verbose("Construct default audio device settings");
-        this.add("io-devices", new NodeSelectedAudioDeviceSettings(this.controller, "", ""));
-        this.add("playback-settings", new NodePlaybackSettings(this.controller, 48000, 512));
+        log.verbose('Construct default audio device settings');
+        this.add('io-devices', new NodeSelectedAudioDeviceSettings(this.controller, '', ''));
+        this.add('playback-settings', new NodePlaybackSettings(this.controller, 48000, 512));
+    }
+    setIODevices(input, output) {
+        if (!this.hasSettings())
+            this.default();
+        this._objects['io-devices'].set([input, output]);
+    }
+    setPlaypackSettings(srate, bufsize) {
+        if (!this.hasSettings())
+            this.default();
+        this._objects['playback-settings'].set([srate, bufsize]);
+    }
+    getIODevices() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._objects['io-devices'].get();
+        });
+    }
+    getPlaybackSettings() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._objects['playback-settings'].get();
+        });
     }
     remove(name, obj) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -396,9 +121,9 @@ class NodeAudioDeviceSettings extends data_1.ManagedNodeStateMapRegister {
     insert(name, obj) {
         return __awaiter(this, void 0, void 0, function* () {
             switch (name) {
-                case "io-devices":
+                case 'io-devices':
                     return new NodeSelectedAudioDeviceSettings(this.controller, obj.data[0], obj.data[1]);
-                case "playback-settings":
+                case 'playback-settings':
                     return new NodePlaybackSettings(this.controller, obj.data[0], obj.data[1]);
             }
             return null;
@@ -423,19 +148,20 @@ class NodeAudioDevices extends data_1.NodeModule {
             let devices = yield this._devmgmt.request('device-list');
             this._idev_list = devices.data.inputs;
             this._odev_list = devices.data.outputs;
+            this._config.input_device = "";
+            this._config.output_device = "";
             let input_device = yield this._devmgmt.request('input-device');
             let output_device = yield this._devmgmt.request('output-device');
+            let is_open = yield this.isOpen();
             if (input_device.data && input_device.data.length)
                 this._config.input_device = input_device.data;
             if (output_device.data && output_device.data.length)
                 this._config.output_device = output_device.data;
             if (this._config.input_device.length
-                && this._config.output_device.length) {
+                && this._config.output_device.length && is_open) {
                 let channels = yield this._devmgmt.request('device-channels');
-                console.log(channels);
+                // console.log(channels);
             }
-            let is_open = yield this.isOpen();
-            let dsp_enabled = (yield this._dsp.request('is-enabled')).data;
             let srate = (yield this._devmgmt.request('samplerate')).data;
             let bsize = (yield this._devmgmt.request('buffersize')).data;
             this._config.buffersize = bsize;
@@ -490,13 +216,16 @@ class NodeAudioDevices extends data_1.NodeModule {
     open() {
         return __awaiter(this, void 0, void 0, function* () {
             if (!(yield this.isOpen())) {
-                return this._devmgmt.set('open', true);
+                yield this._devmgmt.setTmt('open', 20000, true);
+                this._is_open = yield this.isOpen();
             }
         });
     }
     close() {
         return __awaiter(this, void 0, void 0, function* () {
-            return this._devmgmt.set('open', false);
+            yield this._devmgmt.set('open', false);
+            this._is_open = yield this.isOpen();
+            return;
         });
     }
     isOpen() {
@@ -507,29 +236,36 @@ class NodeAudioDevices extends data_1.NodeModule {
     }
     enable() {
         return __awaiter(this, void 0, void 0, function* () {
-            return this._dsp.set('is-enabled', true);
+            yield this._dsp.set('is-enabled', true);
+            this._is_enabled = yield this.isEnabled();
         });
     }
     disable() {
         return __awaiter(this, void 0, void 0, function* () {
-            return this._dsp.set('is-enabled', false);
+            yield this._dsp.set('is-enabled', false);
+            this._is_enabled = yield this.isEnabled();
         });
     }
     isEnabled() {
         return __awaiter(this, void 0, void 0, function* () {
-            return this._dsp.request('is-enabled');
+            return this._dsp.requestTyped('is-enabled').bool();
         });
     }
     setInputDevice(dev) {
         return __awaiter(this, void 0, void 0, function* () {
             this._chlis_valid = false;
-            return this._devmgmt.set('input-device', dev);
+            yield this._devmgmt.set('input-device', dev);
+            this._config.input_device = dev;
+            this.writeSettingsToDB();
+            return;
         });
     }
     setOutputDevice(dev) {
         return __awaiter(this, void 0, void 0, function* () {
             this._chlis_valid = false;
-            return this._devmgmt.set('output-device', dev);
+            yield this._devmgmt.set('output-device', dev);
+            this._config.output_device = dev;
+            this.writeSettingsToDB();
         });
     }
     setSamplerate(rate) {
@@ -540,6 +276,8 @@ class NodeAudioDevices extends data_1.NodeModule {
             let ret = yield this._devmgmt.set('samplerate', rate);
             if (was_open)
                 yield this.open();
+            this._config.samplerate = rate;
+            this.writeSettingsToDB();
             return ret;
         });
     }
@@ -551,14 +289,32 @@ class NodeAudioDevices extends data_1.NodeModule {
             let ret = yield this._devmgmt.set('buffersize', size);
             if (was_open)
                 yield this.open();
+            this._config.buffersize = size;
+            this.writeSettingsToDB();
             return ret;
         });
     }
     reloadSettingsFromDB() {
         return __awaiter(this, void 0, void 0, function* () {
+            if (this._settings.hasSettings()) {
+                let iodev = yield this._settings.getIODevices();
+                let playset = yield this._settings.getPlaybackSettings();
+                yield this.setInputDevice(iodev[0]);
+                yield this.setOutputDevice(iodev[1]);
+                yield this.setSamplerate(playset[0]);
+                yield this.setBuffersize(playset[1]);
+                if (this._is_open) {
+                    yield this.open();
+                    if (this._is_enabled)
+                        yield this.enable();
+                }
+            }
         });
     }
     writeSettingsToDB() {
+        this._settings.setIODevices(this._config.input_device, this._config.output_device);
+        this._settings.setPlaypackSettings(this._config.samplerate, this._config.buffersize);
+        this._settings.save();
     }
     destroy() {
         if (this._devmgmt)
@@ -573,32 +329,85 @@ class NodeAudioDevices extends data_1.NodeModule {
         this._dsp = remote.getRequester('dsp');
         if (!this._settings.hasSettings())
             this._settings.default();
+        this.events.on('dsp-started', () => {
+            this.reloadSettingsFromDB().then(() => {
+                log.info("Restored DSP settings from DB");
+            }).catch(err => {
+                log.error("Could not restore settings from DB: " + err);
+            });
+        });
+        this.reloadSettingsFromDB().then(() => {
+            log.info("Restored DSP settings from DB");
+        }).catch(err => {
+            log.error("Could not restore settings from DB: " + err);
+        });
         this.save();
     }
 }
 exports.NodeAudioDevices = NodeAudioDevices;
 class AudioDevices extends data_1.ServerModule {
     init() {
-        this.handle("update", (socket, node, data) => {
+        this.handle('update', (socket, node, data) => {
             log.info(`Refreshing audio device data for node ${node.name()}`);
-            node.audio_devices.getNodeDevicesInformation().then((data) => {
+            node.audio_devices.getNodeDevicesInformation()
+                .then((data) => {
                 socket.emit('audiosettings.update.done', data);
-            });
+            })
+                .catch(this.endTransactionWithError.bind(this, socket));
         });
-        this.handle("inputdevice", (socket, node, data) => {
+        this.handle('inputdevice', (socket, node, data) => {
+            node.audio_devices.setInputDevice(data)
+                .then(this.endTransaction.bind(this, socket))
+                .catch(this.endTransactionWithError.bind(this, socket));
         });
-        this.handle("outputdevice", (socket, node, data) => {
+        this.handle('outputdevice', (socket, node, data) => {
+            node.audio_devices.setOutputDevice(data)
+                .then(this.endTransaction.bind(this, socket))
+                .catch(this.endTransactionWithError.bind(this, socket));
         });
-        this.handle("buffersize", (socket, node, data) => {
+        this.handle('buffersize', (socket, node, data) => {
+            node.audio_devices.setBuffersize(data)
+                .then(this.endTransaction.bind(this, socket))
+                .catch(this.endTransactionWithError.bind(this, socket));
         });
-        this.handle("samplerate", (socket, node, data) => {
+        this.handle('samplerate', (socket, node, data) => {
+            node.audio_devices.setSamplerate(data)
+                .then(this.endTransaction.bind(this, socket))
+                .catch(this.endTransactionWithError.bind(this, socket));
         });
-        this.handle("dspenabled", (socket, node, data) => {
+        this.handle('dspenabled', (socket, node, data) => {
+            if (data) {
+                node.audio_devices.enable()
+                    .then(this.endTransaction.bind(this, socket))
+                    .catch(this.endTransactionWithError.bind(this, socket));
+            }
+            else {
+                node.audio_devices.disable()
+                    .then(this.endTransaction.bind(this, socket))
+                    .catch(this.endTransactionWithError.bind(this, socket));
+            }
         });
-        this.handle("open", (socket, node, data) => {
+        this.handle('open', (socket, node, data) => {
+            if (data) {
+                node.audio_devices.open()
+                    .then(this.endTransaction.bind(this, socket))
+                    .catch(this.endTransactionWithError.bind(this, socket));
+            }
+            else {
+                node.audio_devices.close()
+                    .then(this.endTransaction.bind(this, socket))
+                    .catch(this.endTransactionWithError.bind(this, socket));
+            }
         });
-        this.handle("dspuse", (socket, node) => {
+        this.handle('dspuse', (socket, node) => {
         });
+    }
+    endTransaction(socket) {
+        socket.emit('audiosettings.done');
+    }
+    endTransactionWithError(socket, error) {
+        socket.emit('audiosettings.done');
+        this.webif.error(error);
     }
     constructor() {
         super('audiosettings');

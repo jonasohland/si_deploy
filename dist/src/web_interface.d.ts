@@ -10,6 +10,7 @@ export default class WebInterface {
     private _webif_root;
     constructor(options: any);
     reportDispatchError(error_string: string, command: string): void;
+    error(err: any): void;
     attachHandler(thisarg: any, module: string, event: string, handler: any): void;
     _handlers: WEBIFEventHandler[];
     io: SocketIO.Server;

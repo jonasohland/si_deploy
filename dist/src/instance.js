@@ -7,7 +7,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const AudioDevices = __importStar(require("./audio_devices"));
 const Logger = __importStar(require("./log"));
 const timecode_1 = require("./timecode");
 const log = Logger.get('MGT');
@@ -20,7 +19,7 @@ class SIDSPNode {
         this.name = nodename;
         this.id = nid;
         this.addresses = addrs;
-        this.devices = new AudioDevices.Manager(this.connection);
+        // this.devices = new AudioDevices.Manager(this.connection);
         this.tc = new timecode_1.TimecodeNode(this.connection);
         this.connection.begin();
         this.connection.on('connection', () => {

@@ -1,5 +1,5 @@
 /// <reference types="socket.io" />
-import { AudioDeviceManager, Channel } from './audio_devices';
+import { Channel } from './audio_devices';
 import { ManagedNodeStateMapRegister, ManagedNodeStateObject, ManagedNodeStateObjectData, NodeModule } from './data';
 import * as DSP from './dsp';
 import { SIDSPNode } from './instance';
@@ -32,9 +32,8 @@ export declare class InputManager extends ShowfileTarget {
     targetName(): string;
     onEmptyShowfileCreate(s: import('./showfiles').Showfile): void;
     nodes: NodeAndInputs[];
-    devices: AudioDeviceManager;
     webif: WebInterface;
-    constructor(webif: WebInterface, audioDevMan: AudioDeviceManager, sfm: ShowfileManager);
+    constructor(webif: WebInterface, audioDevMan: any, sfm: ShowfileManager);
     updateInterface(sock: SocketIO.Socket | SocketIO.Server): Promise<void>;
     addInput(input: any): Promise<void>;
 }

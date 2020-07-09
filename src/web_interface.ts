@@ -61,6 +61,16 @@ export default class WebInterface {
     {
     }
 
+    error(err: any)
+    {
+        if(err instanceof Error) {
+            this.io.emit('error', err.message);
+        } 
+        else if(typeof err == 'string') {
+            this.io.emit('error', err);
+        }
+    }
+
     attachHandler(thisarg: any, module: string, event: string, handler: any)
     {
         log.debug(`Attach handler -${module}.${event}`);

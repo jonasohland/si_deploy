@@ -46,6 +46,14 @@ class WebInterface {
     }
     reportDispatchError(error_string, command) {
     }
+    error(err) {
+        if (err instanceof Error) {
+            this.io.emit('error', err.message);
+        }
+        else if (typeof err == 'string') {
+            this.io.emit('error', err);
+        }
+    }
     attachHandler(thisarg, module, event, handler) {
         log.debug(`Attach handler -${module}.${event}`);
         this._handlers.push({ thisarg, handler, event: `-${module}.${event}` });

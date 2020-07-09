@@ -18,7 +18,7 @@ export class InstanceID {
 }
 
 export interface InstanceStatusInformation {
-    audiostatus: AudioDevices.Status;
+    // audiostatus: AudioDevices.Status;
 }
 
 export interface InstanceNetworkInformations {
@@ -35,7 +35,7 @@ export class SIDSPNode {
     graph: DSP.Graph;
     connection: Connection;
     vst: VST.VSTScanner;
-    devices: AudioDevices.Manager;
+    // devices: AudioDevices.Manager;
     service_browser: mdns.Browser;
     addresses: string[];
     tc: TimecodeNode;
@@ -46,7 +46,7 @@ export class SIDSPNode {
         this.id = nid;
         this.addresses = addrs;
 
-        this.devices = new AudioDevices.Manager(this.connection);
+        // this.devices = new AudioDevices.Manager(this.connection);
         this.tc = new TimecodeNode(this.connection);
 
         this.connection.begin();

@@ -55,7 +55,7 @@ class InputManager extends showfiles_1.ShowfileTarget {
     constructor(webif, audioDevMan, sfm) {
         super();
         let self = this;
-        this.devices = audioDevMan;
+        // this.devices = audioDevMan;
         this.nodes = [];
         this.webif = webif;
         sfm.register(this);
@@ -75,36 +75,49 @@ class InputManager extends showfiles_1.ShowfileTarget {
     }
     updateInterface(sock) {
         return __awaiter(this, void 0, void 0, function* () {
-            let nodes = yield this.devices.getAllChannelLists();
+            /*let nodes = await this.devices.getAllChannelLists();
+    
             sock.emit('inputs.update', {
-                nodes: nodes,
-                inputs: this.nodes.map(nd => {
+                nodes : nodes,
+                inputs : this.nodes.map(nd => {
                     return {
                         id: nd.si.id, inputs: nd.inputs.map(i => i.plain())
-                    };
+                    }
                 })
-            });
+            });*/
         });
     }
     addInput(input) {
         return __awaiter(this, void 0, void 0, function* () {
-            let ins = this.devices.instances.find(ins => ins.id == input.nodeid);
-            let chlist = yield ins.devices.getChannelList();
-            let chs = chlist.inputs.slice(input.ch_start, input.ch_start + input.ch_count);
+            /* let ins = this.devices.instances.find(ins => ins.id == input.nodeid);
+    
+            let chlist = await ins.devices.getChannelList();
+    
+            let chs = chlist.inputs.slice(
+                input.ch_start, input.ch_start + input.ch_count);
+    
             let nodeAndInput = this.nodes.find(ni => ni.si.id == input.nodeid);
+    
             if (nodeAndInput == undefined)
-                this.nodes.push({ si: ins, inputs: [], max_id: 0 });
+                this.nodes.push({ si : ins, inputs : [], max_id : 0 });
+    
             nodeAndInput = this.nodes.find(ni => ni.si.id == input.nodeid);
-            log.info(`Added new Input to node ${nodeAndInput.si.name} (chs: ${chs.length}, name: ${input.name})`);
+    
+            log.info(`Added new Input to node ${nodeAndInput.si.name} (chs: ${
+                chs.length}, name: ${input.name})`);
+    
             let i = new Input(0, '', 0);
+    
             i.build({
-                name: input.name,
-                channels: chs,
-                format: input.format,
-                id: ++nodeAndInput.max_id
+                name : input.name,
+                channels : chs,
+                format : input.format,
+                id : ++nodeAndInput.max_id
             });
+    
             nodeAndInput.inputs.push(i);
-            this.updateInterface(this.webif.io);
+    
+            this.updateInterface(this.webif.io);*/
         });
     }
 }

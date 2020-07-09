@@ -1,10 +1,6 @@
-/// <reference types="node" />
-import EventEmitter from 'events';
-import io from 'socket.io';
-import { SIDSPNode } from './instance';
-import WebInterface from './web_interface';
-import { Requester, Connection, Message } from './communication';
-import { NodeModule, ManagedNodeStateMapRegister, ManagedNodeStateObject, ManagedNodeStateObjectData, ServerModule } from './data';
+/// <reference types="socket.io" />
+import { Connection, Requester } from './communication';
+import { ManagedNodeStateMapRegister, ManagedNodeStateObject, ManagedNodeStateObjectData, NodeModule, ServerModule } from './data';
 export interface Channel {
     i: number;
     name: string;
@@ -17,10 +13,6 @@ export interface NodeAndChannels {
     id: string;
     name: string;
     channels: ChannelList;
-}
-export interface Status {
-    open: boolean;
-    enabled: boolean;
 }
 export declare class AudioDeviceConfiguration {
     samplerate: number;
@@ -48,41 +40,6 @@ export interface NodeAudioDevicesInformation {
     dsp_on: boolean;
     device_open: boolean;
 }
-export declare class Manager {
-    remote: Requester;
-    dsp: Requester;
-    input_devices: any[];
-    output_devices: any[];
-    ich_names: string[];
-    och_names: string[];
-    config: AudioDeviceConfiguration;
-    status: NodeAudioDevicesInformation;
-    channel_list_cache: ChannelList;
-    channel_list_fresh: boolean;
-    constructor(con: Connection);
-    refresh(): Promise<void>;
-    refreshDSPLoad(): Promise<void>;
-    setConfig(): Promise<void>;
-    setInputDevice(dev: string): Promise<Message>;
-    setOutputDevice(dev: string): Promise<Message>;
-    setSamplerate(rate: number): Promise<Message>;
-    setBuffersize(size: number): Promise<Message>;
-    open(): Promise<Message>;
-    close(): Promise<Message>;
-    isOpen(): Promise<boolean>;
-    enable(): Promise<Message>;
-    disable(): Promise<Message>;
-    isEnabled(): Promise<Message>;
-    getChannelList(): Promise<ChannelList>;
-}
-export declare class AudioDeviceManager extends EventEmitter {
-    webif: io.Server;
-    instances: SIDSPNode[];
-    constructor(server: WebInterface, instances: SIDSPNode[]);
-    handleUpdateRequest(socket: io.Socket): void;
-    refreshAllDevices(): Promise<NodeAudioDevicesInformation[]>;
-    getAllChannelLists(): Promise<NodeAndChannels[]>;
-}
 export declare class NodeSelectedAudioDeviceSettings extends ManagedNodeStateObject<[string, string]> {
     input: string;
     output: string;
@@ -106,6 +63,10 @@ export declare class NodeAudioDeviceSettings extends ManagedNodeStateMapRegister
     constructor(ctrl: NodeAudioDevices);
     hasSettings(): boolean;
     default(): void;
+    setIODevices(input: string, output: string): void;
+    setPlaypackSettings(srate: number, bufsize: number): void;
+    getIODevices(): Promise<[string, string]>;
+    getPlaybackSettings(): Promise<[number, number]>;
     remove(name: string, obj: ManagedNodeStateObject<any>): Promise<void>;
     insert(name: string, obj: ManagedNodeStateObjectData): Promise<NodeSelectedAudioDeviceSettings | NodePlaybackSettings>;
 }
@@ -123,16 +84,16 @@ export declare class NodeAudioDevices extends NodeModule {
     refresh(): Promise<void>;
     getNodeDevicesInformation(): Promise<NodeAudioDevicesInformation>;
     getChannelList(): Promise<ChannelList>;
-    open(): Promise<Message>;
-    close(): Promise<Message>;
+    open(): Promise<void>;
+    close(): Promise<void>;
     isOpen(): Promise<boolean>;
-    enable(): Promise<Message>;
-    disable(): Promise<Message>;
-    isEnabled(): Promise<Message>;
-    setInputDevice(dev: string): Promise<Message>;
-    setOutputDevice(dev: string): Promise<Message>;
-    setSamplerate(rate: number): Promise<Message>;
-    setBuffersize(size: number): Promise<Message>;
+    enable(): Promise<void>;
+    disable(): Promise<void>;
+    isEnabled(): Promise<boolean>;
+    setInputDevice(dev: string): Promise<void>;
+    setOutputDevice(dev: string): Promise<void>;
+    setSamplerate(rate: number): Promise<import("./communication").Message>;
+    setBuffersize(size: number): Promise<import("./communication").Message>;
     reloadSettingsFromDB(): Promise<void>;
     writeSettingsToDB(): void;
     destroy(): void;
@@ -142,5 +103,7 @@ export declare class NodeAudioDevices extends NodeModule {
 }
 export declare class AudioDevices extends ServerModule {
     init(): void;
+    endTransaction(socket: SocketIO.Socket): void;
+    endTransactionWithError(socket: SocketIO.Socket, error: any): void;
     constructor();
 }

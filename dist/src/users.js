@@ -104,22 +104,31 @@ class UsersManager extends events_1.default {
         });
     }
     addUser(userdata) {
-        let ins = this.inputs.devices.instances.find(ins => ins.id
-            == userdata.nodeid);
-        let user = new User(ins, userdata.username);
-        user.advanced = false;
-        user.inputs = [];
-        user.id = ++this.max_id;
+        /* let ins  = this.inputs.devices.instances.find(ins => ins.id
+                                                            == userdata.nodeid); */
+        /* let user = new User(ins, userdata.username);
+
+        user.advanced       = false;
+        user.inputs         = [];
+        user.id             = ++this.max_id;
         user.outputChannels = userdata.channels;
+
         let nodeAndUsers = this.users.find(n => n.si.id == userdata.nodeid);
+
         if (nodeAndUsers == undefined)
-            this.users.push({ si: ins, users: [] });
+            this.users.push({ si : ins, users : [] });
+
         nodeAndUsers = this.users.find(n => n.si.id == userdata.nodeid);
+
         nodeAndUsers.users.push(user);
-        let dspModule = new dsp_modules_1.BasicUserModule(user);
-        ins.graph.addModule(dspModule);
+
+        let dspModule = new BasicUserModule(user);
+
+        // ins.graph.addModule(dspModule);
         // ins.graph.sync();
+
         this.updateInterface(this.webif.io);
+        */
     }
     updateInterface(socket) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -157,8 +166,8 @@ class UsersManager extends events_1.default {
                     inputs: nodeAndInput.inputs
                 });
             });
-            let channels = yield this.inputs.devices.getAllChannelLists();
-            socket.emit('users.update', { nodes: update_users, inputs: update_aux, channels: channels });
+            // let channels = await this.inputs.devices.getAllChannelLists();
+            socket.emit('users.update', { nodes: update_users, inputs: update_aux, channels: null });
             socket.emit('users.headtrackers.update', this.htrks.trackers.filter(trk => trk.remote.conf).map(trk => trk.remote.id));
         });
     }

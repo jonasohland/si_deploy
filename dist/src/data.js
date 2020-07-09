@@ -492,11 +492,12 @@ class NodeDataStorage extends communication_1.NodeMessageInterceptor {
                     this._save_again = false;
                     this.saveLater();
                 }
-                this._saving = true;
+                this._saving = false;
             })
                 .catch(err => {
                 log.error('Could not save file ' + err);
             });
+            this._saving = true;
         }, 5000);
     }
     target() {

@@ -188,9 +188,9 @@ export class UsersManager extends EventEmitter {
 
     addUser(userdata: WEBIFNewUserData)
     {
-        let ins  = this.inputs.devices.instances.find(ins => ins.id
-                                                            == userdata.nodeid);
-        let user = new User(ins, userdata.username);
+        /* let ins  = this.inputs.devices.instances.find(ins => ins.id
+                                                            == userdata.nodeid); */
+        /* let user = new User(ins, userdata.username);
 
         user.advanced       = false;
         user.inputs         = [];
@@ -200,7 +200,7 @@ export class UsersManager extends EventEmitter {
         let nodeAndUsers = this.users.find(n => n.si.id == userdata.nodeid);
 
         if (nodeAndUsers == undefined)
-            this.users.push({ si : ins, users : [] });
+            this.users.push({ si : ins, users : [] }); 
 
         nodeAndUsers = this.users.find(n => n.si.id == userdata.nodeid);
 
@@ -208,10 +208,11 @@ export class UsersManager extends EventEmitter {
 
         let dspModule = new BasicUserModule(user);
 
-        ins.graph.addModule(dspModule);
+        // ins.graph.addModule(dspModule);
         // ins.graph.sync();
 
         this.updateInterface(this.webif.io);
+        */
     }
 
     async updateInterface(socket: SocketIO.Server|SocketIO.Socket)
@@ -256,11 +257,11 @@ export class UsersManager extends EventEmitter {
             });
         });
 
-        let channels = await this.inputs.devices.getAllChannelLists();
+        // let channels = await this.inputs.devices.getAllChannelLists();
 
         socket.emit(
             'users.update',
-            { nodes : update_users, inputs : update_aux, channels : channels });
+            { nodes : update_users, inputs : update_aux, channels : null });
 
         socket.emit('users.headtrackers.update', this.htrks.trackers.filter(trk => trk.remote.conf).map(trk => trk.remote.id));
     }
