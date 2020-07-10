@@ -1,6 +1,6 @@
 /// <reference types="socket.io" />
 import { Connection, Requester } from './communication';
-import { ManagedNodeStateMapRegister, ManagedNodeStateObject, ManagedNodeStateObjectData, NodeModule, ServerModule } from './data';
+import { ManagedNodeStateMapRegister, ManagedNodeStateObject, NodeModule, ServerModule } from './data';
 export interface Channel {
     i: number;
     name: string;
@@ -46,7 +46,7 @@ export declare class NodeSelectedAudioDeviceSettings extends ManagedNodeStateObj
     controller: NodeAudioDevices;
     constructor(ctrl: NodeAudioDevices, input: string, output: string);
     set(val: any): Promise<void>;
-    get(): Promise<[string, string]>;
+    get(): [string, string];
     apply(): Promise<void>;
 }
 export declare class NodePlaybackSettings extends ManagedNodeStateObject<[number, number]> {
@@ -55,7 +55,7 @@ export declare class NodePlaybackSettings extends ManagedNodeStateObject<[number
     controller: NodeAudioDevices;
     constructor(controller: NodeAudioDevices, srate: number, bufsize: number);
     set(val: [number, number]): Promise<void>;
-    get(): Promise<[number, number]>;
+    get(): [number, number];
     apply(): Promise<void>;
 }
 export declare class NodeAudioDeviceSettings extends ManagedNodeStateMapRegister {
@@ -68,7 +68,7 @@ export declare class NodeAudioDeviceSettings extends ManagedNodeStateMapRegister
     getIODevices(): Promise<[string, string]>;
     getPlaybackSettings(): Promise<[number, number]>;
     remove(name: string, obj: ManagedNodeStateObject<any>): Promise<void>;
-    insert(name: string, obj: ManagedNodeStateObjectData): Promise<NodeSelectedAudioDeviceSettings | NodePlaybackSettings>;
+    insert(name: string, obj: any): Promise<NodeSelectedAudioDeviceSettings | NodePlaybackSettings>;
 }
 export declare class NodeAudioDevices extends NodeModule {
     _devmgmt: Requester;

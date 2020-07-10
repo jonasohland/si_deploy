@@ -1,22 +1,20 @@
+import {v4 as uniqueId} from 'uuid';
+
 import {Channel} from './audio_devices';
-import {SIServerWSSession} from './communication';
 import {
     ManagedNodeStateListRegister,
     ManagedNodeStateMapRegister,
     ManagedNodeStateObject,
     ManagedNodeStateObjectData,
-    NodeModule
+    NodeModule,
+    ServerModule
 } from './data';
 import * as DSP from './dsp'
 import {SIDSPNode} from './instance';
 import * as Logger from './log';
-import {
-    ShowfileManager,
-    ShowfileRecord,
-    ShowfileSection,
-    ShowfileTarget
-} from './showfiles';
+import {ShowfileManager, ShowfileRecord, ShowfileTarget} from './showfiles';
 import WebInterface from './web_interface';
+import { DSPNode } from './dsp_node';
 
 const log = Logger.get('INP');
 
@@ -83,15 +81,14 @@ export class InputManager extends ShowfileTarget {
     // devices: AudioDeviceManager;
     webif: WebInterface;
 
-    constructor(webif: WebInterface, audioDevMan: any,
-                sfm: ShowfileManager)
+    constructor(webif: WebInterface, audioDevMan: any, sfm: ShowfileManager)
     {
         super();
 
         let self = this;
 
         // this.devices = audioDevMan;
-        this.nodes   = [];
+        this.nodes = [];
 
         this.webif = webif;
 
@@ -158,6 +155,26 @@ export class InputManager extends ShowfileTarget {
 export interface NodeAudioInputDescription {
     name: string;
     channel: number;
+    type: DSP.PortTypes;
+    id: string;
+    default_roomencode: boolean;
+    default_encodingorder: number;
+    default_gain: number;
+}
+
+export function basicNodeAudioInputDescription(
+    name: string, channel: number,
+    type: DSP.PortTypes): NodeAudioInputDescription
+{
+    return {
+        name,
+        channel,
+        type,
+        id : uniqueId(),
+        default_roomencode : false,
+        default_encodingorder : 3,
+        default_gain : 1.
+    };
 }
 
 export class NodeAudioInput extends
@@ -171,48 +188,68 @@ export class NodeAudioInput extends
         this._description.name    = val.name;
     }
 
-    async get()
+    get()
     {
         return this._description;
     }
 
-    constructor(name: string, channel: number)
+    constructor(desc: NodeAudioInputDescription)
     {
         super();
-        this._description = { name, channel }
+        this._description = desc;
     }
 }
 
-export class NodeAudioInputList extends ManagedNodeStateMapRegister {
+export class NodeAudioInputList extends ManagedNodeStateListRegister {
 
-    async remove(name: string, obj: ManagedNodeStateObject<NodeAudioInputDescription>)
+    async remove(obj: ManagedNodeStateObject<NodeAudioInputDescription>)
     {
     }
 
-    async insert(name: string, obj: ManagedNodeStateObjectData)
+    async insert(data: NodeAudioInputDescription)
     {
-        let data = <NodeAudioInputDescription>obj.data;
-        return new NodeAudioInput(data.name, data.channel);
-    }
-
-    constructor()
-    {
-        super();
+        return new NodeAudioInput(data);
     }
 }
 
 export class NodeAudioInputManager extends NodeModule {
-    
-    destroy() 
+
+    async addInput(input: NodeAudioInputDescription)
+    {
+        this._input_list.add(new NodeAudioInput(input));
+        return this.save();
+    }
+
+    async removeInput(id: string)
+    {
+        this._input_list.removeItem(this._input_list._objects.find(
+            obj => (<NodeAudioInputDescription>obj.get()).id == id));
+
+        return this._input_list.save();
+    }
+
+    getRawInputDescriptionList()
+    {
+        return this._input_list._objects.map(obj => <NodeAudioInputDescription> obj.get());
+    }
+
+    findInputForId(id: string)
+    {
+        return <NodeAudioInput> this._input_list._objects.find(obj => obj.get().id == id);
+    }
+
+    destroy()
     {
     }
 
-    init(): void {
+    init(): void
+    {
     }
 
-    start(): void {
+    start(): void
+    {
         this.save().catch(err => {
-            log.error("Could write data to node " + err);
+            log.error('Could write data to node ' + err);
         });
     }
 
@@ -223,5 +260,54 @@ export class NodeAudioInputManager extends NodeModule {
         super('inputs');
         this._input_list = new NodeAudioInputList();
         this.add(this._input_list, 'input-list');
+    }
+}
+
+export class AudioInputsManager extends ServerModule {
+
+    init(): void 
+    {
+        this.handle('update', (socket, node: DSPNode, data) => {
+            try {
+                socket.emit('inputs.update', node.id(), node.inputs.getRawInputDescriptionList());
+            } catch (err) {
+                this.webif.error(err);
+            }
+        });
+
+        this.handle('add', (socket, node: DSPNode, data: NodeAudioInputDescription) => {
+            try {
+                node.inputs.addInput(data);
+            } catch (err) {
+                this.webif.error(err);
+            }
+        });
+
+        this.handle('remove', (socket, node: DSPNode, data: string) => {
+            try {
+                node.inputs.removeInput(data);
+            } catch (err) {
+                this.webif.error(err);
+            }
+        });
+
+        this.handle('modify', (socket, node: DSPNode, data: NodeAudioInputDescription) => {
+            try {
+                let input = node.inputs.findInputForId(data.id);
+                if(input) {
+                    input.set(data).catch(err => {
+                        this.webif.error(err);
+                    });
+                } else {
+                    this.webif.error("Input " + data.name + " not found");
+                }
+            } catch (err) {
+                this.webif.error(err);
+            }
+        });
+    }
+    
+    constructor() {
+        super('inputs');
     }
 }

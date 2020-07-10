@@ -17,7 +17,6 @@ import {configFileDir} from './files';
 import * as Logger from './log';
 import {ignore} from './util';
 import WebInterface from './web_interface';
-import node_mode from './node_mode';
 
 const log = Logger.get('NSTATE');
 
@@ -106,7 +105,7 @@ export abstract class ManagedNodeStateObject<EncapsulatedType extends any> {
     _parent: ManagedNodeStateRegister;
 
     abstract async set(val: EncapsulatedType): Promise<void>;
-    abstract async get(): Promise<EncapsulatedType>;
+    abstract get(): EncapsulatedType;
 
     init(parent: ManagedNodeStateRegister)
     {
@@ -115,12 +114,12 @@ export abstract class ManagedNodeStateObject<EncapsulatedType extends any> {
         this._parent = parent;
     }
 
-    async _export()
+    _export()
     {
         return <ManagedNodeStateObjectData>
         {
             object_id: this._oid, name: this._name, uid: this._uid,
-                data: await this.get()
+            data: this.get()
         }
     }
 
@@ -272,12 +271,12 @@ export abstract class ManagedNodeStateMapRegister extends
 
     abstract async remove(name: string,
                           obj: ManagedNodeStateObject<any>): Promise<void>;
-    abstract async insert(name: string, obj: ManagedNodeStateObjectData):
+    abstract async insert(name: string, obj: any):
         Promise<ManagedNodeStateObject<any>>;
 
     async _wrap_insert(name: string, obj: ManagedNodeStateObjectData)
     {
-        let ob   = await this.insert(name, obj)
+        let ob   = await this.insert(name, obj.data)
         ob._uid  = obj.uid;
         ob._oid  = obj.object_id;
         ob._name = (<any>obj).name
@@ -402,12 +401,12 @@ export abstract class ManagedNodeStateListRegister extends
     }
 
     abstract async remove(obj: ManagedNodeStateObject<any>): Promise<void>;
-    abstract async insert(obj: ManagedNodeStateObjectData):
+    abstract async insert(obj: any):
         Promise<ManagedNodeStateObject<any>>;
 
     private async _wrap_insert(obj: ManagedNodeStateObjectData)
     {
-        let nobj  = await this.insert(obj);
+        let nobj  = await this.insert(obj.data);
         nobj._uid = obj.uid;
         nobj._oid = obj.object_id;
         log.debug(`Inserting new object [${nobj.constructor.name}] ${
@@ -500,6 +499,17 @@ export abstract class ManagedNodeStateListRegister extends
                                         await this._wrap_insert(obj)) }));
             }
         }
+    }
+
+    removeItem(item: ManagedNodeStateObject<any>)
+    {
+        let itemIndex = this._objects.indexOf(item);
+        if(itemIndex != -1) {
+            this._objects.splice(itemIndex, 1);
+            return true;
+        }
+        else 
+            return false;
     }
 
     add(obj: ManagedNodeStateObject<any>)
@@ -965,7 +975,7 @@ export abstract class Node {
                     'update-object', <UpdateObjectMessage>{
                         module : mod._name,
                         register : reg._name,
-                        data : await obj.get()
+                        data : obj.get()
                     });
             else
                 return this._state_manager.set(

@@ -80,7 +80,8 @@ export class NodeSelectedAudioDeviceSettings extends
         this.input  = val[0];
         this.output = val[1];
     }
-    async get()
+    
+    get()
     {
         return <[ string, string ]>[ this.input, this.output ];
     }
@@ -111,7 +112,7 @@ export class NodePlaybackSettings extends
         this.buffersize = val[1];
     }
 
-    async get()
+    get()
     {
         return <[ number, number ]>[ this.srate, this.buffersize ];
     }
@@ -178,16 +179,16 @@ export class NodeAudioDeviceSettings extends ManagedNodeStateMapRegister {
         }
     }
 
-    async insert(name: string, obj: ManagedNodeStateObjectData)
+    async insert(name: string, obj: any)
     {
 
         switch (name) {
             case 'io-devices':
                 return new NodeSelectedAudioDeviceSettings(
-                    this.controller, obj.data[0], obj.data[1]);
+                    this.controller, obj[0], obj[1]);
             case 'playback-settings':
                 return new NodePlaybackSettings(
-                    this.controller, obj.data[0], obj.data[1]);
+                    this.controller, obj[0], obj[1]);
         }
 
         return null;

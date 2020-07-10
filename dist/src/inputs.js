@@ -16,6 +16,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const uuid_1 = require("uuid");
 const data_1 = require("./data");
 const Logger = __importStar(require("./log"));
 const showfiles_1 = require("./showfiles");
@@ -122,10 +123,22 @@ class InputManager extends showfiles_1.ShowfileTarget {
     }
 }
 exports.InputManager = InputManager;
+function basicNodeAudioInputDescription(name, channel, type) {
+    return {
+        name,
+        channel,
+        type,
+        id: uuid_1.v4(),
+        default_roomencode: false,
+        default_encodingorder: 3,
+        default_gain: 1.
+    };
+}
+exports.basicNodeAudioInputDescription = basicNodeAudioInputDescription;
 class NodeAudioInput extends data_1.ManagedNodeStateObject {
-    constructor(name, channel) {
+    constructor(desc) {
         super();
-        this._description = { name, channel };
+        this._description = desc;
     }
     set(val) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -134,25 +147,19 @@ class NodeAudioInput extends data_1.ManagedNodeStateObject {
         });
     }
     get() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this._description;
-        });
+        return this._description;
     }
 }
 exports.NodeAudioInput = NodeAudioInput;
-class NodeAudioInputList extends data_1.ManagedNodeStateMapRegister {
-    remove(name, obj) {
+class NodeAudioInputList extends data_1.ManagedNodeStateListRegister {
+    remove(obj) {
         return __awaiter(this, void 0, void 0, function* () {
         });
     }
-    insert(name, obj) {
+    insert(data) {
         return __awaiter(this, void 0, void 0, function* () {
-            let data = obj.data;
-            return new NodeAudioInput(data.name, data.channel);
+            return new NodeAudioInput(data);
         });
-    }
-    constructor() {
-        super();
     }
 }
 exports.NodeAudioInputList = NodeAudioInputList;
@@ -162,15 +169,81 @@ class NodeAudioInputManager extends data_1.NodeModule {
         this._input_list = new NodeAudioInputList();
         this.add(this._input_list, 'input-list');
     }
+    addInput(input) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this._input_list.add(new NodeAudioInput(input));
+            return this.save();
+        });
+    }
+    removeInput(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this._input_list.removeItem(this._input_list._objects.find(obj => obj.get().id == id));
+            return this._input_list.save();
+        });
+    }
+    getRawInputDescriptionList() {
+        return this._input_list._objects.map(obj => obj.get());
+    }
+    findInputForId(id) {
+        return this._input_list._objects.find(obj => obj.get().id == id);
+    }
     destroy() {
     }
     init() {
     }
     start() {
         this.save().catch(err => {
-            log.error("Could write data to node " + err);
+            log.error('Could write data to node ' + err);
         });
     }
 }
 exports.NodeAudioInputManager = NodeAudioInputManager;
+class AudioInputsManager extends data_1.ServerModule {
+    init() {
+        this.handle('update', (socket, node, data) => {
+            try {
+                socket.emit('inputs.update', node.id(), node.inputs.getRawInputDescriptionList());
+            }
+            catch (err) {
+                this.webif.error(err);
+            }
+        });
+        this.handle('add', (socket, node, data) => {
+            try {
+                node.inputs.addInput(data);
+            }
+            catch (err) {
+                this.webif.error(err);
+            }
+        });
+        this.handle('remove', (socket, node, data) => {
+            try {
+                node.inputs.removeInput(data);
+            }
+            catch (err) {
+                this.webif.error(err);
+            }
+        });
+        this.handle('modify', (socket, node, data) => {
+            try {
+                let input = node.inputs.findInputForId(data.id);
+                if (input) {
+                    input.set(data).catch(err => {
+                        this.webif.error(err);
+                    });
+                }
+                else {
+                    this.webif.error("Input " + data.name + " not found");
+                }
+            }
+            catch (err) {
+                this.webif.error(err);
+            }
+        });
+    }
+    constructor() {
+        super('inputs');
+    }
+}
+exports.AudioInputsManager = AudioInputsManager;
 //# sourceMappingURL=inputs.js.map

@@ -83,9 +83,9 @@ export declare abstract class ManagedNodeStateObject<EncapsulatedType extends an
     _name: string;
     _parent: ManagedNodeStateRegister;
     abstract set(val: EncapsulatedType): Promise<void>;
-    abstract get(): Promise<EncapsulatedType>;
+    abstract get(): EncapsulatedType;
     init(parent: ManagedNodeStateRegister): void;
-    _export(): Promise<ManagedNodeStateObjectData>;
+    _export(): ManagedNodeStateObjectData;
     save(): Promise<Message>;
     _map(): {
         oid: string;
@@ -126,7 +126,7 @@ export declare abstract class ManagedNodeStateMapRegister extends ManagedNodeSta
     _objects: Record<string, ManagedNodeStateObject<any>>;
     constructor();
     abstract remove(name: string, obj: ManagedNodeStateObject<any>): Promise<void>;
-    abstract insert(name: string, obj: ManagedNodeStateObjectData): Promise<ManagedNodeStateObject<any>>;
+    abstract insert(name: string, obj: any): Promise<ManagedNodeStateObject<any>>;
     _wrap_insert(name: string, obj: ManagedNodeStateObjectData): Promise<ManagedNodeStateObject<any>>;
     _wrap_remove(name: string, obj: ManagedNodeStateObject<any>): Promise<void>;
     insertExt(name: string, data: ManagedNodeStateObjectData): Promise<void>;
@@ -137,10 +137,11 @@ export declare abstract class ManagedNodeStateListRegister extends ManagedNodeSt
     _objects: ManagedNodeStateObject<any>[];
     constructor();
     abstract remove(obj: ManagedNodeStateObject<any>): Promise<void>;
-    abstract insert(obj: ManagedNodeStateObjectData): Promise<ManagedNodeStateObject<any>>;
+    abstract insert(obj: any): Promise<ManagedNodeStateObject<any>>;
     private _wrap_insert;
     insertExt(data: ManagedNodeStateObjectData): Promise<void>;
     _update_list(s: ManagedNodeStateRegisterData, strategy: StateUpdateStrategy): Promise<void[]>;
+    removeItem(item: ManagedNodeStateObject<any>): boolean;
     add(obj: ManagedNodeStateObject<any>): void;
 }
 export declare abstract class NodeModule {

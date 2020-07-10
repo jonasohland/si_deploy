@@ -52,12 +52,10 @@ class ManagedNodeStateObject {
         this._parent = parent;
     }
     _export() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return {
-                object_id: this._oid, name: this._name, uid: this._uid,
-                data: yield this.get()
-            };
-        });
+        return {
+            object_id: this._oid, name: this._name, uid: this._uid,
+            data: this.get()
+        };
     }
     save() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -177,7 +175,7 @@ class ManagedNodeStateMapRegister extends ManagedNodeStateRegister {
     }
     _wrap_insert(name, obj) {
         return __awaiter(this, void 0, void 0, function* () {
-            let ob = yield this.insert(name, obj);
+            let ob = yield this.insert(name, obj.data);
             ob._uid = obj.uid;
             ob._oid = obj.object_id;
             ob._name = obj.name;
@@ -276,7 +274,7 @@ class ManagedNodeStateListRegister extends ManagedNodeStateRegister {
     }
     _wrap_insert(obj) {
         return __awaiter(this, void 0, void 0, function* () {
-            let nobj = yield this.insert(obj);
+            let nobj = yield this.insert(obj.data);
             nobj._uid = obj.uid;
             nobj._oid = obj.object_id;
             log.debug(`Inserting new object [${nobj.constructor.name}] ${nobj._oid} to ${this._name}`);
@@ -346,6 +344,15 @@ class ManagedNodeStateListRegister extends ManagedNodeStateRegister {
                 }
             }
         });
+    }
+    removeItem(item) {
+        let itemIndex = this._objects.indexOf(item);
+        if (itemIndex != -1) {
+            this._objects.splice(itemIndex, 1);
+            return true;
+        }
+        else
+            return false;
     }
     add(obj) {
         log.debug(`Insert new object [${obj.constructor.name}] into list`);
@@ -667,7 +674,7 @@ class Node {
                     return this._state_manager.set('update-object', {
                         module: mod._name,
                         register: reg._name,
-                        data: yield obj.get()
+                        data: obj.get()
                     });
                 else
                     return this._state_manager.set('update-register', {

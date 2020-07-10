@@ -44,9 +44,7 @@ class NodeSelectedAudioDeviceSettings extends data_1.ManagedNodeStateObject {
         });
     }
     get() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return [this.input, this.output];
-        });
+        return [this.input, this.output];
     }
     apply() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -68,9 +66,7 @@ class NodePlaybackSettings extends data_1.ManagedNodeStateObject {
         });
     }
     get() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return [this.srate, this.buffersize];
-        });
+        return [this.srate, this.buffersize];
     }
     apply() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -122,9 +118,9 @@ class NodeAudioDeviceSettings extends data_1.ManagedNodeStateMapRegister {
         return __awaiter(this, void 0, void 0, function* () {
             switch (name) {
                 case 'io-devices':
-                    return new NodeSelectedAudioDeviceSettings(this.controller, obj.data[0], obj.data[1]);
+                    return new NodeSelectedAudioDeviceSettings(this.controller, obj[0], obj[1]);
                 case 'playback-settings':
-                    return new NodePlaybackSettings(this.controller, obj.data[0], obj.data[1]);
+                    return new NodePlaybackSettings(this.controller, obj[0], obj[1]);
             }
             return null;
         });

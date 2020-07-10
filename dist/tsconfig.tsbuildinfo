@@ -489,21 +489,9 @@
         "version": "420dce4d7e34d3e4683274e732acc8155b1cf8813032ac1347a623b986d53aae",
         "signature": "a2869aa69b19361aeb4648cb672475dce538dff890666002f1299f306bd502b7"
       },
-      "../node_modules/commander/typings/index.d.ts": {
-        "version": "448682e0bbbfe68f3723e255d94092d65a17a6e82f140c597b08b960e05aa151",
-        "signature": "448682e0bbbfe68f3723e255d94092d65a17a6e82f140c597b08b960e05aa151"
-      },
-      "../node_modules/@types/ini/index.d.ts": {
-        "version": "3cc26d1f94c768ae2896d3900ffa268e0657a332b399e94c1fb52da1f9e07625",
-        "signature": "3cc26d1f94c768ae2896d3900ffa268e0657a332b399e94c1fb52da1f9e07625"
-      },
-      "../src/server_config.ts": {
-        "version": "b5a3994f44494b1ac76203dab8b461515e16a1b314a489b1efb48f7d1a6c4ae2",
-        "signature": "d49f4da749068f301db7ae9f5cc78b0eb755a11b258bab5fd665755471382890"
-      },
-      "../node_modules/@types/event-to-promise/index.d.ts": {
-        "version": "920efe3728fef8ce326928aee60297230ee31c4731feb21c17e4edf89d7128ea",
-        "signature": "920efe3728fef8ce326928aee60297230ee31c4731feb21c17e4edf89d7128ea"
+      "../src/data.ts": {
+        "version": "a23787915957812efb41b2571e0e200693cbfe320853ea812eb404c24a2210d5",
+        "signature": "0a38a4d568bbdb3a4a0afd1810903f61b168b45203ca71da16741e7de78a928e"
       },
       "../src/vst.ts": {
         "version": "b6a119c7bb8274cf353acbce614cf3518c2a1486854cd1d25386ae70c91290dd",
@@ -512,18 +500,6 @@
       "../src/dsp.ts": {
         "version": "7c7539d33b217c03c7a4bad77a658e690c0444e7dd634100fa78b9aecedd94ea",
         "signature": "9275bf0dfe1e4a0c91a211a9bab8f3839705ce3fd8b419d031b8eeec728a4995"
-      },
-      "../src/dsp_process.ts": {
-        "version": "f57940ab66ccea34c1dc3c16284edb32edba570e1914a8596eab2d688db6dc47",
-        "signature": "4776572d0525eed8e2857131abc98ad5775eb21d2332a6eaac496bea9fa12b90"
-      },
-      "../src/node_mode.ts": {
-        "version": "4a95a0cd8846f11c97b1c0876b0c47dc39ea90328f5e4c545ef87b91191db3f5",
-        "signature": "ad015745dadccdbcfad819c08bb54af1e4ce899f015b108ee0c6d3b45f55f988"
-      },
-      "../src/data.ts": {
-        "version": "644a73ffcec981421f5bc6339defdfcfd2c374d8db9a2e06dc63e9166c8750ee",
-        "signature": "289e084f7ae3c74d4fcf4a58bcbfaaedd1b2489028245fa2a1de8fc9eb5be2f7"
       },
       "../node_modules/dependency-graph/lib/index.d.ts": {
         "version": "b54f38290f003aae7b4b51c920c79bb7255d61ea9cf987ff7015caf43d705e11",
@@ -534,16 +510,24 @@
         "signature": "fdd21f76d3d3c0e0fe986982b17b914770e737a061d8b442975f7a4ff155ca51"
       },
       "../src/inputs.ts": {
-        "version": "ad06e31637004a67062c6ac112fab07817ac9ac509e9d230439db0063e5df786",
-        "signature": "20ffa3c78d6684727f464ec41c899989cd3f76e9bd5f48c47bf8aa83affdaa88"
+        "version": "88e7bd7cbac13abb185c5e00e266b9c8c9f405f2c0159e5a9bb5992198dd4360",
+        "signature": "db4dbe27d652784b531380e23115cadd47fdf49649f69b8bc44ecc7cb0abf92e"
+      },
+      "../node_modules/@types/event-to-promise/index.d.ts": {
+        "version": "920efe3728fef8ce326928aee60297230ee31c4731feb21c17e4edf89d7128ea",
+        "signature": "920efe3728fef8ce326928aee60297230ee31c4731feb21c17e4edf89d7128ea"
+      },
+      "../src/dsp_process.ts": {
+        "version": "f57940ab66ccea34c1dc3c16284edb32edba570e1914a8596eab2d688db6dc47",
+        "signature": "4776572d0525eed8e2857131abc98ad5775eb21d2332a6eaac496bea9fa12b90"
       },
       "../src/dsp_node.ts": {
         "version": "93ea0e6453bd9cff487dea132df07a22a0caf471db132a2e07a28975bfccb8aa",
         "signature": "cff05fbd2c4e5aabe462f6da1b18eb0c6baac0f2c5356034ed23b8f10bbda545"
       },
       "../src/audio_devices.ts": {
-        "version": "f995e4ec672a3205fe11a1770ddc1892bdcfc72154d58c6879d25d34b8d7de11",
-        "signature": "1a3a169719295dfad36e264f17970ce4cc7d59f756f517ec4255a44ad0495ac6"
+        "version": "32a7b397179c7029d09bdcb31e6695626f4ffb2f3e492a9378f080dbab44a799",
+        "signature": "322c63ec7fc1917258a79065c179c853a4fb0b0a1601e26152d1939ff3fb987a"
       },
       "../src/instance.ts": {
         "version": "9c86fc292cbbd9423d5b60965a4c2f8bfcd5f6845227917a40eb44ad06370f98",
@@ -789,9 +773,25 @@
         "version": "b4964043dcb8e8042f8ed07a33f501913206e24e03f2a5df2baec5066ceff707",
         "signature": "59579e538b2a4792f8d29bca9e643913a705fa15cde80f828819d670bee1fb03"
       },
+      "../node_modules/commander/typings/index.d.ts": {
+        "version": "448682e0bbbfe68f3723e255d94092d65a17a6e82f140c597b08b960e05aa151",
+        "signature": "448682e0bbbfe68f3723e255d94092d65a17a6e82f140c597b08b960e05aa151"
+      },
+      "../node_modules/@types/ini/index.d.ts": {
+        "version": "3cc26d1f94c768ae2896d3900ffa268e0657a332b399e94c1fb52da1f9e07625",
+        "signature": "3cc26d1f94c768ae2896d3900ffa268e0657a332b399e94c1fb52da1f9e07625"
+      },
+      "../src/server_config.ts": {
+        "version": "b5a3994f44494b1ac76203dab8b461515e16a1b314a489b1efb48f7d1a6c4ae2",
+        "signature": "d49f4da749068f301db7ae9f5cc78b0eb755a11b258bab5fd665755471382890"
+      },
+      "../src/node_mode.ts": {
+        "version": "4a95a0cd8846f11c97b1c0876b0c47dc39ea90328f5e4c545ef87b91191db3f5",
+        "signature": "ad015745dadccdbcfad819c08bb54af1e4ce899f015b108ee0c6d3b45f55f988"
+      },
       "../src/server.ts": {
-        "version": "216e7f74381e8e02cf1118489b355254187304468620afe50199942e21e7dc91",
-        "signature": "02ee97def95995acaf9b6d4405e786c81b9e86afcc8edb787f8e15acc4457858"
+        "version": "627722384eb21b8df4409c1a322e35f32e7cf8c59632e30a7e1a7af1dfb722a6",
+        "signature": "f6fc855268622b6859a1df0bbbda5e073272e5c19f3fddccf5dd459f62f42f4b"
       },
       "../src/server_mode.ts": {
         "version": "b5ead72aabb4620210ae6bc4b546f69b0d7bee6a3a86d415689ffdd8c6669e5b",
@@ -852,6 +852,7 @@
           "typings/*"
         ]
       },
+      "watch": true,
       "configFilePath": "../tsconfig.json"
     },
     "referencedMap": {
@@ -1906,35 +1907,16 @@
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
-      "../node_modules/commander/typings/index.d.ts": [
-        "../node_modules/@types/node/ts3.2/index.d.ts",
-        "../node_modules/@types/node/fs.d.ts",
-        "../node_modules/@types/node/ts3.2/fs.d.ts",
-        "../node_modules/@types/node/util.d.ts",
-        "../node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "../node_modules/@types/ini/index.d.ts": [
-        "../node_modules/@types/node/fs.d.ts",
-        "../node_modules/@types/node/ts3.2/fs.d.ts",
-        "../node_modules/@types/node/util.d.ts",
-        "../node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "../src/server_config.ts": [
-        "../node_modules/commander/typings/index.d.ts",
-        "../node_modules/@types/node/fs.d.ts",
-        "../node_modules/@types/ini/index.d.ts",
-        "../node_modules/@types/node/net.d.ts",
-        "../node_modules/@types/node/os.d.ts",
-        "../src/log.ts",
-        "../node_modules/@types/node/console.d.ts",
-        "../node_modules/@types/node/ts3.2/fs.d.ts",
-        "../node_modules/@types/node/util.d.ts",
-        "../node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "../node_modules/@types/event-to-promise/index.d.ts": [
+      "../src/data.ts": [
         "../node_modules/@types/node/events.d.ts",
-        "../node_modules/@types/node/ts3.2/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/sanitize-filename/index.d.ts",
+        "../node_modules/@types/uuid/index.d.ts",
+        "../src/communication.ts",
+        "../src/files.ts",
+        "../src/log.ts",
+        "../src/util.ts",
+        "../src/web_interface.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
@@ -1961,55 +1943,6 @@
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
-      "../src/dsp_process.ts": [
-        "../node_modules/@types/node/child_process.d.ts",
-        "../node_modules/@types/node/readline.d.ts",
-        "../src/log.ts",
-        "../node_modules/@types/node/os.d.ts",
-        "../node_modules/@types/node/fs.d.ts",
-        "../src/communication.ts",
-        "../src/ipc.ts",
-        "../src/util.ts",
-        "../node_modules/@types/event-to-promise/index.d.ts",
-        "../src/data.ts",
-        "../src/dsp.ts",
-        "../src/vst.ts",
-        "../node_modules/@types/node/ts3.2/fs.d.ts",
-        "../node_modules/@types/node/util.d.ts",
-        "../node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "../src/node_mode.ts": [
-        "../node_modules/@types/dnssd/index.d.ts",
-        "../node_modules/node-machine-id/types/index.d.ts",
-        "../node_modules/@types/node/os.d.ts",
-        "../node_modules/@types/socket.io-client/index.d.ts",
-        "../src/communication.ts",
-        "../src/discovery.ts",
-        "../src/ipc.ts",
-        "../src/server_config.ts",
-        "../src/dsp_process.ts",
-        "../node_modules/winston/index.d.ts",
-        "../src/data.ts",
-        "../node_modules/@types/node/fs.d.ts",
-        "../node_modules/@types/node/ts3.2/fs.d.ts",
-        "../node_modules/@types/node/util.d.ts",
-        "../node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "../src/data.ts": [
-        "../node_modules/@types/node/events.d.ts",
-        "../node_modules/@types/node/fs.d.ts",
-        "../node_modules/sanitize-filename/index.d.ts",
-        "../node_modules/@types/uuid/index.d.ts",
-        "../src/communication.ts",
-        "../src/files.ts",
-        "../src/log.ts",
-        "../src/util.ts",
-        "../src/web_interface.ts",
-        "../src/node_mode.ts",
-        "../node_modules/@types/node/ts3.2/fs.d.ts",
-        "../node_modules/@types/node/util.d.ts",
-        "../node_modules/@types/node/ts3.2/util.d.ts"
-      ],
       "../node_modules/dependency-graph/lib/index.d.ts": [
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
@@ -2029,15 +1962,41 @@
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
       "../src/inputs.ts": [
+        "../node_modules/@types/uuid/index.d.ts",
         "../src/audio_devices.ts",
-        "../src/communication.ts",
         "../src/data.ts",
         "../src/dsp.ts",
         "../src/instance.ts",
         "../src/log.ts",
         "../src/showfiles.ts",
         "../src/web_interface.ts",
+        "../src/dsp_node.ts",
         "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "../node_modules/@types/event-to-promise/index.d.ts": [
+        "../node_modules/@types/node/events.d.ts",
+        "../node_modules/@types/node/ts3.2/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "../src/dsp_process.ts": [
+        "../node_modules/@types/node/child_process.d.ts",
+        "../node_modules/@types/node/readline.d.ts",
+        "../src/log.ts",
+        "../node_modules/@types/node/os.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../src/communication.ts",
+        "../src/ipc.ts",
+        "../src/util.ts",
+        "../node_modules/@types/event-to-promise/index.d.ts",
+        "../src/data.ts",
+        "../src/dsp.ts",
+        "../src/vst.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
@@ -2658,6 +2617,48 @@
         "../src/showfiles.ts",
         "../node_modules/@types/node/net.d.ts",
         "../src/headtracker.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "../node_modules/commander/typings/index.d.ts": [
+        "../node_modules/@types/node/ts3.2/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "../node_modules/@types/ini/index.d.ts": [
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "../src/server_config.ts": [
+        "../node_modules/commander/typings/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/ini/index.d.ts",
+        "../node_modules/@types/node/net.d.ts",
+        "../node_modules/@types/node/os.d.ts",
+        "../src/log.ts",
+        "../node_modules/@types/node/console.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "../src/node_mode.ts": [
+        "../node_modules/@types/dnssd/index.d.ts",
+        "../node_modules/node-machine-id/types/index.d.ts",
+        "../node_modules/@types/node/os.d.ts",
+        "../node_modules/@types/socket.io-client/index.d.ts",
+        "../src/communication.ts",
+        "../src/discovery.ts",
+        "../src/ipc.ts",
+        "../src/server_config.ts",
+        "../src/dsp_process.ts",
+        "../node_modules/winston/index.d.ts",
+        "../src/data.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -3763,29 +3764,10 @@
       "../src/web_interface.ts": [
         "../node_modules/@types/socket.io/index.d.ts"
       ],
-      "../node_modules/commander/typings/index.d.ts": [
-        "../node_modules/@types/node/ts3.2/index.d.ts",
-        "../node_modules/@types/node/fs.d.ts",
-        "../node_modules/@types/node/ts3.2/fs.d.ts",
-        "../node_modules/@types/node/util.d.ts",
-        "../node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "../node_modules/@types/ini/index.d.ts": [
-        "../node_modules/@types/node/fs.d.ts",
-        "../node_modules/@types/node/ts3.2/fs.d.ts",
-        "../node_modules/@types/node/util.d.ts",
-        "../node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "../src/server_config.ts": [
-        "../node_modules/commander/typings/index.d.ts"
-      ],
-      "../node_modules/@types/event-to-promise/index.d.ts": [
+      "../src/data.ts": [
+        "../src/communication.ts",
         "../node_modules/@types/node/events.d.ts",
-        "../node_modules/@types/node/ts3.2/index.d.ts",
-        "../node_modules/@types/node/fs.d.ts",
-        "../node_modules/@types/node/ts3.2/fs.d.ts",
-        "../node_modules/@types/node/util.d.ts",
-        "../node_modules/@types/node/ts3.2/util.d.ts"
+        "../src/web_interface.ts"
       ],
       "../src/vst.ts": [
         "../src/communication.ts",
@@ -3795,18 +3777,6 @@
         "../node_modules/@types/node/events.d.ts",
         "../src/communication.ts",
         "../src/vst.ts"
-      ],
-      "../src/dsp_process.ts": [
-        "../src/ipc.ts",
-        "../src/communication.ts",
-        "../src/dsp.ts",
-        "../src/vst.ts",
-        "../src/data.ts"
-      ],
-      "../src/data.ts": [
-        "../src/communication.ts",
-        "../node_modules/@types/node/events.d.ts",
-        "../src/web_interface.ts"
       ],
       "../node_modules/dependency-graph/lib/index.d.ts": [
         "../node_modules/@types/node/fs.d.ts",
@@ -3820,11 +3790,27 @@
       ],
       "../src/inputs.ts": [
         "../src/showfiles.ts",
+        "../src/communication.ts",
         "../src/dsp.ts",
         "../src/audio_devices.ts",
         "../src/web_interface.ts",
         "../src/data.ts",
         "../src/instance.ts"
+      ],
+      "../node_modules/@types/event-to-promise/index.d.ts": [
+        "../node_modules/@types/node/events.d.ts",
+        "../node_modules/@types/node/ts3.2/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "../src/dsp_process.ts": [
+        "../src/ipc.ts",
+        "../src/communication.ts",
+        "../src/dsp.ts",
+        "../src/vst.ts",
+        "../src/data.ts"
       ],
       "../src/dsp_node.ts": [
         "../src/inputs.ts",
@@ -4323,12 +4309,29 @@
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
+      "../node_modules/commander/typings/index.d.ts": [
+        "../node_modules/@types/node/ts3.2/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "../node_modules/@types/ini/index.d.ts": [
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "../src/server_config.ts": [
+        "../node_modules/commander/typings/index.d.ts"
+      ],
       "../src/server.ts": [
         "../src/instance.ts",
         "../src/communication.ts",
         "../src/data.ts",
         "../src/web_interface.ts",
-        "../src/audio_devices.ts"
+        "../src/audio_devices.ts",
+        "../src/inputs.ts"
       ],
       "../src/source_behaviours.ts": [
         "../src/sources.ts",
@@ -4495,17 +4498,14 @@
       "../node_modules/@types/body-parser/index.d.ts",
       "../node_modules/@types/express/index.d.ts",
       "../src/web_interface.ts",
-      "../node_modules/commander/typings/index.d.ts",
-      "../node_modules/@types/ini/index.d.ts",
-      "../src/server_config.ts",
-      "../node_modules/@types/event-to-promise/index.d.ts",
+      "../src/data.ts",
       "../src/vst.ts",
       "../src/dsp.ts",
-      "../src/dsp_process.ts",
-      "../src/node_mode.ts",
       "../node_modules/dependency-graph/lib/index.d.ts",
       "../src/showfiles.ts",
       "../src/inputs.ts",
+      "../node_modules/@types/event-to-promise/index.d.ts",
+      "../src/dsp_process.ts",
       "../src/dsp_node.ts",
       "../src/audio_devices.ts",
       "../src/instance.ts",
@@ -4569,8 +4569,10 @@
       "../node_modules/usb-detection/index.d.ts",
       "../src/headtracker_bridge_mode.ts",
       "../src/headtracker_mode.ts",
-      "../src/server.ts",
-      "../src/server_mode.ts",
+      "../node_modules/commander/typings/index.d.ts",
+      "../node_modules/@types/ini/index.d.ts",
+      "../src/server_config.ts",
+      "../src/node_mode.ts",
       "../src/install_service.ts",
       "../src/index.ts",
       "../src/source_behaviours.ts",
@@ -4580,7 +4582,8 @@
       "../node_modules/@types/checksum/index.d.ts",
       "../node_modules/@types/minimatch/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/data.ts"
+      "../src/server.ts",
+      "../src/server_mode.ts"
     ]
   },
   "version": "3.7.3"

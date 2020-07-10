@@ -2,7 +2,7 @@
   "name": "spatial_intercom_server",
   "version": "0.0.1",
   "description": "spatial intercom server application",
-  "main": "index.js",
+  "main": "dist/src",
   "scripts": {
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -58,7 +58,6 @@
     "socket.io": "^2.3.0",
     "split2": "^3.1.1",
     "terminal-kit": "^1.35.2",
-    "typescript": "^3.7.3",
     "usb-detection": "^4.9.0",
     "uuid": "^8.1.0",
     "winston": "^3.2.1"
@@ -74,7 +73,8 @@
     "endOfLine": "auto"
   },
   "devDependencies": {
-    "typedoc": "^0.15.6"
+    "typedoc": "^0.15.6",
+    "typescript": "^3.7.3"
   },
   "files": [
     "dist/**/*",

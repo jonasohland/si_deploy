@@ -1,6 +1,6 @@
 /// <reference types="socket.io" />
 import { Channel } from './audio_devices';
-import { ManagedNodeStateMapRegister, ManagedNodeStateObject, ManagedNodeStateObjectData, NodeModule } from './data';
+import { ManagedNodeStateListRegister, ManagedNodeStateObject, NodeModule, ServerModule } from './data';
 import * as DSP from './dsp';
 import { SIDSPNode } from './instance';
 import { ShowfileManager, ShowfileRecord, ShowfileTarget } from './showfiles';
@@ -40,23 +40,36 @@ export declare class InputManager extends ShowfileTarget {
 export interface NodeAudioInputDescription {
     name: string;
     channel: number;
+    type: DSP.PortTypes;
+    id: string;
+    default_roomencode: boolean;
+    default_encodingorder: number;
+    default_gain: number;
 }
+export declare function basicNodeAudioInputDescription(name: string, channel: number, type: DSP.PortTypes): NodeAudioInputDescription;
 export declare class NodeAudioInput extends ManagedNodeStateObject<NodeAudioInputDescription> {
     _description: NodeAudioInputDescription;
     set(val: NodeAudioInputDescription): Promise<void>;
-    get(): Promise<NodeAudioInputDescription>;
-    constructor(name: string, channel: number);
+    get(): NodeAudioInputDescription;
+    constructor(desc: NodeAudioInputDescription);
 }
-export declare class NodeAudioInputList extends ManagedNodeStateMapRegister {
-    remove(name: string, obj: ManagedNodeStateObject<NodeAudioInputDescription>): Promise<void>;
-    insert(name: string, obj: ManagedNodeStateObjectData): Promise<NodeAudioInput>;
-    constructor();
+export declare class NodeAudioInputList extends ManagedNodeStateListRegister {
+    remove(obj: ManagedNodeStateObject<NodeAudioInputDescription>): Promise<void>;
+    insert(data: NodeAudioInputDescription): Promise<NodeAudioInput>;
 }
 export declare class NodeAudioInputManager extends NodeModule {
+    addInput(input: NodeAudioInputDescription): Promise<import("./communication").Message>;
+    removeInput(id: string): Promise<import("./communication").Message>;
+    getRawInputDescriptionList(): NodeAudioInputDescription[];
+    findInputForId(id: string): NodeAudioInput;
     destroy(): void;
     init(): void;
     start(): void;
     _input_list: NodeAudioInputList;
+    constructor();
+}
+export declare class AudioInputsManager extends ServerModule {
+    init(): void;
     constructor();
 }
 export {};
