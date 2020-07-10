@@ -76,6 +76,22 @@
     "typedoc": "^0.15.6",
     "typescript": "^3.7.3"
   },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+        "node": true
+    },
+    "extends": [
+        "eslint:recommended"
+    ],
+    "rules": {
+        "no-console": "off",
+        "indent": [
+            "error",
+            4
+        ]
+    }
+},
   "files": [
     "dist/**/*",
     "bin/**/*",
