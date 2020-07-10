@@ -5,8 +5,6 @@ import {
     Graph,
     Module,
     NativeNode,
-    PluginNode,
-    PortTypes
 } from './dsp'
 import * as IPC from './ipc'
 import * as Logger from './log';

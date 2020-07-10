@@ -1,21 +1,21 @@
 /// <reference types="socket.io" />
 import { Channel } from './audio_devices';
 import { ManagedNodeStateListRegister, ManagedNodeStateObject, NodeModule, ServerModule } from './data';
-import * as DSP from './dsp';
 import { SIDSPNode } from './instance';
 import { ShowfileManager, ShowfileRecord, ShowfileTarget } from './showfiles';
 import WebInterface from './web_interface';
+import { PortTypes } from './dsp_defs';
 interface NodeAndInputs {
     max_id: 0;
     si: SIDSPNode;
     inputs: Input[];
 }
 export declare class Input extends ShowfileRecord {
-    constructor(id: number, name: string, format: DSP.PortTypes);
+    constructor(id: number, name: string, format: PortTypes);
     plain(): Promise<{
         id: number;
-        name: DSP.PortTypes;
-        format: DSP.PortTypes;
+        name: PortTypes;
+        format: PortTypes;
         channels: {
             i: number;
             name: string;
@@ -25,7 +25,7 @@ export declare class Input extends ShowfileRecord {
     build(data: any): void;
     id: number;
     name: string;
-    format: DSP.PortTypes;
+    format: PortTypes;
     channels: Channel[];
 }
 export declare class InputManager extends ShowfileTarget {
@@ -40,13 +40,13 @@ export declare class InputManager extends ShowfileTarget {
 export interface NodeAudioInputDescription {
     name: string;
     channel: number;
-    type: DSP.PortTypes;
+    type: PortTypes;
     id: string;
     default_roomencode: boolean;
     default_encodingorder: number;
     default_gain: number;
 }
-export declare function basicNodeAudioInputDescription(name: string, channel: number, type: DSP.PortTypes): NodeAudioInputDescription;
+export declare function basicNodeAudioInputDescription(name: string, channel: number, type: PortTypes): NodeAudioInputDescription;
 export declare class NodeAudioInput extends ManagedNodeStateObject<NodeAudioInputDescription> {
     _description: NodeAudioInputDescription;
     set(val: NodeAudioInputDescription): Promise<void>;

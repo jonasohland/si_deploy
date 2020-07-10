@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const dsp_1 = require("./dsp");
+const dsp_defs_1 = require("./dsp_defs");
 class SourceBehaviour {
 }
 exports.SourceBehaviour = SourceBehaviour;
@@ -54,9 +54,9 @@ class X3DSourceBehaviour extends SourceBehaviour {
 }
 exports.X3DSourceBehaviour = X3DSourceBehaviour;
 exports.SourceSets = {
-    [dsp_1.PortTypes.Mono]: new MonoSourceBehaviour(),
-    [dsp_1.PortTypes.Stereo]: new StereoSourceBehaviour(dsp_1.PortTypes.Stereo),
-    [dsp_1.PortTypes.Surround_5_1]: new SurroundSourceBehaviour(dsp_1.PortTypes.Surround_5_1),
-    [dsp_1.PortTypes.x3D_5_4_1]: new X3DSourceBehaviour(dsp_1.PortTypes.x3D_5_4_1)
+    [dsp_defs_1.PortTypes.Mono]: new MonoSourceBehaviour(),
+    [dsp_defs_1.PortTypes.Stereo]: new StereoSourceBehaviour(dsp_defs_1.PortTypes.Stereo),
+    [dsp_defs_1.PortTypes.Surround_5_1]: new SurroundSourceBehaviour(dsp_defs_1.PortTypes.Surround_5_1),
+    [dsp_defs_1.PortTypes.x3D_5_4_1]: new X3DSourceBehaviour(dsp_defs_1.PortTypes.x3D_5_4_1)
 };
 //# sourceMappingURL=source_behaviours.js.map

@@ -1,4 +1,4 @@
-import { PortTypes } from './dsp';
+import { PortTypes } from './dsp_defs';
 export interface Source {
     a: number;
     e: number;

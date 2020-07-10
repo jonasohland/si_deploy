@@ -9,75 +9,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const events_1 = require("events");
 const Logger = __importStar(require("./log"));
+const dsp_defs_1 = require("./dsp_defs");
 const log = Logger.get('DSP');
 function _portarr_chcount(ports) {
     return ports.reduce((count, port) => { return count + port.c; }, 0);
 }
-var PortTypes;
-(function (PortTypes) {
-    PortTypes[PortTypes["Any"] = 0] = "Any";
-    PortTypes[PortTypes["Mono"] = 1] = "Mono";
-    PortTypes[PortTypes["Stereo"] = 2] = "Stereo";
-    PortTypes[PortTypes["Quad"] = 3] = "Quad";
-    PortTypes[PortTypes["Surround_5_1"] = 4] = "Surround_5_1";
-    PortTypes[PortTypes["Surround_7_1"] = 5] = "Surround_7_1";
-    PortTypes[PortTypes["Surround_10_2"] = 6] = "Surround_10_2";
-    PortTypes[PortTypes["Surround_11_1"] = 7] = "Surround_11_1";
-    PortTypes[PortTypes["Surround_22_2"] = 8] = "Surround_22_2";
-    PortTypes[PortTypes["x3D_5_4_1"] = 9] = "x3D_5_4_1";
-    PortTypes[PortTypes["x3D_7_4_1"] = 10] = "x3D_7_4_1";
-    PortTypes[PortTypes["x3D_4_0_4"] = 11] = "x3D_4_0_4";
-    PortTypes[PortTypes["Ambi_O0"] = 12] = "Ambi_O0";
-    PortTypes[PortTypes["Ambi_O1"] = 13] = "Ambi_O1";
-    PortTypes[PortTypes["Ambi_O2"] = 14] = "Ambi_O2";
-    PortTypes[PortTypes["Ambi_O3"] = 15] = "Ambi_O3";
-    PortTypes[PortTypes["Ambi_O4"] = 16] = "Ambi_O4";
-    PortTypes[PortTypes["Ambi_O5"] = 17] = "Ambi_O5";
-    PortTypes[PortTypes["Ambi_O6"] = 18] = "Ambi_O6";
-    PortTypes[PortTypes["Ambi_O7"] = 19] = "Ambi_O7";
-    PortTypes[PortTypes["Ambi_O8"] = 20] = "Ambi_O8";
-    PortTypes[PortTypes["Ambi_O9"] = 21] = "Ambi_O9";
-    PortTypes[PortTypes["Ambi_O10"] = 22] = "Ambi_O10";
-    PortTypes[PortTypes["Ambi_O11"] = 23] = "Ambi_O11";
-})(PortTypes = exports.PortTypes || (exports.PortTypes = {}));
-function stringToPortType(str) {
-    switch (str.toLocaleLowerCase()) {
-        case 'mono': return PortTypes.Mono;
-        case 'st': return PortTypes.Stereo;
-        case 'stereo': return PortTypes.Stereo;
-        case 'surround': return PortTypes.Surround_5_1;
-        case '5.1': return PortTypes.Surround_5_1;
-        case '5_1': return PortTypes.Surround_5_1;
-        default: return PortTypes.Any;
-    }
-}
-exports.stringToPortType = stringToPortType;
-exports.PortTypeChannelCount = [
-    1,
-    1,
-    2,
-    4,
-    6,
-    8,
-    12,
-    12,
-    24,
-    10,
-    12,
-    8,
-    1,
-    4,
-    9,
-    16,
-    25,
-    36,
-    49,
-    64,
-    81,
-    100,
-    121,
-    144 // Ambi O11
-];
 class AmbisonicsProperties {
 }
 exports.AmbisonicsProperties = AmbisonicsProperties;
@@ -95,7 +31,7 @@ class Port {
         this.c = 1;
         this.type = type;
         this.name = name;
-        this.c = exports.PortTypeChannelCount[type];
+        this.c = dsp_defs_1.PortTypeChannelCount[type];
     }
     isAmbiPort() {
         return this instanceof AmbiPort;
@@ -186,7 +122,7 @@ class Bus {
     _set_start_idx(idx) {
         for (let i in this.ports) {
             this.ports[i].ni
-                = idx + (Number.parseInt(i) * exports.PortTypeChannelCount[this.type]);
+                = idx + (Number.parseInt(i) * dsp_defs_1.PortTypeChannelCount[this.type]);
         }
     }
     _set_nodeid(id) {
@@ -194,20 +130,20 @@ class Bus {
     }
     static _with_ports(count, bus, type) {
         for (let i = 0; i < count; ++i) {
-            let port = new Port(`${bus.name} ${i + 1} (${PortTypes[bus.type]})`, type);
+            let port = new Port(`${bus.name} ${i + 1} (${dsp_defs_1.PortTypes[bus.type]})`, type);
             port.i = i;
             bus.ports.push(port);
         }
         return bus;
     }
     static createAny(name, count) {
-        return Bus._with_ports(count, new Bus(name, PortTypes.Any), PortTypes.Any);
+        return Bus._with_ports(count, new Bus(name, dsp_defs_1.PortTypes.Any), dsp_defs_1.PortTypes.Any);
     }
     static createMono(name, count) {
-        return Bus._with_ports(count, new Bus(name, PortTypes.Mono), PortTypes.Mono);
+        return Bus._with_ports(count, new Bus(name, dsp_defs_1.PortTypes.Mono), dsp_defs_1.PortTypes.Mono);
     }
     static createStereo(name, count) {
-        return Bus._with_ports(count, new Bus(name, PortTypes.Stereo), PortTypes.Stereo);
+        return Bus._with_ports(count, new Bus(name, dsp_defs_1.PortTypes.Stereo), dsp_defs_1.PortTypes.Stereo);
     }
     static create(name, count, type) {
         return Bus._with_ports(count, new Bus(name, type), type);
@@ -216,19 +152,19 @@ class Bus {
         return Bus._with_ports(count, new Bus('main', type), type);
     }
     static createMainAny(count) {
-        return Bus.createMain(count, PortTypes.Any);
+        return Bus.createMain(count, dsp_defs_1.PortTypes.Any);
     }
     static createMainMono(count) {
-        return Bus.createMain(count, PortTypes.Mono);
+        return Bus.createMain(count, dsp_defs_1.PortTypes.Mono);
     }
     static createMainStereo(count) {
-        return Bus.createMain(count, PortTypes.Stereo);
+        return Bus.createMain(count, dsp_defs_1.PortTypes.Stereo);
     }
 }
 exports.Bus = Bus;
 class AmbiBus extends Bus {
     static createForOrder(name, order, count) {
-        return Bus.create(name, count, PortTypes.Ambi_O0 + order);
+        return Bus.create(name, count, dsp_defs_1.PortTypes.Ambi_O0 + order);
     }
     static createMainForOrder(order, count) {
         return AmbiBus.createForOrder('main', order, count);

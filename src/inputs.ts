@@ -15,6 +15,7 @@ import * as Logger from './log';
 import {ShowfileManager, ShowfileRecord, ShowfileTarget} from './showfiles';
 import WebInterface from './web_interface';
 import { DSPNode } from './dsp_node';
+import { PortTypes } from './dsp_defs';
 
 const log = Logger.get('INP');
 
@@ -26,7 +27,7 @@ interface NodeAndInputs {
 
 export class Input extends ShowfileRecord {
 
-    constructor(id: number, name: string, format: DSP.PortTypes)
+    constructor(id: number, name: string, format: PortTypes)
     {
         super(name);
 
@@ -63,7 +64,7 @@ export class Input extends ShowfileRecord {
 
     id: number;
     name: string;
-    format: DSP.PortTypes;
+    format: PortTypes;
     channels: Channel[] = [];
 }
 
@@ -155,7 +156,7 @@ export class InputManager extends ShowfileTarget {
 export interface NodeAudioInputDescription {
     name: string;
     channel: number;
-    type: DSP.PortTypes;
+    type: PortTypes;
     id: string;
     default_roomencode: boolean;
     default_encodingorder: number;
@@ -164,7 +165,7 @@ export interface NodeAudioInputDescription {
 
 export function basicNodeAudioInputDescription(
     name: string, channel: number,
-    type: DSP.PortTypes): NodeAudioInputDescription
+    type: PortTypes): NodeAudioInputDescription
 {
     return {
         name,

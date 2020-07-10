@@ -1,4 +1,4 @@
-import { PortTypes } from './dsp';
+import { PortTypes } from './dsp_defs';
 import { SourceParameterSet, SourceSet } from './sources';
 export declare abstract class SourceBehaviour {
     abstract buildSourceSet(params: SourceParameterSet): SourceSet;

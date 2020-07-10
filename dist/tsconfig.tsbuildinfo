@@ -497,9 +497,13 @@
         "version": "b6a119c7bb8274cf353acbce614cf3518c2a1486854cd1d25386ae70c91290dd",
         "signature": "75fb1c33d866c08fc848910dcd5121acb93992415801fa28c7962d6be84c517f"
       },
+      "../src/dsp_defs.ts": {
+        "version": "09a6f05e3be5988b8f93e37d3bd0d49ba0cf26561936b72f9ac7b7a8cdb17a48",
+        "signature": "9087acffaf636778cead3feea2b64838fb41ebc62274a3f3beb56b8cc3c87f7b"
+      },
       "../src/dsp.ts": {
-        "version": "7c7539d33b217c03c7a4bad77a658e690c0444e7dd634100fa78b9aecedd94ea",
-        "signature": "9275bf0dfe1e4a0c91a211a9bab8f3839705ce3fd8b419d031b8eeec728a4995"
+        "version": "d5cbf81785c9d9cb405a14308facfcca98d77d7838ba1cddae619043da4b4bee",
+        "signature": "6b69638592e741db2e361e7efde0e6e47075d494ae0d4747d9ad6d83c57491b9"
       },
       "../node_modules/dependency-graph/lib/index.d.ts": {
         "version": "b54f38290f003aae7b4b51c920c79bb7255d61ea9cf987ff7015caf43d705e11",
@@ -510,8 +514,8 @@
         "signature": "fdd21f76d3d3c0e0fe986982b17b914770e737a061d8b442975f7a4ff155ca51"
       },
       "../src/inputs.ts": {
-        "version": "88e7bd7cbac13abb185c5e00e266b9c8c9f405f2c0159e5a9bb5992198dd4360",
-        "signature": "db4dbe27d652784b531380e23115cadd47fdf49649f69b8bc44ecc7cb0abf92e"
+        "version": "01f341de40f9bf7e529be2116795d1991e311ab0fdd39feadf617903befe40a4",
+        "signature": "534f3b46044aa7e67198cd419702c7dc0c7f029eba26b494c6f1af4191daf873"
       },
       "../node_modules/@types/event-to-promise/index.d.ts": {
         "version": "920efe3728fef8ce326928aee60297230ee31c4731feb21c17e4edf89d7128ea",
@@ -562,7 +566,7 @@
         "signature": "e1329dd3e61db5d427ef06b4080a18fa45f13956869e62c45990dd581bd8bc15"
       },
       "../src/dsp_modules.ts": {
-        "version": "23ee7ce1441248236ecd2a0bd3e5d3a9c5689878ea28e391526c982399320369",
+        "version": "d759baabef351829a5bc9e5d389826894922c7fd0deffbdbcca64212fc306340",
         "signature": "406c2f81bc6193a5f9abaf8e72f5026b212b082e6cefad8a9ca5718d71634bf3"
       },
       "../typings/osc-min.d.ts": {
@@ -773,6 +777,26 @@
         "version": "b4964043dcb8e8042f8ed07a33f501913206e24e03f2a5df2baec5066ceff707",
         "signature": "59579e538b2a4792f8d29bca9e643913a705fa15cde80f828819d670bee1fb03"
       },
+      "../src/index.ts": {
+        "version": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "signature": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "../src/install_service.ts": {
+        "version": "271bd5a312bafaf8ca946c0851f7cc9fc687de37f955cf8024f3092f93829f0e",
+        "signature": "a8845c6916af9277ba3ad6b9c4c99cab3c745cf205806e7feecf9449d95739e1"
+      },
+      "../src/source_behaviours.ts": {
+        "version": "f5e35b2ad6e5b32c854673f01fa82d53efb7fe8b3bbeb746381f14be115d7cb4",
+        "signature": "19488b74d754de0a2bb76081b913718e9895295b1787af23cb81024789f9a389"
+      },
+      "../src/sources.ts": {
+        "version": "e75a8d91acb5e1c30ea8d6db0313a4b01d1b167485df0dbeedd34f920dab7c7d",
+        "signature": "ec2c1b511753a1832ab29fde16f44a45201717afe18f13a98f038eebbad762f4"
+      },
+      "../src/interface.ts": {
+        "version": "2068e920c527b6df4aa9d3420a36ba0a788413b7890f52b5770e324353392cbc",
+        "signature": "1f4233c8eea1a3722c3936b9391458164e9a9a65f83e7c93179a4c1dfd8aa651"
+      },
       "../node_modules/commander/typings/index.d.ts": {
         "version": "448682e0bbbfe68f3723e255d94092d65a17a6e82f140c597b08b960e05aa151",
         "signature": "448682e0bbbfe68f3723e255d94092d65a17a6e82f140c597b08b960e05aa151"
@@ -797,25 +821,9 @@
         "version": "b5ead72aabb4620210ae6bc4b546f69b0d7bee6a3a86d415689ffdd8c6669e5b",
         "signature": "ad015745dadccdbcfad819c08bb54af1e4ce899f015b108ee0c6d3b45f55f988"
       },
-      "../src/install_service.ts": {
-        "version": "271bd5a312bafaf8ca946c0851f7cc9fc687de37f955cf8024f3092f93829f0e",
-        "signature": "a8845c6916af9277ba3ad6b9c4c99cab3c745cf205806e7feecf9449d95739e1"
-      },
-      "../src/index.ts": {
+      "../src/si.ts": {
         "version": "3734fa8517ff52d690069eb724f22c1c63fffdc939284ab33a7e7fbd0031704f",
         "signature": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
-      },
-      "../src/source_behaviours.ts": {
-        "version": "5086466ae3a62f7c8938807f5ced88180c1f14cb4c31e7640786003f5f055a66",
-        "signature": "4bc64d20b64383e0a6fa87369df31ee85c523f5f915a3a8ebd73f9246d0aa980"
-      },
-      "../src/sources.ts": {
-        "version": "13fd9d724337af470391bd4176c7499738e2e2584f3487b550af7eef74bfe629",
-        "signature": "5139b7913c6d760ea20c86769acb182056465fd2f9755d62c84c3c3b2b04592a"
-      },
-      "../src/interface.ts": {
-        "version": "2068e920c527b6df4aa9d3420a36ba0a788413b7890f52b5770e324353392cbc",
-        "signature": "1f4233c8eea1a3722c3936b9391458164e9a9a65f83e7c93179a4c1dfd8aa651"
       },
       "../node_modules/@types/bonjour/index.d.ts": {
         "version": "804c04162bc2850fef4a6e11619aef73e17b01f41311967335341ae0c357e034",
@@ -1931,6 +1939,12 @@
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
+      "../src/dsp_defs.ts": [
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
       "../src/dsp.ts": [
         "../node_modules/@types/node/events.d.ts",
         "../src/ipc.ts",
@@ -1938,6 +1952,7 @@
         "../src/communication.ts",
         "../src/data.ts",
         "../src/vst.ts",
+        "../src/dsp_defs.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -1971,6 +1986,7 @@
         "../src/showfiles.ts",
         "../src/web_interface.ts",
         "../src/dsp_node.ts",
+        "../src/dsp_defs.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -2622,6 +2638,43 @@
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
+      "../src/index.ts": [
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "../src/install_service.ts": [
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "../src/source_behaviours.ts": [
+        "../src/dsp_defs.ts",
+        "../src/sources.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "../src/sources.ts": [
+        "../src/dsp_defs.ts",
+        "../src/source_behaviours.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "../src/interface.ts": [
+        "../src/audio_devices.ts",
+        "../src/sources.ts",
+        "../src/inputs.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
       "../node_modules/commander/typings/index.d.ts": [
         "../node_modules/@types/node/ts3.2/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
@@ -2692,44 +2745,13 @@
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
-      "../src/install_service.ts": [
-        "../node_modules/@types/node/fs.d.ts",
-        "../node_modules/@types/node/ts3.2/fs.d.ts",
-        "../node_modules/@types/node/util.d.ts",
-        "../node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "../src/index.ts": [
+      "../src/si.ts": [
         "../node_modules/commander/typings/index.d.ts",
         "../src/node_mode.ts",
         "../src/server_mode.ts",
         "../src/headtracker_mode.ts",
         "../src/headtracker_bridge_mode.ts",
         "../src/install_service.ts",
-        "../node_modules/@types/node/fs.d.ts",
-        "../node_modules/@types/node/ts3.2/fs.d.ts",
-        "../node_modules/@types/node/util.d.ts",
-        "../node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "../src/source_behaviours.ts": [
-        "../src/dsp.ts",
-        "../src/sources.ts",
-        "../node_modules/@types/node/fs.d.ts",
-        "../node_modules/@types/node/ts3.2/fs.d.ts",
-        "../node_modules/@types/node/util.d.ts",
-        "../node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "../src/sources.ts": [
-        "../src/dsp.ts",
-        "../src/source_behaviours.ts",
-        "../node_modules/@types/node/fs.d.ts",
-        "../node_modules/@types/node/ts3.2/fs.d.ts",
-        "../node_modules/@types/node/util.d.ts",
-        "../node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "../src/interface.ts": [
-        "../src/audio_devices.ts",
-        "../src/sources.ts",
-        "../src/inputs.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -3774,6 +3796,7 @@
         "../src/data.ts"
       ],
       "../src/dsp.ts": [
+        "../src/dsp_defs.ts",
         "../node_modules/@types/node/events.d.ts",
         "../src/communication.ts",
         "../src/vst.ts"
@@ -3791,7 +3814,7 @@
       "../src/inputs.ts": [
         "../src/showfiles.ts",
         "../src/communication.ts",
-        "../src/dsp.ts",
+        "../src/dsp_defs.ts",
         "../src/audio_devices.ts",
         "../src/web_interface.ts",
         "../src/data.ts",
@@ -4309,6 +4332,18 @@
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
+      "../src/source_behaviours.ts": [
+        "../src/sources.ts",
+        "../src/dsp_defs.ts"
+      ],
+      "../src/sources.ts": [
+        "../src/dsp_defs.ts"
+      ],
+      "../src/interface.ts": [
+        "../src/sources.ts",
+        "../src/inputs.ts",
+        "../src/audio_devices.ts"
+      ],
       "../node_modules/commander/typings/index.d.ts": [
         "../node_modules/@types/node/ts3.2/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
@@ -4332,18 +4367,6 @@
         "../src/web_interface.ts",
         "../src/audio_devices.ts",
         "../src/inputs.ts"
-      ],
-      "../src/source_behaviours.ts": [
-        "../src/sources.ts",
-        "../src/dsp.ts"
-      ],
-      "../src/sources.ts": [
-        "../src/dsp.ts"
-      ],
-      "../src/interface.ts": [
-        "../src/sources.ts",
-        "../src/inputs.ts",
-        "../src/audio_devices.ts"
       ],
       "../node_modules/@types/bonjour/index.d.ts": [
         "../node_modules/@types/node/ts3.2/index.d.ts",
@@ -4500,6 +4523,7 @@
       "../src/web_interface.ts",
       "../src/data.ts",
       "../src/vst.ts",
+      "../src/dsp_defs.ts",
       "../src/dsp.ts",
       "../node_modules/dependency-graph/lib/index.d.ts",
       "../src/showfiles.ts",
@@ -4516,7 +4540,6 @@
       "../src/headtracker_network.ts",
       "../src/headtracking.ts",
       "../src/users.ts",
-      "../src/dsp_modules.ts",
       "../typings/osc-min.d.ts",
       "../node_modules/@types/semver/classes/semver.d.ts",
       "../node_modules/@types/semver/functions/parse.d.ts",
@@ -4569,21 +4592,23 @@
       "../node_modules/usb-detection/index.d.ts",
       "../src/headtracker_bridge_mode.ts",
       "../src/headtracker_mode.ts",
+      "../src/index.ts",
+      "../src/install_service.ts",
+      "../src/source_behaviours.ts",
+      "../src/sources.ts",
+      "../src/interface.ts",
       "../node_modules/commander/typings/index.d.ts",
       "../node_modules/@types/ini/index.d.ts",
       "../src/server_config.ts",
       "../src/node_mode.ts",
-      "../src/install_service.ts",
-      "../src/index.ts",
-      "../src/source_behaviours.ts",
-      "../src/sources.ts",
-      "../src/interface.ts",
+      "../src/server.ts",
+      "../src/server_mode.ts",
+      "../src/si.ts",
       "../node_modules/@types/bonjour/index.d.ts",
       "../node_modules/@types/checksum/index.d.ts",
       "../node_modules/@types/minimatch/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/server.ts",
-      "../src/server_mode.ts"
+      "../src/dsp_modules.ts"
     ]
   },
   "version": "3.7.3"
