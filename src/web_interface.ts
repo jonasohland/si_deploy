@@ -126,6 +126,11 @@ export default class WebInterface extends ServerModule {
         }
     }  
 
+    broadcastEvent(title: string, ...data: any[])
+    {
+        this.io.emit(title, ...data);
+    }
+
     _handlers: WEBIFEventHandler[] = [];
     io: SocketIO.Server;
 }

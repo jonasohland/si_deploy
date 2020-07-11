@@ -17,6 +17,7 @@ export default class WebInterface extends ServerModule {
     broadcastNotification(title: string, message: string): void;
     broadcastWarning(title: string, message: string): void;
     broadcastError(title: string, err: any): void;
+    broadcastEvent(title: string, ...data: any[]): void;
     _handlers: WEBIFEventHandler[];
     io: SocketIO.Server;
 }

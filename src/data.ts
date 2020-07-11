@@ -277,6 +277,7 @@ export abstract class ManagedNodeStateMapRegister extends
     async _wrap_insert(name: string, obj: ManagedNodeStateObjectData)
     {
         let ob   = await this.insert(name, obj.data)
+        ob._parent = this;
         ob._uid  = obj.uid;
         ob._oid  = obj.object_id;
         ob._name = (<any>obj).name
@@ -409,6 +410,7 @@ export abstract class ManagedNodeStateListRegister extends
         let nobj  = await this.insert(obj.data);
         nobj._uid = obj.uid;
         nobj._oid = obj.object_id;
+        nobj._parent = this;
         log.debug(`Inserting new object [${nobj.constructor.name}] ${
             nobj._oid} to ${this._name}`);
         return nobj;
@@ -781,6 +783,7 @@ export class NodeDataStorage extends NodeMessageInterceptor {
 
     updateObject(msg: UpdateObjectMessage)
     {
+        console.log(JSON.stringify(msg, null, 2));
         if (this._modules[msg.module]) {
             let mod = this._modules[msg.module];
             let regidx
@@ -797,7 +800,7 @@ export class NodeDataStorage extends NodeMessageInterceptor {
                     let objectidx = listreg.objects.findIndex(
                         obj => obj.object_id == msg.data.object_id);
 
-                    if (objectidx != -1)
+                    if (objectidx == -1)
                         ignore(listreg.objects.push(msg.data));
                     else
                         ignore(listreg.objects[objectidx] = msg.data);
@@ -994,7 +997,7 @@ export abstract class Node {
                     'update-object', <UpdateObjectMessage>{
                         module : mod._name,
                         register : reg._name,
-                        data : obj.get()
+                        data : obj._export()
                     });
             else
                 return this._state_manager.set(

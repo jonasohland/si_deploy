@@ -486,11 +486,11 @@
         "signature": "6e1c6fe784daeba017901db7766e6b872f535defe33b0e0196d2a12c26f50517"
       },
       "../src/web_interface.ts": {
-        "version": "0879fc6db522db7516b37a23630a7dca7784b557f46d2ad66cef5c48fe78f88a",
-        "signature": "9bc451c354f9cd1adb83017c64b7af3ad56fec93ccdcc75f19e157846047ebd9"
+        "version": "642e93f4b65a79565557d130a865d1a75551503a7e4e4594bb246dc0e1044ab9",
+        "signature": "5a8f04e275e8ac35f703c6fb43cf266283e8fc04ce553990a9dc61771dd8f507"
       },
       "../src/data.ts": {
-        "version": "b4a200ba05905b8233ebc7b0cda2a45a3b7fe4faf09127609b93e48c9c7eb172",
+        "version": "786029fde12ce098fd4d3b1fd0faaf1f0efebcd9aa88ffd367d8a4757bff70d5",
         "signature": "dcc787a1d1b8c6c20ab3f0edea144a7397e5510500ff6d519176389a7c1f48aa"
       },
       "../src/vst.ts": {
@@ -518,7 +518,7 @@
         "signature": "938966c16b25054dcb37972f64607a3370df6c28e95501846e1d0f846a523099"
       },
       "../src/inputs.ts": {
-        "version": "e74deedb8201c5f7f1edb982deebdd68d7e89d0c682e30fdfa60fc59825b3682",
+        "version": "595a0e463ce38d72731b30b18c1b4424a1f0fb1ff7fd8bc1218a3b877461e51d",
         "signature": "1f2281b005b9e26a2976b5953590997b4bcd6ee7cd427f5711d9c9e9186c887a"
       },
       "../node_modules/@types/event-to-promise/index.d.ts": {
@@ -4557,7 +4557,6 @@
       "../node_modules/@types/body-parser/index.d.ts",
       "../node_modules/@types/express/index.d.ts",
       "../src/web_interface.ts",
-      "../src/data.ts",
       "../src/vst.ts",
       "../src/dsp_defs.ts",
       "../src/dsp.ts",
@@ -4631,6 +4630,7 @@
       "../node_modules/usb-detection/index.d.ts",
       "../src/headtracker_bridge_mode.ts",
       "../src/headtracker_mode.ts",
+      "../src/index.ts",
       "../src/install_service.ts",
       "../src/source_behaviours.ts",
       "../src/sources.ts",
@@ -4646,7 +4646,7 @@
       "../node_modules/@types/checksum/index.d.ts",
       "../node_modules/@types/minimatch/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/index.ts"
+      "../src/data.ts"
     ]
   },
   "version": "3.7.3"

@@ -101,6 +101,9 @@ class WebInterface extends data_1.ServerModule {
             log.error("Unrecognized error type: Error: " + err);
         }
     }
+    broadcastEvent(title, ...data) {
+        this.io.emit(title, ...data);
+    }
 }
 exports.default = WebInterface;
 //# sourceMappingURL=web_interface.js.map

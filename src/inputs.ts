@@ -256,6 +256,7 @@ export class AudioInputsManager extends ServerModule {
         this.handle('add', (socket, node: DSPNode, data: NodeAudioInputDescription) => {
             try {
                 node.inputs.addInput(data);
+                this.webif.broadcastEvent('inputs.update', node.id(), node.inputs.getRawInputDescriptionList());
             } catch (err) {
                 this.webif.error(err);
             }
@@ -273,7 +274,9 @@ export class AudioInputsManager extends ServerModule {
             try {
                 let input = node.inputs.findInputForId(data.id);
                 if(input) {
-                    input.set(data).catch(err => {
+                    input.set(data).then(() => {
+                        input.save();
+                    }).catch(err => {
                         this.webif.error(err);
                     });
                 } else {

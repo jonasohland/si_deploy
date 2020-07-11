@@ -176,6 +176,7 @@ class ManagedNodeStateMapRegister extends ManagedNodeStateRegister {
     _wrap_insert(name, obj) {
         return __awaiter(this, void 0, void 0, function* () {
             let ob = yield this.insert(name, obj.data);
+            ob._parent = this;
             ob._uid = obj.uid;
             ob._oid = obj.object_id;
             ob._name = obj.name;
@@ -277,6 +278,7 @@ class ManagedNodeStateListRegister extends ManagedNodeStateRegister {
             let nobj = yield this.insert(obj.data);
             nobj._uid = obj.uid;
             nobj._oid = obj.object_id;
+            nobj._parent = this;
             log.debug(`Inserting new object [${nobj.constructor.name}] ${nobj._oid} to ${this._name}`);
             return nobj;
         });
@@ -537,6 +539,7 @@ class NodeDataStorage extends communication_1.NodeMessageInterceptor {
         });
     }
     updateObject(msg) {
+        console.log(JSON.stringify(msg, null, 2));
         if (this._modules[msg.module]) {
             let mod = this._modules[msg.module];
             let regidx = mod.registers.findIndex(reg => reg.name == msg.register);
@@ -550,7 +553,7 @@ class NodeDataStorage extends communication_1.NodeMessageInterceptor {
                 else {
                     let listreg = reg;
                     let objectidx = listreg.objects.findIndex(obj => obj.object_id == msg.data.object_id);
-                    if (objectidx != -1)
+                    if (objectidx == -1)
                         util_1.ignore(listreg.objects.push(msg.data));
                     else
                         util_1.ignore(listreg.objects[objectidx] = msg.data);
@@ -687,7 +690,7 @@ class Node {
                     return this._state_manager.set('update-object', {
                         module: mod._name,
                         register: reg._name,
-                        data: obj.get()
+                        data: obj._export()
                     });
                 else
                     return this._state_manager.set('update-register', {

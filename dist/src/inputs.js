@@ -198,6 +198,7 @@ class AudioInputsManager extends data_1.ServerModule {
         this.handle('add', (socket, node, data) => {
             try {
                 node.inputs.addInput(data);
+                this.webif.broadcastEvent('inputs.update', node.id(), node.inputs.getRawInputDescriptionList());
             }
             catch (err) {
                 this.webif.error(err);
@@ -215,7 +216,9 @@ class AudioInputsManager extends data_1.ServerModule {
             try {
                 let input = node.inputs.findInputForId(data.id);
                 if (input) {
-                    input.set(data).catch(err => {
+                    input.set(data).then(() => {
+                        input.save();
+                    }).catch(err => {
                         this.webif.error(err);
                     });
                 }
