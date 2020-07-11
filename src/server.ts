@@ -41,6 +41,7 @@ export class SpatialIntercomServer extends Server {
         this.webif = webif;
         this.audio_devices = new AudioDevices();
         this.inputs = new AudioInputsManager();
+        this.add(this.webif);
         this.add(this.audio_devices);
         this.add(this.inputs);
     }

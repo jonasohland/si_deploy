@@ -9,6 +9,7 @@ import {
 import {DSPNode} from './dsp_node';
 import * as Logger from './log'
 import { lowerFirst } from 'lodash';
+import { webifResponseEvent } from './web_interface_defs';
 
 const log = Logger.get('AUDDEV');
 
@@ -80,7 +81,7 @@ export class NodeSelectedAudioDeviceSettings extends
         this.input  = val[0];
         this.output = val[1];
     }
-    
+
     get()
     {
         return <[ string, string ]>[ this.input, this.output ];
@@ -442,6 +443,12 @@ export class NodeAudioDevices extends NodeModule {
         if (!this._settings.hasSettings())
             this._settings.default();
 
+        this._devmgmt.on('device-type-changed', (msg) => {
+            console.log(msg);
+            if(msg && msg.data && typeof msg.data == 'string') 
+                this.events.emit('webif-node-warning', this.myNodeId(), `Audio device type changed to: ${msg.data}`);
+        });
+
         this.events.on('dsp-started', () => {
             this.reloadSettingsFromDB().then(() => {
                 log.info("Restored DSP settings from DB");
@@ -534,6 +541,17 @@ export class AudioDevices extends ServerModule {
         this.handle('dspuse', (socket, node: DSPNode) => {
 
                               });
+
+        this.handle('channellist', (socket, node: DSPNode) => {
+            node.audio_devices.getChannelList().then(chlist => {
+                console.log(webifResponseEvent(node.id(), 'audiosettings', 'channellist'));
+                socket.emit(webifResponseEvent(node.id(), 'audiosettings', 'channellist'), chlist);
+            }).catch(err => {
+                socket.emit(webifResponseEvent(node.id(), 'audiosettings', 'channellist'), null);
+                // TODO: error handling for Error objects
+                this.webif.error("Could not retrieve channel list for node " + node.name() + ": " + err);
+            });
+        });
     }
 
     endTransaction(socket: SocketIO.Socket)

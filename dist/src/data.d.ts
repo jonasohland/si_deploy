@@ -165,6 +165,9 @@ export declare abstract class NodeModule {
     _clear(): void;
     _map(): ModuleReference;
     add(reg: ManagedNodeStateRegister, name: string): void;
+    isInitialized(): boolean;
+    myNode(): Node;
+    myNodeId(): string;
     _restore(state: ManagedNodeStateModuleData, strategy?: StateUpdateStrategy): Promise<(void | void[])[]>;
     applyModuleData(mod: ManagedNodeStateModuleData): Promise<(void | void[])[]>;
     applyRegisterData(name: string, reg: ManagedNodeStateRegisterData): Promise<void>;
@@ -255,10 +258,10 @@ export declare abstract class ServerModule {
     events: EventEmitter;
     server: Server;
     webif: WebInterface;
-    _init(srv: Server, webif: WebInterface): void;
+    _init(srv: Server, webif: WebInterface, events: EventEmitter): void;
     abstract init(): void;
     constructor(name: string);
-    getNode(id: string): void;
+    getNode(id: string): Node;
     handle(event: string, handler: WEBIFNodeEventHandler): void;
     handleGlobal(event: string, handler: WEBIFEventHandler): void;
 }

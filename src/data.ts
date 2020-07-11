@@ -607,6 +607,25 @@ export abstract class NodeModule {
         this._registers[reg._name] = reg;
     }
 
+    isInitialized()
+    {
+        return Boolean(this._parent);
+    }
+
+    myNode()
+    {
+        return this._parent;
+    }
+
+    myNodeId()
+    {
+        let node = this.myNode();
+        if(node)
+            return node.id();
+        else
+            throw new Error("Node module not initialized");
+    }
+
     async _restore(state: ManagedNodeStateModuleData,
                    strategy: StateUpdateStrategy = StateUpdateStrategy.SYNC)
     {
@@ -1116,10 +1135,11 @@ export abstract class ServerModule {
     server: Server;
     webif: WebInterface;
 
-    _init(srv: Server, webif: WebInterface)
+    _init(srv: Server, webif: WebInterface, events: EventEmitter)
     {
         this.webif = webif;
         this.server = srv;
+        this.events = events;
         this.init();
     }
 
@@ -1127,13 +1147,12 @@ export abstract class ServerModule {
 
     constructor(name: string)
     {
-        this.events = new EventEmitter();
         this._name = name;
     }
 
     getNode(id: string)
     {
-
+        return this.server._nodes[id];
     }
 
     handle(event: string, handler: WEBIFNodeEventHandler)
@@ -1199,7 +1218,7 @@ export abstract class Server {
     add(module: ServerModule)
     {
         this._modules[module._name] = module;
-        module._init(this, this._webif);
+        module._init(this, this._webif, this._event_bus);
     }
 
     _on_add_remote(session: SIServerWSSession)

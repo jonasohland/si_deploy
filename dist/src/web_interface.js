@@ -16,12 +16,14 @@ const http = __importStar(require("http"));
 const socket_io_1 = __importDefault(require("socket.io"));
 const Logger = __importStar(require("./log"));
 const util_1 = require("./util");
+const data_1 = require("./data");
 const log = Logger.get('WEBINT');
 function logany(...things) {
     log.debug([...things].join(' '));
 }
-class WebInterface {
+class WebInterface extends data_1.ServerModule {
     constructor(options) {
+        super('webinterface');
         this._webif_root = __dirname + '/../../../interface/dist';
         this._handlers = [];
         this._expressapp = express_1.default();
@@ -44,19 +46,60 @@ class WebInterface {
             this._handlers.forEach(handler => socket.on(handler.event, handler.handler.bind(handler.thisarg, socket)));
         });
     }
+    init() {
+        this.events.on('webif-node-notify', (nodeid, msg) => {
+            let node = this.getNode(nodeid);
+            if (node) {
+                this.broadcastNotification(`NODE ${node.name()}`, msg);
+                log.info(`NODE ${node.name()}: ${msg}`);
+            }
+            else
+                log.error(`Could not deliver notification from node ${nodeid}: Node not found. MSG: ${msg}`);
+        });
+        this.events.on('webif-node-warning', (nodeid, msg) => {
+            let node = this.getNode(nodeid);
+            if (node) {
+                this.broadcastWarning(`NODE ${node.name()}`, msg);
+                log.warn(`NODE ${node.name()}: ${msg}`);
+            }
+            else
+                log.error(`Could not deliver notification from node ${nodeid}: Node not found. MSG: ${msg}`);
+        });
+        this.events.on('webif-node-error', (nodeid, msg) => {
+            let node = this.getNode(nodeid);
+            if (node) {
+                this.broadcastError(`NODE ${node.name()}`, msg);
+                log.error(`NODE ${node.name()}: ${msg}`);
+            }
+            else
+                log.error(`Could not deliver notification from node ${nodeid}: Node not found. MSG: ${msg}`);
+        });
+    }
     reportDispatchError(error_string, command) {
     }
     error(err) {
-        if (err instanceof Error) {
-            this.io.emit('error', err.message);
-        }
-        else if (typeof err == 'string') {
-            this.io.emit('error', err);
-        }
+        this.broadcastError("Server Error", err);
     }
     attachHandler(thisarg, module, event, handler) {
         log.debug(`Attach handler -${module}.${event}`);
         this._handlers.push({ thisarg, handler, event: `-${module}.${event}` });
+    }
+    broadcastNotification(title, message) {
+        this.io.emit('notification', title, message);
+    }
+    broadcastWarning(title, message) {
+        this.io.emit('warning', title, message);
+    }
+    broadcastError(title, err) {
+        if (err instanceof Error) {
+            this.io.emit('error', title, err.message);
+        }
+        else if (typeof err == 'string') {
+            this.io.emit('error', title, err);
+        }
+        else {
+            log.error("Unrecognized error type: Error: " + err);
+        }
     }
 }
 exports.default = WebInterface;

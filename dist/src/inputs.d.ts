@@ -5,6 +5,7 @@ import { SIDSPNode } from './instance';
 import { ShowfileManager, ShowfileRecord, ShowfileTarget } from './showfiles';
 import WebInterface from './web_interface';
 import { PortTypes } from './dsp_defs';
+import { NodeAudioInputDescription } from './inputs_defs';
 interface NodeAndInputs {
     max_id: 0;
     si: SIDSPNode;
@@ -37,16 +38,6 @@ export declare class InputManager extends ShowfileTarget {
     updateInterface(sock: SocketIO.Socket | SocketIO.Server): Promise<void>;
     addInput(input: any): Promise<void>;
 }
-export interface NodeAudioInputDescription {
-    name: string;
-    channel: number;
-    type: PortTypes;
-    id: string;
-    default_roomencode: boolean;
-    default_encodingorder: number;
-    default_gain: number;
-}
-export declare function basicNodeAudioInputDescription(name: string, channel: number, type: PortTypes): NodeAudioInputDescription;
 export declare class NodeAudioInput extends ManagedNodeStateObject<NodeAudioInputDescription> {
     _description: NodeAudioInputDescription;
     set(val: NodeAudioInputDescription): Promise<void>;

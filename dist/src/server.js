@@ -25,6 +25,7 @@ class SpatialIntercomServer extends data_1.Server {
         this.webif = webif;
         this.audio_devices = new audio_devices_1.AudioDevices();
         this.inputs = new inputs_1.AudioInputsManager();
+        this.add(this.webif);
         this.add(this.audio_devices);
         this.add(this.inputs);
     }

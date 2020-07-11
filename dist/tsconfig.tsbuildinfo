@@ -438,7 +438,7 @@
         "signature": "bc23a2808c75897c4b88fccf9200835495f901af40c3ca5aec27dc291f5dd4fd"
       },
       "../src/communication.ts": {
-        "version": "60aa30cb6847683846b8818ea94f4f6707e457f52a54e1ef407db0a5a978e95b",
+        "version": "aa2fba3f0f2b87692cea491ededc0f174078b04ea8749779f6cb71787bd90d86",
         "signature": "996480226ca716893e57336a5af7a1710b667fb29f03dd5ac3bdae6fac7df26e"
       },
       "../node_modules/sanitize-filename/index.d.ts": {
@@ -486,12 +486,12 @@
         "signature": "6e1c6fe784daeba017901db7766e6b872f535defe33b0e0196d2a12c26f50517"
       },
       "../src/web_interface.ts": {
-        "version": "420dce4d7e34d3e4683274e732acc8155b1cf8813032ac1347a623b986d53aae",
-        "signature": "a2869aa69b19361aeb4648cb672475dce538dff890666002f1299f306bd502b7"
+        "version": "0879fc6db522db7516b37a23630a7dca7784b557f46d2ad66cef5c48fe78f88a",
+        "signature": "9bc451c354f9cd1adb83017c64b7af3ad56fec93ccdcc75f19e157846047ebd9"
       },
       "../src/data.ts": {
-        "version": "a23787915957812efb41b2571e0e200693cbfe320853ea812eb404c24a2210d5",
-        "signature": "0a38a4d568bbdb3a4a0afd1810903f61b168b45203ca71da16741e7de78a928e"
+        "version": "b4a200ba05905b8233ebc7b0cda2a45a3b7fe4faf09127609b93e48c9c7eb172",
+        "signature": "dcc787a1d1b8c6c20ab3f0edea144a7397e5510500ff6d519176389a7c1f48aa"
       },
       "../src/vst.ts": {
         "version": "b6a119c7bb8274cf353acbce614cf3518c2a1486854cd1d25386ae70c91290dd",
@@ -513,9 +513,13 @@
         "version": "e20d9ff090675859d3aaa2b28a19b6fce1a9ae93d9a01f6b2615f950ade0e614",
         "signature": "fdd21f76d3d3c0e0fe986982b17b914770e737a061d8b442975f7a4ff155ca51"
       },
+      "../src/inputs_defs.ts": {
+        "version": "863895bf45a449e72f5bcb2a92585cde33b141835925d1f79d1e7e1ce91ac183",
+        "signature": "938966c16b25054dcb37972f64607a3370df6c28e95501846e1d0f846a523099"
+      },
       "../src/inputs.ts": {
-        "version": "01f341de40f9bf7e529be2116795d1991e311ab0fdd39feadf617903befe40a4",
-        "signature": "534f3b46044aa7e67198cd419702c7dc0c7f029eba26b494c6f1af4191daf873"
+        "version": "e74deedb8201c5f7f1edb982deebdd68d7e89d0c682e30fdfa60fc59825b3682",
+        "signature": "1f2281b005b9e26a2976b5953590997b4bcd6ee7cd427f5711d9c9e9186c887a"
       },
       "../node_modules/@types/event-to-promise/index.d.ts": {
         "version": "920efe3728fef8ce326928aee60297230ee31c4731feb21c17e4edf89d7128ea",
@@ -529,8 +533,12 @@
         "version": "93ea0e6453bd9cff487dea132df07a22a0caf471db132a2e07a28975bfccb8aa",
         "signature": "cff05fbd2c4e5aabe462f6da1b18eb0c6baac0f2c5356034ed23b8f10bbda545"
       },
+      "../src/web_interface_defs.ts": {
+        "version": "3b35d81521e5f453b208911d5ec4c1c48f2aab0d6e0c936dc986a90e9cd9f7c2",
+        "signature": "ff3916c21e98addc76326fd303ccb87786a8268724c3a3e6b2d61101a59bb7ea"
+      },
       "../src/audio_devices.ts": {
-        "version": "32a7b397179c7029d09bdcb31e6695626f4ffb2f3e492a9378f080dbab44a799",
+        "version": "c192328c16c62b5883f9d33a46ba992c3814d33abd1113e72d4d00f88f4538dd",
         "signature": "322c63ec7fc1917258a79065c179c853a4fb0b0a1601e26152d1939ff3fb987a"
       },
       "../src/instance.ts": {
@@ -778,8 +786,8 @@
         "signature": "59579e538b2a4792f8d29bca9e643913a705fa15cde80f828819d670bee1fb03"
       },
       "../src/index.ts": {
-        "version": "6d06ac2545b6c453f44bccd457b8913916dde3e4f09e8019c462672e00ce5415",
-        "signature": "8a9fc5074a874d4bdb07f22147c37b0a7af41b432df1b2d4380f282be68f1bc4"
+        "version": "fc0731f25fdc5d93fbfedb5d5bbd5752d758315c16dec9ebe4483c6c68f04f48",
+        "signature": "6cf0aa620093be765e2f91ad3995d8710a9b8399ba23d01e29b246332ea11d72"
       },
       "../src/install_service.ts": {
         "version": "271bd5a312bafaf8ca946c0851f7cc9fc687de37f955cf8024f3092f93829f0e",
@@ -814,7 +822,7 @@
         "signature": "ad015745dadccdbcfad819c08bb54af1e4ce899f015b108ee0c6d3b45f55f988"
       },
       "../src/server.ts": {
-        "version": "627722384eb21b8df4409c1a322e35f32e7cf8c59632e30a7e1a7af1dfb722a6",
+        "version": "968dff071f93d1db7a40903ac480bc3bd01cdd88a9ad0a17397d97d234bf9c74",
         "signature": "f6fc855268622b6859a1df0bbbda5e073272e5c19f3fddccf5dd459f62f42f4b"
       },
       "../src/server_mode.ts": {
@@ -1910,6 +1918,7 @@
         "../node_modules/@types/socket.io/index.d.ts",
         "../src/log.ts",
         "../src/util.ts",
+        "../src/data.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -1976,6 +1985,14 @@
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
+      "../src/inputs_defs.ts": [
+        "../node_modules/@types/uuid/index.d.ts",
+        "../src/dsp_defs.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
       "../src/inputs.ts": [
         "../node_modules/@types/uuid/index.d.ts",
         "../src/audio_devices.ts",
@@ -1987,6 +2004,7 @@
         "../src/web_interface.ts",
         "../src/dsp_node.ts",
         "../src/dsp_defs.ts",
+        "../src/inputs_defs.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -2030,12 +2048,19 @@
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
+      "../src/web_interface_defs.ts": [
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
       "../src/audio_devices.ts": [
         "../src/communication.ts",
         "../src/data.ts",
         "../src/dsp_node.ts",
         "../src/log.ts",
         "../node_modules/@types/lodash/ts3.1/index.d.ts",
+        "../src/web_interface_defs.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -2640,6 +2665,7 @@
       ],
       "../src/index.ts": [
         "../src/dsp_defs.ts",
+        "../src/inputs_defs.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -3785,7 +3811,8 @@
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
       "../src/web_interface.ts": [
-        "../node_modules/@types/socket.io/index.d.ts"
+        "../node_modules/@types/socket.io/index.d.ts",
+        "../src/data.ts"
       ],
       "../src/data.ts": [
         "../src/communication.ts",
@@ -3812,12 +3839,16 @@
         "../node_modules/winston/index.d.ts",
         "../node_modules/@types/node/events.d.ts"
       ],
+      "../src/inputs_defs.ts": [
+        "../src/dsp_defs.ts"
+      ],
       "../src/inputs.ts": [
         "../src/showfiles.ts",
         "../src/communication.ts",
         "../src/dsp_defs.ts",
         "../src/audio_devices.ts",
         "../src/web_interface.ts",
+        "../src/inputs_defs.ts",
         "../src/data.ts",
         "../src/instance.ts"
       ],
@@ -4333,6 +4364,10 @@
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
+      "../src/index.ts": [
+        "../src/dsp_defs.ts",
+        "../src/inputs_defs.ts"
+      ],
       "../src/source_behaviours.ts": [
         "../src/sources.ts",
         "../src/dsp_defs.ts"
@@ -4397,9 +4432,6 @@
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "../src/index.ts": [
-        "../src/dsp_defs.ts"
       ]
     },
     "semanticDiagnosticsPerFile": [
@@ -4531,10 +4563,12 @@
       "../src/dsp.ts",
       "../node_modules/dependency-graph/lib/index.d.ts",
       "../src/showfiles.ts",
+      "../src/inputs_defs.ts",
       "../src/inputs.ts",
       "../node_modules/@types/event-to-promise/index.d.ts",
       "../src/dsp_process.ts",
       "../src/dsp_node.ts",
+      "../src/web_interface_defs.ts",
       "../src/audio_devices.ts",
       "../src/instance.ts",
       "../src/ipc.ts",

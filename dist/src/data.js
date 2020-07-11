@@ -417,6 +417,19 @@ class NodeModule {
         reg.init(name, this);
         this._registers[reg._name] = reg;
     }
+    isInitialized() {
+        return Boolean(this._parent);
+    }
+    myNode() {
+        return this._parent;
+    }
+    myNodeId() {
+        let node = this.myNode();
+        if (node)
+            return node.id();
+        else
+            throw new Error("Node module not initialized");
+    }
     _restore(state, strategy = StateUpdateStrategy.SYNC) {
         return __awaiter(this, void 0, void 0, function* () {
             log.debug('Restoring data for module ' + this._name);
@@ -777,15 +790,16 @@ class Node {
 exports.Node = Node;
 class ServerModule {
     constructor(name) {
-        this.events = new events_1.EventEmitter();
         this._name = name;
     }
-    _init(srv, webif) {
+    _init(srv, webif, events) {
         this.webif = webif;
         this.server = srv;
+        this.events = events;
         this.init();
     }
     getNode(id) {
+        return this.server._nodes[id];
     }
     handle(event, handler) {
         this.webif.attachHandler(this, this._name, event, (socket, nodeid, data) => {
@@ -835,7 +849,7 @@ class Server {
     }
     add(module) {
         this._modules[module._name] = module;
-        module._init(this, this._webif);
+        module._init(this, this._webif, this._event_bus);
     }
     _on_add_remote(session) {
         log.info(`Create new node instance for [${communication_1.NODE_TYPE[session.id().type]}] ${session.id().name}`);

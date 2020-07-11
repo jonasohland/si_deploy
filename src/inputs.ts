@@ -16,6 +16,7 @@ import {ShowfileManager, ShowfileRecord, ShowfileTarget} from './showfiles';
 import WebInterface from './web_interface';
 import { DSPNode } from './dsp_node';
 import { PortTypes } from './dsp_defs';
+import { basicNodeAudioInputDescription, NodeAudioInputDescription } from './inputs_defs';
 
 const log = Logger.get('INP');
 
@@ -153,30 +154,6 @@ export class InputManager extends ShowfileTarget {
     }
 }
 
-export interface NodeAudioInputDescription {
-    name: string;
-    channel: number;
-    type: PortTypes;
-    id: string;
-    default_roomencode: boolean;
-    default_encodingorder: number;
-    default_gain: number;
-}
-
-export function basicNodeAudioInputDescription(
-    name: string, channel: number,
-    type: PortTypes): NodeAudioInputDescription
-{
-    return {
-        name,
-        channel,
-        type,
-        id : uniqueId(),
-        default_roomencode : false,
-        default_encodingorder : 3,
-        default_gain : 1.
-    };
-}
 
 export class NodeAudioInput extends
     ManagedNodeStateObject<NodeAudioInputDescription> {

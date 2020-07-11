@@ -16,7 +16,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const uuid_1 = require("uuid");
 const data_1 = require("./data");
 const Logger = __importStar(require("./log"));
 const showfiles_1 = require("./showfiles");
@@ -123,18 +122,6 @@ class InputManager extends showfiles_1.ShowfileTarget {
     }
 }
 exports.InputManager = InputManager;
-function basicNodeAudioInputDescription(name, channel, type) {
-    return {
-        name,
-        channel,
-        type,
-        id: uuid_1.v4(),
-        default_roomencode: false,
-        default_encodingorder: 3,
-        default_gain: 1.
-    };
-}
-exports.basicNodeAudioInputDescription = basicNodeAudioInputDescription;
 class NodeAudioInput extends data_1.ManagedNodeStateObject {
     constructor(desc) {
         super();
