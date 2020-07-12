@@ -4,12 +4,12 @@ function webifResponseEvent(nodeid, modulename, event) {
     return `${nodeid}.${modulename}.${event}`;
 }
 exports.webifResponseEvent = webifResponseEvent;
-function clientNodeRoomName(nodeid, module, topic) {
+function nodeRoomName(nodeid, module, topic) {
     return `${nodeid}-${module}-${topic}`;
 }
-exports.clientNodeRoomName = clientNodeRoomName;
-function clientServerRoomName(module, topic) {
+exports.nodeRoomName = nodeRoomName;
+function serverRoomName(module, topic) {
     return `${module}-${topic}`;
 }
-exports.clientServerRoomName = clientServerRoomName;
+exports.serverRoomName = serverRoomName;
 //# sourceMappingURL=web_interface_defs.js.map

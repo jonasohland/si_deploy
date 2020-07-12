@@ -486,11 +486,11 @@
         "signature": "6e1c6fe784daeba017901db7766e6b872f535defe33b0e0196d2a12c26f50517"
       },
       "../src/web_interface_defs.ts": {
-        "version": "c2ae935ba43db8bd5768de60b9e88f9c9a6de7b0968e76820d33219fa679f886",
-        "signature": "bac943c05fef7d10829d270cd6129230a4031f086683a6aceb5b6e61bb3dc8a1"
+        "version": "d5bec09f76cad3e6c10e963d69b7acb39590ef7796843088d33b466fd622af1d",
+        "signature": "4e3b74ab072115fa80aa223cac914657e1150188837a896e536197be8ce9e74c"
       },
       "../src/web_interface.ts": {
-        "version": "940513d754626234f8827500a16b2b38f87ae27dbc65cb9bfcb8ee2e44f38e05",
+        "version": "948a82103e541505f3ec03e12dfb18b9b5f327299e5502d1d8969a42f576c800",
         "signature": "42b4e3724fc87e23630054c95575693635be0e56b6250cd64700394357307990"
       },
       "../src/data.ts": {
@@ -802,8 +802,8 @@
         "signature": "59579e538b2a4792f8d29bca9e643913a705fa15cde80f828819d670bee1fb03"
       },
       "../src/index.ts": {
-        "version": "70e71cfab6c40be3bd0a8de57bb109ecf37858ee1206f5c04f888a316ee70176",
-        "signature": "b2abea89edf1fad1e1766bf11436ac059cc057d097abf9ef5229fb3ad1cbbcf9"
+        "version": "b512939ed3ceff6e8052a95d7cc5dfa4e4ef4a353e5f6280785ee16ccc23a259",
+        "signature": "387d1d73df71a979d320e07de0f06bd37cdbe70100725ab26cd5fe206b00ff53"
       },
       "../src/install_service.ts": {
         "version": "271bd5a312bafaf8ca946c0851f7cc9fc687de37f955cf8024f3092f93829f0e",
@@ -2713,6 +2713,7 @@
         "../src/dsp_defs.ts",
         "../src/inputs_defs.ts",
         "../src/users_defs.ts",
+        "../src/web_interface_defs.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -4412,7 +4413,8 @@
       "../src/index.ts": [
         "../src/dsp_defs.ts",
         "../src/inputs_defs.ts",
-        "../src/users_defs.ts"
+        "../src/users_defs.ts",
+        "../src/web_interface_defs.ts"
       ],
       "../node_modules/commander/typings/index.d.ts": [
         "../node_modules/@types/node/ts3.2/index.d.ts",

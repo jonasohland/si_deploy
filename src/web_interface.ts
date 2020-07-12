@@ -8,7 +8,7 @@ import {defaultIF} from './util';
 import { ServerModule, Node, Server } from './data';
 import { EventEmitter } from 'events';
 
-import { clientNodeRoomName, clientServerRoomName } from './web_interface_defs'
+import { nodeRoomName, serverRoomName } from './web_interface_defs'
 
 const log = Logger.get('WEBINT');
 
@@ -51,7 +51,7 @@ class WebInterfaceClient {
     {
         this._socket = socket;
         this._server = server;
-        
+
         log.info(`New WebInterface connection from agent ${this._socket.handshake.headers['user-agent']}`);
 
         this._socket.on('join-node', this._on_join_node.bind(this));
@@ -62,7 +62,7 @@ class WebInterfaceClient {
 
     _on_join_node(nodeid: string, module: string, topic: string)
     {
-        let room = clientNodeRoomName(nodeid, module, topic);
+        let room = nodeRoomName(nodeid, module, topic);
         this._socket.join(room, (err?) => {
             if(err)
                 log.error(`Socket could not join room: ` + err);
@@ -75,7 +75,7 @@ class WebInterfaceClient {
 
     _on_leave_node(nodeid: string, module: string, topic: string)
     {
-        let room = clientNodeRoomName(nodeid, module, topic);
+        let room = nodeRoomName(nodeid, module, topic);
         this._socket.leave(room, (err?: any) => {
             if(err)
                 log.error(`WebIF could not leave room: ` + err);
@@ -88,7 +88,7 @@ class WebInterfaceClient {
 
     _on_join_server(module: string, topic: string)
     {
-        let room = clientServerRoomName(module, topic);
+        let room = serverRoomName(module, topic);
         this._socket.join(room, (err?) => {
             if(err)
                 log.error(`Socket could not join room: ` + err);
@@ -101,7 +101,7 @@ class WebInterfaceClient {
 
     _on_leave_server(module: string, topic: string)
     {
-        let room = clientServerRoomName(module, topic);
+        let room = serverRoomName(module, topic);
         this._socket.leave(room, (err?: any) => {
             if(err)
                 log.error(`Socket could not leave room: ` + err);
@@ -114,12 +114,12 @@ class WebInterfaceClient {
 
     isMemeberOfServerRoom(module: string, topic: string)
     {
-        return this._socket.rooms[clientServerRoomName(module, topic)] != null;
+        return this._socket.rooms[serverRoomName(module, topic)] != null;
     }
 
     isMemeberOfNodeRoom(nodeid: string, module: string, topic: string)
     {
-        return this._socket.rooms[clientNodeRoomName(nodeid, module, topic)] != null;
+        return this._socket.rooms[nodeRoomName(nodeid, module, topic)] != null;
     }
 
     socket() {

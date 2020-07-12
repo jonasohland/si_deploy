@@ -37,7 +37,7 @@ class WebInterfaceClient {
         this._socket.on('leave-server', this._on_leave_server.bind(this));
     }
     _on_join_node(nodeid, module, topic) {
-        let room = web_interface_defs_1.clientNodeRoomName(nodeid, module, topic);
+        let room = web_interface_defs_1.nodeRoomName(nodeid, module, topic);
         this._socket.join(room, (err) => {
             if (err)
                 log.error(`Socket could not join room: ` + err);
@@ -48,7 +48,7 @@ class WebInterfaceClient {
         });
     }
     _on_leave_node(nodeid, module, topic) {
-        let room = web_interface_defs_1.clientNodeRoomName(nodeid, module, topic);
+        let room = web_interface_defs_1.nodeRoomName(nodeid, module, topic);
         this._socket.leave(room, (err) => {
             if (err)
                 log.error(`WebIF could not leave room: ` + err);
@@ -59,7 +59,7 @@ class WebInterfaceClient {
         });
     }
     _on_join_server(module, topic) {
-        let room = web_interface_defs_1.clientServerRoomName(module, topic);
+        let room = web_interface_defs_1.serverRoomName(module, topic);
         this._socket.join(room, (err) => {
             if (err)
                 log.error(`Socket could not join room: ` + err);
@@ -70,7 +70,7 @@ class WebInterfaceClient {
         });
     }
     _on_leave_server(module, topic) {
-        let room = web_interface_defs_1.clientServerRoomName(module, topic);
+        let room = web_interface_defs_1.serverRoomName(module, topic);
         this._socket.leave(room, (err) => {
             if (err)
                 log.error(`Socket could not leave room: ` + err);
@@ -81,10 +81,10 @@ class WebInterfaceClient {
         });
     }
     isMemeberOfServerRoom(module, topic) {
-        return this._socket.rooms[web_interface_defs_1.clientServerRoomName(module, topic)] != null;
+        return this._socket.rooms[web_interface_defs_1.serverRoomName(module, topic)] != null;
     }
     isMemeberOfNodeRoom(nodeid, module, topic) {
-        return this._socket.rooms[web_interface_defs_1.clientNodeRoomName(nodeid, module, topic)] != null;
+        return this._socket.rooms[web_interface_defs_1.nodeRoomName(nodeid, module, topic)] != null;
     }
     socket() {
         return this._socket;
