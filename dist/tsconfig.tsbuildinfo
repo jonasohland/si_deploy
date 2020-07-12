@@ -802,8 +802,8 @@
         "signature": "59579e538b2a4792f8d29bca9e643913a705fa15cde80f828819d670bee1fb03"
       },
       "../src/index.ts": {
-        "version": "b512939ed3ceff6e8052a95d7cc5dfa4e4ef4a353e5f6280785ee16ccc23a259",
-        "signature": "387d1d73df71a979d320e07de0f06bd37cdbe70100725ab26cd5fe206b00ff53"
+        "version": "4038e44a7506d11931c4b38b08061dabc4fec84bc9748ad7b41ae072649c5e1e",
+        "signature": "2b9a9ae8418e814b07b7b5256e11a811ad640cd5588ea12bf454d9e18c24749d"
       },
       "../src/install_service.ts": {
         "version": "271bd5a312bafaf8ca946c0851f7cc9fc687de37f955cf8024f3092f93829f0e",
@@ -876,7 +876,6 @@
           "typings/*"
         ]
       },
-      "watch": true,
       "configFilePath": "../tsconfig.json"
     },
     "referencedMap": {
@@ -4594,6 +4593,7 @@
       "../node_modules/@types/body-parser/index.d.ts",
       "../node_modules/@types/express/index.d.ts",
       "../src/web_interface_defs.ts",
+      "../src/web_interface.ts",
       "../src/data.ts",
       "../src/dsp_defs.ts",
       "../src/inputs_defs.ts",
@@ -4671,7 +4671,6 @@
       "../node_modules/usb-detection/index.d.ts",
       "../src/headtracker_bridge_mode.ts",
       "../src/headtracker_mode.ts",
-      "../src/index.ts",
       "../src/install_service.ts",
       "../node_modules/commander/typings/index.d.ts",
       "../node_modules/@types/ini/index.d.ts",
@@ -4685,7 +4684,7 @@
       "../node_modules/@types/checksum/index.d.ts",
       "../node_modules/@types/minimatch/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/web_interface.ts"
+      "../src/index.ts"
     ]
   },
   "version": "3.7.3"
