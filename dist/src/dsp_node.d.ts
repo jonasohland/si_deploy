@@ -5,11 +5,13 @@ import { DSPController } from './dsp_process';
 import { Graph } from './dsp';
 import { VSTScanner } from './vst';
 import { NodeAudioDevices } from './audio_devices';
+import { NodeUsersManager } from './users';
 export declare class DSPNode extends Node {
     init(): void;
     start(): void;
     destroy(): void;
     inputs: NodeAudioInputManager;
+    users: NodeUsersManager;
     vst: VSTScanner;
     dsp_graph: Graph;
     dsp_process: DSPController;

@@ -22,8 +22,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const events_1 = __importDefault(require("events"));
 const dsp_modules_1 = require("./dsp_modules");
 const Logger = __importStar(require("./log"));
+const data_1 = require("./data");
 const log = Logger.get('USR');
-class User {
+class OLDUser {
     constructor(instance, name) {
         this.htrk = -1;
         this.name = name;
@@ -73,8 +74,8 @@ class User {
                     + this.name);
     }
 }
-exports.User = User;
-class UsersManager extends events_1.default {
+exports.OLDUser = OLDUser;
+class OLDUsersManager extends events_1.default {
     constructor(webif, inputs, htrks) {
         super();
         this.users = [];
@@ -284,6 +285,55 @@ class UsersManager extends events_1.default {
         usr.inputs.forEach(input => {
             input.dspModule.setRoomCharacter(value);
         });
+    }
+}
+exports.OLDUsersManager = OLDUsersManager;
+class User extends data_1.ManagedNodeStateObject {
+    constructor(data) {
+        super();
+        this.data = data;
+    }
+    set(val) {
+        return __awaiter(this, void 0, void 0, function* () {
+        });
+    }
+    get() {
+        return this.data;
+    }
+}
+class UserList extends data_1.ManagedNodeStateListRegister {
+    remove(obj) {
+        return __awaiter(this, void 0, void 0, function* () {
+        });
+    }
+    insert(obj) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new User(obj);
+        });
+    }
+}
+class NodeUsersManager extends data_1.NodeModule {
+    constructor() {
+        super('nodeusers');
+        this._users = new UserList();
+        this.add(this._users, 'users');
+    }
+    init() {
+    }
+    start(remote) {
+        this.save().catch(err => {
+            log.error('Could write data to node ' + err);
+        });
+    }
+    destroy() {
+    }
+}
+exports.NodeUsersManager = NodeUsersManager;
+class UsersManager extends data_1.ServerModule {
+    constructor() {
+        super('users');
+    }
+    init() {
     }
 }
 exports.UsersManager = UsersManager;

@@ -144,6 +144,9 @@ export declare abstract class ManagedNodeStateListRegister extends ManagedNodeSt
     removeItem(item: ManagedNodeStateObject<any>): boolean;
     add(obj: ManagedNodeStateObject<any>): void;
 }
+export declare class Publisher {
+    constructor();
+}
 export declare abstract class NodeModule {
     _parent: Node;
     _name: string;
@@ -279,6 +282,10 @@ export declare abstract class Server {
     add(module: ServerModule): void;
     _on_add_remote(session: SIServerWSSession): void;
     _on_remove_remote(session: SIServerWSSession): void;
+    _notify_join_server_room(socket: SocketIO.Socket, module: string, topic: string): void;
+    _notify_join_node_room(socket: SocketIO.Socket, nodeid: string, module: string, topic: string): void;
+    _notify_leave_server_room(socket: SocketIO.Socket, module: string, topic: string): void;
+    _notify_leave_node_room(socket: SocketIO.Socket, nodeid: string, module: string, topic: string): void;
     abstract createNode(id: NodeIdentification): Node;
     abstract destroyNode(node: Node): void;
 }

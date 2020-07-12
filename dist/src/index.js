@@ -6,4 +6,7 @@ exports.PortTypeChannelCount = dsp_defs_1.PortTypeChannelCount;
 exports.stringToPortType = dsp_defs_1.stringToPortType;
 var inputs_defs_1 = require("./inputs_defs");
 exports.basicNodeAudioInputDescription = inputs_defs_1.basicNodeAudioInputDescription;
+var users_defs_1 = require("./users_defs");
+exports.UserData = users_defs_1.UserData;
+exports.basicUserData = users_defs_1.basicUserData;
 //# sourceMappingURL=index.js.map

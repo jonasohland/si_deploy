@@ -522,6 +522,12 @@ export abstract class ManagedNodeStateListRegister extends
     }
 }
 
+export class Publisher {
+    constructor() {
+
+    }
+}
+
 export abstract class NodeModule {
 
     _parent: Node;
@@ -1164,7 +1170,7 @@ export abstract class ServerModule {
             let node = this.server._nodes[nodeid];
             if(!node) {
                 log.error(`Node not found for message -${this._name}.${event} - node: ${nodeid}`);
-                socket.emit('error', `Node not found for id ${nodeid}`);
+                socket.emit('showerror', `Node not found for id ${nodeid}`);
                 return;
             }
             log.debug(`Dispatch event: -${this._name}.${event} - ${nodeid}`);
@@ -1200,7 +1206,7 @@ export class ServerInternalsModule extends ServerModule {
     }
 }
 
-export abstract class Server {
+export abstract class Server  {
 
     _srv: SIServerWSServer
     _nodes: Record<string, Node> = {};
@@ -1243,6 +1249,26 @@ export abstract class Server {
             this.destroyNode(node);
             delete this._nodes[session.id().id];
         }
+    }
+
+    _notify_join_server_room(socket: SocketIO.Socket, module: string, topic: string)
+    {
+
+    }
+
+    _notify_join_node_room(socket: SocketIO.Socket, nodeid: string, module: string, topic: string)
+    {
+
+    }
+
+    _notify_leave_server_room(socket: SocketIO.Socket, module: string, topic: string)
+    {
+        
+    }
+
+    _notify_leave_node_room(socket: SocketIO.Socket, nodeid: string, module: string, topic: string)
+    {
+
     }
 
     abstract createNode(id: NodeIdentification): Node;

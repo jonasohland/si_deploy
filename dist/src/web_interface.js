@@ -17,14 +17,84 @@ const socket_io_1 = __importDefault(require("socket.io"));
 const Logger = __importStar(require("./log"));
 const util_1 = require("./util");
 const data_1 = require("./data");
+const web_interface_defs_1 = require("./web_interface_defs");
 const log = Logger.get('WEBINT');
+// join ${nodeid}.${service}.${topic}
+// leave ${nodeid}.${service}.${topic}
+// join server.${service}.${topic}
+// leave server.${service}.${topic}
 function logany(...things) {
     log.debug([...things].join(' '));
+}
+class WebInterfaceClient {
+    constructor(socket, server) {
+        this._socket = socket;
+        this._server = server;
+        log.info(`New WebInterface connection from agent ${this._socket.handshake.headers['user-agent']}`);
+        this._socket.on('join-node', this._on_join_node.bind(this));
+        this._socket.on('leave-node', this._on_leave_node.bind(this));
+        this._socket.on('join-server', this._on_join_server.bind(this));
+        this._socket.on('leave-server', this._on_leave_server.bind(this));
+    }
+    _on_join_node(nodeid, module, topic) {
+        let room = web_interface_defs_1.clientNodeRoomName(nodeid, module, topic);
+        this._socket.join(room, (err) => {
+            if (err)
+                log.error(`Socket could not join room: ` + err);
+            else {
+                log.verbose(`WebIF joined room ${room}`);
+                this._server._notify_join_node_room(this._socket, nodeid, module, topic);
+            }
+        });
+    }
+    _on_leave_node(nodeid, module, topic) {
+        let room = web_interface_defs_1.clientNodeRoomName(nodeid, module, topic);
+        this._socket.leave(room, (err) => {
+            if (err)
+                log.error(`WebIF could not leave room: ` + err);
+            else {
+                log.verbose(`WebIF left room ${room}`);
+                this._server._notify_leave_node_room(this._socket, nodeid, module, topic);
+            }
+        });
+    }
+    _on_join_server(module, topic) {
+        let room = web_interface_defs_1.clientServerRoomName(module, topic);
+        this._socket.join(room, (err) => {
+            if (err)
+                log.error(`Socket could not join room: ` + err);
+            else {
+                log.verbose(`WebIF joined room ${room}`);
+                this._server._notify_join_server_room(this._socket, module, topic);
+            }
+        });
+    }
+    _on_leave_server(module, topic) {
+        let room = web_interface_defs_1.clientServerRoomName(module, topic);
+        this._socket.leave(room, (err) => {
+            if (err)
+                log.error(`Socket could not leave room: ` + err);
+            else {
+                log.verbose(`WebIF left room ${room}`);
+                this._server._notify_leave_server_room(this._socket, module, topic);
+            }
+        });
+    }
+    isMemeberOfServerRoom(module, topic) {
+        return this._socket.rooms[web_interface_defs_1.clientServerRoomName(module, topic)] != null;
+    }
+    isMemeberOfNodeRoom(nodeid, module, topic) {
+        return this._socket.rooms[web_interface_defs_1.clientNodeRoomName(nodeid, module, topic)] != null;
+    }
+    socket() {
+        return this._socket;
+    }
 }
 class WebInterface extends data_1.ServerModule {
     constructor(options) {
         super('webinterface');
         this._webif_root = __dirname + '/../../../interface/dist';
+        this._clients = [];
         this._handlers = [];
         this._expressapp = express_1.default();
         this._http = http.createServer(this._expressapp);
@@ -44,6 +114,12 @@ class WebInterface extends data_1.ServerModule {
         this.io = socket_io_1.default.listen(45040);
         this.io.on('connect', socket => {
             this._handlers.forEach(handler => socket.on(handler.event, handler.handler.bind(handler.thisarg, socket)));
+            socket.on('disconnect', () => {
+                let idx = this._clients.findIndex(cl => cl.socket() == socket);
+                if (idx != -1)
+                    this._clients.splice(idx, 1);
+            });
+            this._clients.push(new WebInterfaceClient(socket, this._server));
         });
     }
     init() {
@@ -75,6 +151,9 @@ class WebInterface extends data_1.ServerModule {
                 log.error(`Could not deliver notification from node ${nodeid}: Node not found. MSG: ${msg}`);
         });
     }
+    attachServer(server) {
+        this._server = server;
+    }
     reportDispatchError(error_string, command) {
     }
     error(err) {
@@ -86,6 +165,9 @@ class WebInterface extends data_1.ServerModule {
     }
     broadcastNotification(title, message) {
         this.io.emit('notification', title, message);
+    }
+    broadcastNodeNotification(node, message) {
+        this.broadcastNotification(node.name(), message);
     }
     broadcastWarning(title, message) {
         this.io.emit('warning', title, message);

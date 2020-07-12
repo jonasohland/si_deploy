@@ -1,5 +1,5 @@
 import { Bus, Connection, Graph, Module, NativeNode } from './dsp';
-import { OwnedInput, User } from './users';
+import { OwnedInput, OLDUser } from './users';
 export declare class BasicSpatializer extends NativeNode {
     constructor(name: string);
     remoteAttached(): void;
@@ -34,11 +34,11 @@ export declare abstract class SpatializationModule extends Module {
     abstract setStWidth(stwidth: number): void;
 }
 export declare class BasicSpatializerModule extends SpatializationModule {
-    constructor(input: OwnedInput, user: User);
+    constructor(input: OwnedInput, user: OLDUser);
     encoder_nid: number;
     id: number;
     owned_input: OwnedInput;
-    user: User;
+    user: OLDUser;
     inputConn: Connection;
     outputConn: Connection;
     processor: BasicSpatializer;
@@ -58,12 +58,12 @@ export declare class AdvancedSpatializerModule extends SpatializationModule {
     setStWidth(stwidth: number): void;
     setReflections(reflections: number): void;
     setRoomCharacter(character: number): void;
-    constructor(input: OwnedInput, user: User);
+    constructor(input: OwnedInput, user: OLDUser);
     encoder_l_nid: number;
     encoder_r_nid: number;
     id: number;
     owned_input: OwnedInput;
-    user: User;
+    user: OLDUser;
     inputConnL: Connection;
     inputConnR: Connection;
     processorL: AdvancedSpatializer;
@@ -81,12 +81,12 @@ export declare class AdvancedSpatializerModule extends SpatializationModule {
 export declare class BasicUserModule extends Module {
     decoder_nid: number;
     id: number;
-    user: User;
+    user: OLDUser;
     outputConn: Connection;
     inputCons: Connection[];
     graph: Graph;
     node: AdvancedBinauralDecoder;
-    constructor(user: User);
+    constructor(user: OLDUser);
     input(graph: Graph): Bus;
     output(graph: Graph): Bus;
     assignHeadtracker(id: number): Promise<import("./communication").Message>;

@@ -1,11 +1,12 @@
 /// <reference types="socket.io" />
 import { Channel } from './audio_devices';
 import { ManagedNodeStateListRegister, ManagedNodeStateObject, NodeModule, ServerModule } from './data';
+import { PortTypes } from './dsp_defs';
+import { DSPNode } from './dsp_node';
+import { NodeAudioInputDescription } from './inputs_defs';
 import { SIDSPNode } from './instance';
 import { ShowfileManager, ShowfileRecord, ShowfileTarget } from './showfiles';
 import WebInterface from './web_interface';
-import { PortTypes } from './dsp_defs';
-import { NodeAudioInputDescription } from './inputs_defs';
 interface NodeAndInputs {
     max_id: 0;
     si: SIDSPNode;
@@ -60,6 +61,7 @@ export declare class NodeAudioInputManager extends NodeModule {
     constructor();
 }
 export declare class AudioInputsManager extends ServerModule {
+    broadcastUpdate(node: DSPNode): void;
     init(): void;
     constructor();
 }

@@ -5,9 +5,19 @@ import SocketIO from 'socket.io';
 
 import * as Logger from './log';
 import {defaultIF} from './util';
-import { ServerModule } from './data';
+import { ServerModule, Node, Server } from './data';
+import { EventEmitter } from 'events';
+
+import { clientNodeRoomName, clientServerRoomName } from './web_interface_defs'
 
 const log = Logger.get('WEBINT');
+
+
+// join ${nodeid}.${service}.${topic}
+// leave ${nodeid}.${service}.${topic}
+
+// join server.${service}.${topic}
+// leave server.${service}.${topic}
 
 function logany(...things: any)
 {
@@ -15,10 +25,115 @@ function logany(...things: any)
 }
 
 interface WEBIFEventHandler {
-    thisarg: any, handler: (...args: any[]) => void, event: string
+    thisarg: any, handler: (...args: any[]) => void, event: string;
+}
+
+interface ServerRoomMembership {
+    modules: Record<string, {
+        topics: Record<string, string>
+    }>;
+}
+
+interface NodeRoomMembership {
+    nodes: Record<string, {
+        modules: Record<string, {
+            topics: Record<string, string>
+        }>
+    }>
+}
+
+class WebInterfaceClient {
+
+    _server: Server;
+    _socket: SocketIO.Socket
+
+    constructor(socket: SocketIO.Socket, server: Server)
+    {
+        this._socket = socket;
+        this._server = server;
+        
+        log.info(`New WebInterface connection from agent ${this._socket.handshake.headers['user-agent']}`);
+
+        this._socket.on('join-node', this._on_join_node.bind(this));
+        this._socket.on('leave-node', this._on_leave_node.bind(this));
+        this._socket.on('join-server', this._on_join_server.bind(this));
+        this._socket.on('leave-server', this._on_leave_server.bind(this));
+    }
+
+    _on_join_node(nodeid: string, module: string, topic: string)
+    {
+        let room = clientNodeRoomName(nodeid, module, topic);
+        this._socket.join(room, (err?) => {
+            if(err)
+                log.error(`Socket could not join room: ` + err);
+            else {
+                log.verbose(`WebIF joined room ${room}`);
+                this._server._notify_join_node_room(this._socket, nodeid, module, topic);
+            }
+        });
+    }
+
+    _on_leave_node(nodeid: string, module: string, topic: string)
+    {
+        let room = clientNodeRoomName(nodeid, module, topic);
+        this._socket.leave(room, (err?: any) => {
+            if(err)
+                log.error(`WebIF could not leave room: ` + err);
+            else {
+                log.verbose(`WebIF left room ${room}`);
+                this._server._notify_leave_node_room(this._socket, nodeid, module, topic);
+            }
+        });
+    }
+
+    _on_join_server(module: string, topic: string)
+    {
+        let room = clientServerRoomName(module, topic);
+        this._socket.join(room, (err?) => {
+            if(err)
+                log.error(`Socket could not join room: ` + err);
+            else {
+                log.verbose(`WebIF joined room ${room}`);
+                this._server._notify_join_server_room(this._socket, module, topic);
+            }
+        });
+    }
+
+    _on_leave_server(module: string, topic: string)
+    {
+        let room = clientServerRoomName(module, topic);
+        this._socket.leave(room, (err?: any) => {
+            if(err)
+                log.error(`Socket could not leave room: ` + err);
+            else {
+                log.verbose(`WebIF left room ${room}`);
+                this._server._notify_leave_server_room(this._socket, module, topic);
+            }
+        });
+    }
+
+    isMemeberOfServerRoom(module: string, topic: string)
+    {
+        return this._socket.rooms[clientServerRoomName(module, topic)] != null;
+    }
+
+    isMemeberOfNodeRoom(nodeid: string, module: string, topic: string)
+    {
+        return this._socket.rooms[clientNodeRoomName(nodeid, module, topic)] != null;
+    }
+
+    socket() {
+        return this._socket;
+    }
 }
 
 export default class WebInterface extends ServerModule {
+
+    private _http: http.Server;
+    private _expressapp: express.Application;
+    private _webif_root: string = __dirname + '/../../../interface/dist';
+    private _server: Server;
+    private _clients: WebInterfaceClient[] = [];
     
     init() {
         this.events.on('webif-node-notify', (nodeid: string, msg: string) => {
@@ -48,10 +163,6 @@ export default class WebInterface extends ServerModule {
                 log.error(`Could not deliver notification from node ${nodeid}: Node not found. MSG: ${msg}`);
         });
     }
-
-    private _http: http.Server;
-    private _expressapp: express.Application;
-    private _webif_root: string = __dirname + '/../../../interface/dist';
 
     constructor(options: any)
     {
@@ -85,7 +196,20 @@ export default class WebInterface extends ServerModule {
                 handler => socket.on(
                     handler.event,
                     handler.handler.bind(handler.thisarg, socket)));
+
+            socket.on('disconnect', () => {
+                let idx = this._clients.findIndex(cl => cl.socket() == socket);
+                if(idx != -1)
+                    this._clients.splice(idx, 1);
+            });
+
+            this._clients.push(new WebInterfaceClient(socket, this._server));
         });
+    }
+
+    attachServer(server: Server)
+    {
+        this._server = server;
     }
 
     reportDispatchError(error_string: string, command: string)
@@ -108,6 +232,11 @@ export default class WebInterface extends ServerModule {
     {
         this.io.emit('notification', title, message);
     }  
+
+    broadcastNodeNotification(node: Node, message: string) 
+    {   
+        this.broadcastNotification(node.name(), message);
+    }
 
     broadcastWarning(title: string, message: string)
     {

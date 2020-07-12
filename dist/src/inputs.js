@@ -129,8 +129,7 @@ class NodeAudioInput extends data_1.ManagedNodeStateObject {
     }
     set(val) {
         return __awaiter(this, void 0, void 0, function* () {
-            this._description.channel = val.channel;
-            this._description.name = val.name;
+            this._description = val;
         });
     }
     get() {
@@ -152,7 +151,7 @@ class NodeAudioInputList extends data_1.ManagedNodeStateListRegister {
 exports.NodeAudioInputList = NodeAudioInputList;
 class NodeAudioInputManager extends data_1.NodeModule {
     constructor() {
-        super('inputs');
+        super('nodeinputs');
         this._input_list = new NodeAudioInputList();
         this.add(this._input_list, 'input-list');
     }
@@ -186,6 +185,9 @@ class NodeAudioInputManager extends data_1.NodeModule {
 }
 exports.NodeAudioInputManager = NodeAudioInputManager;
 class AudioInputsManager extends data_1.ServerModule {
+    broadcastUpdate(node) {
+        this.webif.broadcastEvent('inputs.update', node.id(), node.inputs.getRawInputDescriptionList());
+    }
     init() {
         this.handle('update', (socket, node, data) => {
             try {
@@ -198,32 +200,39 @@ class AudioInputsManager extends data_1.ServerModule {
         this.handle('add', (socket, node, data) => {
             try {
                 node.inputs.addInput(data);
-                this.webif.broadcastEvent('inputs.update', node.id(), node.inputs.getRawInputDescriptionList());
+                this.broadcastUpdate(node);
+                this.webif.broadcastNotification(node.name(), `Added new input: ${data.name}`);
             }
             catch (err) {
                 this.webif.error(err);
             }
         });
         this.handle('remove', (socket, node, data) => {
-            try {
-                node.inputs.removeInput(data);
-            }
-            catch (err) {
+            node.inputs.removeInput(data)
+                .then(() => {
+                this.webif.broadcastNodeNotification(node, `Input removed`);
+                this.broadcastUpdate(node);
+            })
+                .catch((err) => {
                 this.webif.error(err);
-            }
+            });
         });
         this.handle('modify', (socket, node, data) => {
             try {
                 let input = node.inputs.findInputForId(data.id);
                 if (input) {
-                    input.set(data).then(() => {
+                    input.set(data)
+                        .then(() => {
+                        this.webif.broadcastNodeNotification(node, `Modified input: ${input.get().name}`);
+                        this.broadcastUpdate(node);
                         input.save();
-                    }).catch(err => {
+                    })
+                        .catch(err => {
                         this.webif.error(err);
                     });
                 }
                 else {
-                    this.webif.error("Input " + data.name + " not found");
+                    this.webif.error('Input ' + data.name + ' not found');
                 }
             }
             catch (err) {

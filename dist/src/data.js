@@ -363,6 +363,11 @@ class ManagedNodeStateListRegister extends ManagedNodeStateRegister {
     }
 }
 exports.ManagedNodeStateListRegister = ManagedNodeStateListRegister;
+class Publisher {
+    constructor() {
+    }
+}
+exports.Publisher = Publisher;
 class NodeModule {
     constructor(target) {
         this._registers = {};
@@ -809,7 +814,7 @@ class ServerModule {
             let node = this.server._nodes[nodeid];
             if (!node) {
                 log.error(`Node not found for message -${this._name}.${event} - node: ${nodeid}`);
-                socket.emit('error', `Node not found for id ${nodeid}`);
+                socket.emit('showerror', `Node not found for id ${nodeid}`);
                 return;
             }
             log.debug(`Dispatch event: -${this._name}.${event} - ${nodeid}`);
@@ -868,6 +873,14 @@ class Server {
             this.destroyNode(node);
             delete this._nodes[session.id().id];
         }
+    }
+    _notify_join_server_room(socket, module, topic) {
+    }
+    _notify_join_node_room(socket, nodeid, module, topic) {
+    }
+    _notify_leave_server_room(socket, module, topic) {
+    }
+    _notify_leave_node_room(socket, nodeid, module, topic) {
     }
 }
 exports.Server = Server;
