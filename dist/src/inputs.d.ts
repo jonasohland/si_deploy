@@ -57,10 +57,14 @@ export declare class NodeAudioInputManager extends NodeModule {
     destroy(): void;
     init(): void;
     start(): void;
+    joined(socket: SocketIO.Socket, topic: string): void;
+    left(socket: SocketIO.Socket, topic: string): void;
     _input_list: NodeAudioInputList;
     constructor();
 }
 export declare class AudioInputsManager extends ServerModule {
+    joined(socket: SocketIO.Socket, topic: string): void;
+    left(socket: SocketIO.Socket, topic: string): void;
     broadcastUpdate(node: DSPNode): void;
     init(): void;
     constructor();

@@ -203,6 +203,10 @@ class DSPController extends data_1.NodeModule {
         this.events.on('dsp-started', () => {
         });
     }
+    joined(socket, topic) {
+    }
+    left(socket, topic) {
+    }
     syncGraph() {
         return __awaiter(this, void 0, void 0, function* () {
             let self = this;

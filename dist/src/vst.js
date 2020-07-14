@@ -31,6 +31,10 @@ class VSTScanner extends data_1.NodeModule {
     start(remote) {
         this.requester = remote.getRequester("vst");
     }
+    joined(socket, topic) {
+    }
+    left(socket, topic) {
+    }
     waitPluginsScanned() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.requester.requestTmt('wait-scanned', 60000);

@@ -17,7 +17,9 @@ const socket_io_1 = __importDefault(require("socket.io"));
 const Logger = __importStar(require("./log"));
 const util_1 = require("./util");
 const data_1 = require("./data");
+const discovery_1 = require("./discovery");
 const web_interface_defs_1 = require("./web_interface_defs");
+const lodash_1 = __importDefault(require("lodash"));
 const log = Logger.get('WEBINT');
 // join ${nodeid}.${service}.${topic}
 // leave ${nodeid}.${service}.${topic}
@@ -28,6 +30,8 @@ function logany(...things) {
 }
 class WebInterfaceClient {
     constructor(socket, server) {
+        this._node_memberships = [];
+        this._server_memberships = [];
         this._socket = socket;
         this._server = server;
         log.info(`New WebInterface connection from agent ${this._socket.handshake.headers['user-agent']}`);
@@ -35,6 +39,7 @@ class WebInterfaceClient {
         this._socket.on('leave-node', this._on_leave_node.bind(this));
         this._socket.on('join-server', this._on_join_server.bind(this));
         this._socket.on('leave-server', this._on_leave_server.bind(this));
+        this._socket.on('disconnect', this._on_disconnect.bind(this));
     }
     _on_join_node(nodeid, module, topic) {
         let room = web_interface_defs_1.nodeRoomName(nodeid, module, topic);
@@ -43,6 +48,9 @@ class WebInterfaceClient {
                 log.error(`Socket could not join room: ` + err);
             else {
                 log.verbose(`WebIF joined room ${room}`);
+                let memi = this._node_memberships.findIndex(mem => lodash_1.default.isEqual(mem, { nodeid, module, topic }));
+                if (memi == -1)
+                    this._node_memberships.push({ nodeid, module, topic });
                 this._server._notify_join_node_room(this._socket, nodeid, module, topic);
             }
         });
@@ -54,6 +62,9 @@ class WebInterfaceClient {
                 log.error(`WebIF could not leave room: ` + err);
             else {
                 log.verbose(`WebIF left room ${room}`);
+                let memi = this._node_memberships.findIndex(mem => lodash_1.default.isEqual(mem, { nodeid, module, topic }));
+                if (memi != -1)
+                    this._node_memberships.splice(memi, 1);
                 this._server._notify_leave_node_room(this._socket, nodeid, module, topic);
             }
         });
@@ -65,6 +76,9 @@ class WebInterfaceClient {
                 log.error(`Socket could not join room: ` + err);
             else {
                 log.verbose(`WebIF joined room ${room}`);
+                let memi = this._server_memberships.findIndex(mem => lodash_1.default.isEqual(mem, { module, topic }));
+                if (memi == -1)
+                    this._server_memberships.push({ module, topic });
                 this._server._notify_join_server_room(this._socket, module, topic);
             }
         });
@@ -76,8 +90,21 @@ class WebInterfaceClient {
                 log.error(`Socket could not leave room: ` + err);
             else {
                 log.verbose(`WebIF left room ${room}`);
+                let memi = this._server_memberships.findIndex(mem => lodash_1.default.isEqual(mem, { module, topic }));
+                if (memi != -1)
+                    this._server_memberships.splice(memi, 1);
                 this._server._notify_leave_server_room(this._socket, module, topic);
             }
+        });
+    }
+    _on_disconnect() {
+        this._node_memberships.forEach(membership => {
+            log.verbose(`Socket disconnected, leaving room ${web_interface_defs_1.nodeRoomName(membership.nodeid, membership.module, membership.topic)}`);
+            this._server._notify_leave_node_room(this._socket, membership.nodeid, membership.module, membership.topic);
+        });
+        this._server_memberships.forEach(membership => {
+            log.verbose(`Socket disconnected, leaving room ${web_interface_defs_1.serverRoomName(membership.module, membership.topic)}`);
+            this._server._notify_leave_server_room(this._socket, membership.module, membership.topic);
         });
     }
     isMemeberOfServerRoom(module, topic) {
@@ -109,6 +136,8 @@ class WebInterface extends data_1.ServerModule {
         this._expressapp.use(static_middleware);
         if (options.webserver !== false) {
             this._http.listen(options.webserver_port, options.web_interface);
+            this._web_interface_advertiser = discovery_1.getWebinterfaceAdvertiser(options.webserver_port, options.web_interface);
+            this._web_interface_advertiser.start();
             log.info(`Serving webinterface on ${util_1.defaultIF(options.web_interface)}:${options.webserver_port}`);
         }
         this.io = socket_io_1.default.listen(45040);
@@ -121,6 +150,10 @@ class WebInterface extends data_1.ServerModule {
             });
             this._clients.push(new WebInterfaceClient(socket, this._server));
         });
+    }
+    joined(socket) {
+    }
+    left(socket) {
     }
     init() {
         this.events.on('webif-node-notify', (nodeid, msg) => {
@@ -150,6 +183,26 @@ class WebInterface extends data_1.ServerModule {
             else
                 log.error(`Could not deliver notification from node ${nodeid}: Node not found. MSG: ${msg}`);
         });
+    }
+    checkServerHasSubscribers(module, topic) {
+        for (let client of this._clients) {
+            if (client.isMemeberOfServerRoom(module, topic))
+                return true;
+        }
+        return false;
+    }
+    checkNodeHasSubscribers(nodeid, module, topic) {
+        for (let client of this._clients) {
+            if (client.isMemeberOfNodeRoom(nodeid, module, topic))
+                return true;
+        }
+        return false;
+    }
+    doPublishNode(nodeid, module, topic, event, ...data) {
+        this.io.to(web_interface_defs_1.nodeRoomName(nodeid, module, topic)).emit(event, ...data);
+    }
+    doPublishServer(module, topic, event, ...data) {
+        this.io.to(web_interface_defs_1.serverRoomName(module, topic)).emit(event, ...data);
     }
     attachServer(server) {
         this._server = server;

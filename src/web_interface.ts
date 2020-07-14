@@ -6,9 +6,11 @@ import SocketIO from 'socket.io';
 import * as Logger from './log';
 import {defaultIF} from './util';
 import { ServerModule, Node, Server } from './data';
-import { EventEmitter } from 'events';
+import { getWebinterfaceAdvertiser } from './discovery';
 
 import { nodeRoomName, serverRoomName } from './web_interface_defs'
+import _ from 'lodash';
+import { Advertisement } from 'dnssd';
 
 const log = Logger.get('WEBINT');
 
@@ -47,6 +49,17 @@ class WebInterfaceClient {
     _server: Server;
     _socket: SocketIO.Socket
 
+    _node_memberships: {
+        nodeid: string,
+        module: string,
+        topic: string
+    }[] = [];
+
+    _server_memberships: {
+        module: string,
+        topic: string
+    }[] = [];
+
     constructor(socket: SocketIO.Socket, server: Server)
     {
         this._socket = socket;
@@ -58,6 +71,7 @@ class WebInterfaceClient {
         this._socket.on('leave-node', this._on_leave_node.bind(this));
         this._socket.on('join-server', this._on_join_server.bind(this));
         this._socket.on('leave-server', this._on_leave_server.bind(this));
+        this._socket.on('disconnect', this._on_disconnect.bind(this));
     }
 
     _on_join_node(nodeid: string, module: string, topic: string)
@@ -68,6 +82,11 @@ class WebInterfaceClient {
                 log.error(`Socket could not join room: ` + err);
             else {
                 log.verbose(`WebIF joined room ${room}`);
+                
+                let memi = this._node_memberships.findIndex(mem => _.isEqual(mem, {nodeid, module, topic}));
+                if(memi == -1)
+                    this._node_memberships.push({ nodeid, module, topic });
+                
                 this._server._notify_join_node_room(this._socket, nodeid, module, topic);
             }
         });
@@ -81,6 +100,11 @@ class WebInterfaceClient {
                 log.error(`WebIF could not leave room: ` + err);
             else {
                 log.verbose(`WebIF left room ${room}`);
+                
+                let memi = this._node_memberships.findIndex(mem => _.isEqual(mem, {nodeid, module, topic}));
+                if(memi != -1)
+                    this._node_memberships.splice(memi, 1);
+
                 this._server._notify_leave_node_room(this._socket, nodeid, module, topic);
             }
         });
@@ -94,6 +118,11 @@ class WebInterfaceClient {
                 log.error(`Socket could not join room: ` + err);
             else {
                 log.verbose(`WebIF joined room ${room}`);
+
+                let memi = this._server_memberships.findIndex(mem => _.isEqual(mem, {module, topic}));
+                if(memi == -1)
+                    this._server_memberships.push({ module, topic });
+
                 this._server._notify_join_server_room(this._socket, module, topic);
             }
         });
@@ -107,8 +136,26 @@ class WebInterfaceClient {
                 log.error(`Socket could not leave room: ` + err);
             else {
                 log.verbose(`WebIF left room ${room}`);
+
+                let memi = this._server_memberships.findIndex(mem => _.isEqual(mem, {module, topic}));
+                if(memi != -1)
+                    this._server_memberships.splice(memi, 1);
+
                 this._server._notify_leave_server_room(this._socket, module, topic);
             }
+        });
+    }
+
+    _on_disconnect()
+    {
+        this._node_memberships.forEach(membership => {
+            log.verbose(`Socket disconnected, leaving room ${nodeRoomName(membership.nodeid, membership.module, membership.topic)}`);
+            this._server._notify_leave_node_room(this._socket, membership.nodeid, membership.module, membership.topic);
+        });
+
+        this._server_memberships.forEach(membership => {
+            log.verbose(`Socket disconnected, leaving room ${serverRoomName(membership.module, membership.topic)}`);
+            this._server._notify_leave_server_room(this._socket, membership.module, membership.topic);
         });
     }
 
@@ -134,6 +181,17 @@ export default class WebInterface extends ServerModule {
     private _webif_root: string = __dirname + '/../../../interface/dist';
     private _server: Server;
     private _clients: WebInterfaceClient[] = [];
+    private _web_interface_advertiser: Advertisement;
+
+    joined(socket: SocketIO.Socket)
+    {
+
+    }
+
+    left(socket: SocketIO.Socket)
+    {
+        
+    }
     
     init() {
         this.events.on('webif-node-notify', (nodeid: string, msg: string) => {
@@ -185,6 +243,8 @@ export default class WebInterface extends ServerModule {
 
         if (options.webserver !== false) {
             this._http.listen(options.webserver_port, options.web_interface);
+            this._web_interface_advertiser = getWebinterfaceAdvertiser(options.webserver_port, options.web_interface);
+            this._web_interface_advertiser.start();
             log.info(`Serving webinterface on ${
                 defaultIF(options.web_interface)}:${options.webserver_port}`);
         }
@@ -205,6 +265,34 @@ export default class WebInterface extends ServerModule {
 
             this._clients.push(new WebInterfaceClient(socket, this._server));
         });
+    }
+
+    checkServerHasSubscribers(module: string, topic: string)
+    {
+        for(let client of this._clients){
+            if(client.isMemeberOfServerRoom(module, topic))
+                return true;
+        }
+        return false;
+    }
+
+    checkNodeHasSubscribers(nodeid: string, module: string, topic: string)
+    {
+        for(let client of this._clients){
+            if(client.isMemeberOfNodeRoom(nodeid, module, topic))
+                return true;
+        }
+        return false;
+    }
+
+    doPublishNode(nodeid: string, module: string, topic: string, event: string, ...data: any[])
+    {
+        this.io.to(nodeRoomName(nodeid, module, topic)).emit(event, ...data);
+    }
+
+    doPublishServer(module: string, topic: string, event: string, ...data: any[])
+    {
+        this.io.to(serverRoomName(module, topic)).emit(event, ...data);
     }
 
     attachServer(server: Server)

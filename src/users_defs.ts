@@ -6,7 +6,8 @@ export class UserData {
     id: string;
     channel: number;
     headtracker: number;
-    source_ids: string[];
+    room: string;
+    input_ids: string[];
 }
 
 export function basicUserData(name: string, channel: number): UserData {
@@ -15,6 +16,7 @@ export function basicUserData(name: string, channel: number): UserData {
         channel,
         id: uniqueId(),
         headtracker: -1,
-        source_ids: []
+        input_ids: [],
+        room: null,
     }
 }

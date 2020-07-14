@@ -18,6 +18,7 @@ const web_interface_1 = __importDefault(require("./web_interface"));
 const data_1 = require("./data");
 const dsp_node_1 = require("./dsp_node");
 const users_1 = require("./users");
+const rooms_1 = require("./rooms");
 const log = Logger.get('SERVER');
 class SpatialIntercomServer extends data_1.Server {
     constructor(config) {
@@ -28,10 +29,12 @@ class SpatialIntercomServer extends data_1.Server {
         this.audio_devices = new audio_devices_1.AudioDevices();
         this.inputs = new inputs_1.AudioInputsManager();
         this.users = new users_1.UsersManager();
+        this.rooms = new rooms_1.Rooms();
         this.add(this.webif);
         this.add(this.audio_devices);
         this.add(this.inputs);
         this.add(this.users);
+        this.add(this.rooms);
     }
     createNode(id) {
         if (id.type == communication_1.NODE_TYPE.DSP_NODE)

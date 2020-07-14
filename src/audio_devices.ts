@@ -213,6 +213,16 @@ export class NodeAudioDevices extends NodeModule {
 
     _config: AudioDeviceConfiguration = new AudioDeviceConfiguration();
 
+    joined(socket: SocketIO.Socket, topic: string)
+    {
+
+    }
+
+    left(socket: SocketIO.Socket, topic: string)
+    {
+        
+    }
+
     async refresh()
     {
         let devices = await this._devmgmt.request('device-list');
@@ -476,6 +486,16 @@ export class NodeAudioDevices extends NodeModule {
 }
 
 export class AudioDevices extends ServerModule {
+
+    joined(socket: SocketIO.Socket, topic: string)
+    {
+
+    }
+
+    left(socket: SocketIO.Socket, topic: string)
+    {
+        
+    }
 
     init()
     {

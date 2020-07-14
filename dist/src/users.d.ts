@@ -84,12 +84,16 @@ declare class UserList extends ManagedNodeStateListRegister {
 export declare class NodeUsersManager extends NodeModule {
     _users: UserList;
     constructor();
+    joined(socket: SocketIO.Socket, topic: string): void;
+    left(socket: SocketIO.Socket, topic: string): void;
     init(): void;
     start(remote: Connection): void;
     destroy(): void;
 }
 export declare class UsersManager extends ServerModule {
     constructor();
+    joined(socket: SocketIO.Socket, topic: string): void;
+    left(socket: SocketIO.Socket, topic: string): void;
     init(): void;
 }
 export {};

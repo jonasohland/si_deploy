@@ -1,3 +1,4 @@
+/// <reference types="socket.io" />
 import { Requester, Connection } from './communication';
 import { NodeModule } from './data';
 export interface PluginDescription {
@@ -15,6 +16,8 @@ export declare class VSTScanner extends NodeModule {
     knownPlugins: PluginDescription[];
     requester: Requester;
     constructor();
+    joined(socket: SocketIO.Socket, topic: string): void;
+    left(socket: SocketIO.Socket, topic: string): void;
     waitPluginsScanned(): Promise<boolean>;
     isPluginInList(name: string): boolean;
     findPlugin(name: string): PluginDescription;

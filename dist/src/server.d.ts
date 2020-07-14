@@ -5,6 +5,7 @@ import { SIDSPNode } from './instance';
 import WebInterface from './web_interface';
 import { Server, Node } from './data';
 import { UsersManager } from './users';
+import { Rooms } from './rooms';
 export interface SocketAndInstance {
     instance: SIDSPNode;
 }
@@ -15,5 +16,6 @@ export declare class SpatialIntercomServer extends Server {
     audio_devices: AudioDevices;
     inputs: AudioInputsManager;
     users: UsersManager;
+    rooms: Rooms;
     constructor(config: any);
 }

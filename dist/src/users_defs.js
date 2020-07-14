@@ -10,7 +10,8 @@ function basicUserData(name, channel) {
         channel,
         id: uuid_1.v4(),
         headtracker: -1,
-        source_ids: []
+        input_ids: [],
+        room: null,
     };
 }
 exports.basicUserData = basicUserData;

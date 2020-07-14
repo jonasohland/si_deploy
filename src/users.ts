@@ -485,8 +485,19 @@ export class NodeUsersManager extends NodeModule {
         this.add(this._users, 'users');
     }
 
+    joined(socket: SocketIO.Socket, topic: string)
+    {
+
+    }
+
+    left(socket: SocketIO.Socket, topic: string)
+    {
+        
+    }
+
     init() {
     }
+
     start(remote: Connection) {
         this.save().catch(err => {
             log.error('Could write data to node ' + err);
@@ -501,6 +512,16 @@ export class UsersManager extends ServerModule {
 
     constructor() {
         super('users');
+    }
+
+    joined(socket: SocketIO.Socket, topic: string)
+    {
+
+    }
+
+    left(socket: SocketIO.Socket, topic: string)
+    {
+        
     }
 
     init() {

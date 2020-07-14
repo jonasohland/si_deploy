@@ -140,6 +140,10 @@ class NodeAudioDevices extends data_1.NodeModule {
         this._settings = new NodeAudioDeviceSettings(this);
         this.add(this._settings, 'audio-device-settings');
     }
+    joined(socket, topic) {
+    }
+    left(socket, topic) {
+    }
     refresh() {
         return __awaiter(this, void 0, void 0, function* () {
             let devices = yield this._devmgmt.request('device-list');
@@ -348,6 +352,10 @@ class NodeAudioDevices extends data_1.NodeModule {
 }
 exports.NodeAudioDevices = NodeAudioDevices;
 class AudioDevices extends data_1.ServerModule {
+    joined(socket, topic) {
+    }
+    left(socket, topic) {
+    }
     init() {
         this.handle('update', (socket, node, data) => {
             log.info(`Refreshing audio device data for node ${node.name()}`);

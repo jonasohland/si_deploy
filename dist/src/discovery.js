@@ -9,7 +9,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const dnssd = __importStar(require("dnssd"));
 function getWebinterfaceAdvertiser(port, netif) {
-    return new dnssd.Advertisement(dnssd.tcp('http'), port, { interface: netif, name: "Spatial Intercom Manager" });
+    return new dnssd.Advertisement(dnssd.tcp('http'), port, { interface: netif, name: "Spatial Intercom Manager", txt: { path: "/admin/settings" } });
 }
 exports.getWebinterfaceAdvertiser = getWebinterfaceAdvertiser;
 function getServerAdvertiser(port, netif) {

@@ -267,6 +267,13 @@ class ManagedNodeStateMapRegister extends ManagedNodeStateRegister {
     }
 }
 exports.ManagedNodeStateMapRegister = ManagedNodeStateMapRegister;
+class Publisher {
+    constructor() {
+    }
+    _pub_init(server) {
+    }
+}
+exports.Publisher = Publisher;
 class ManagedNodeStateListRegister extends ManagedNodeStateRegister {
     constructor() {
         super();
@@ -363,20 +370,24 @@ class ManagedNodeStateListRegister extends ManagedNodeStateRegister {
     }
 }
 exports.ManagedNodeStateListRegister = ManagedNodeStateListRegister;
-class Publisher {
-    constructor() {
-    }
-}
-exports.Publisher = Publisher;
-class NodeModule {
+class NodeModule extends Publisher {
     constructor(target) {
+        super();
         this._registers = {};
         this._name = target;
         this._uid = uuid_1.v4();
     }
-    _init(parent) {
+    publish(topic, event, ...data) {
+        this._server._do_publish_node(this.myNodeId(), this._name, topic, event, ...data);
+    }
+    hasSubs(topic) {
+        return this._server._check_node_has_subscribers(this.myNodeId(), this._name, topic);
+    }
+    _init(parent, server) {
         this._parent = parent;
+        this._server = server;
         this.events = this._parent.events;
+        this._pub_init(server);
         this.init();
     }
     _start(remote) {
@@ -551,9 +562,18 @@ class NodeDataStorage extends communication_1.NodeMessageInterceptor {
             if (regidx != -1) {
                 let reg = mod.registers[regidx];
                 if (reg.map) {
-                    reg
-                        .objects[msg.data.name]
-                        = msg.data.data;
+                    if (reg
+                        .objects[msg.data.name] == null) {
+                        reg
+                            .objects[msg.data.name] = { data: msg.data.data, object_id: msg.data.object_id, uid: msg.data.uid };
+                    }
+                    else {
+                        let obj = reg
+                            .objects[msg.data.name];
+                        obj.data = msg.data.data;
+                        obj.object_id = msg.data.object_id;
+                        obj.uid = msg.data.uid;
+                    }
                 }
                 else {
                     let listreg = reg;
@@ -669,16 +689,17 @@ class Node {
         for (let key of keys)
             this._modules[key].destroy();
     }
-    _init(remote, node_events) {
-        this.events = node_events;
-        this._remote = remote;
-        this._state_manager = this._remote.getRequester('state-manager');
-        this.init();
-        let modnames = Object.keys(this._modules);
-        for (let mod of modnames) {
-            this._modules[mod]._init(this);
-        }
-        this._reload_data_from_node().then(() => {
+    _init(remote, node_events, server) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.events = node_events;
+            this._remote = remote;
+            this._state_manager = this._remote.getRequester('state-manager');
+            this.init();
+            let modnames = Object.keys(this._modules);
+            for (let mod of modnames) {
+                this._modules[mod]._init(this, server);
+            }
+            yield this._reload_data_from_node();
             for (let mod of modnames) {
                 this._modules[mod]._start(remote);
             }
@@ -796,15 +817,23 @@ class Node {
     }
 }
 exports.Node = Node;
-class ServerModule {
+class ServerModule extends Publisher {
     constructor(name) {
+        super();
         this._name = name;
     }
     _init(srv, webif, events) {
         this.webif = webif;
         this.server = srv;
         this.events = events;
+        this._pub_init(this.server);
         this.init();
+    }
+    publish(topic, event, ...data) {
+        this.server._do_publish_server(this._name, topic, event, ...data);
+    }
+    hasSubs(topic) {
+        return this.server._check_server_has_subscribers(this._name, topic);
     }
     getNode(id) {
         return this.server._nodes[id];
@@ -829,15 +858,22 @@ class ServerModule {
 }
 exports.ServerModule = ServerModule;
 class ServerInternalsModule extends ServerModule {
+    joined(socket, topic) {
+        socket.emit('server.nodes', this.nodeIdList());
+    }
+    left(socket, topic) {
+    }
+    nodesChanged() {
+        this.publish('nodes', 'server.nodes', this.nodeIdList());
+    }
+    nodeIdList() {
+        let ids = Object.keys(this.server._nodes);
+        let out = [];
+        for (let id of ids)
+            out.push(this.server._nodes[id]._id);
+        return out;
+    }
     init() {
-        this.handleGlobal('nodes', (socket, data) => {
-            let ids = Object.keys(this.server._nodes);
-            let out = [];
-            for (let id of ids)
-                out.push(this.server._nodes[id]._id);
-            log.info(`Sending node information`);
-            socket.emit('server.nodes', out);
-        });
     }
     constructor() {
         super('server');
@@ -853,7 +889,8 @@ class Server {
         this._webif = webif;
         this._srv.on('add-session', this._on_add_remote.bind(this));
         this._srv.on('remove-session', this._on_remove_remote.bind(this));
-        this.add(new ServerInternalsModule());
+        this._internals = new ServerInternalsModule();
+        this.add(this._internals);
     }
     add(module) {
         this._modules[module._name] = module;
@@ -862,8 +899,10 @@ class Server {
     _on_add_remote(session) {
         log.info(`Create new node instance for [${communication_1.NODE_TYPE[session.id().type]}] ${session.id().name}`);
         let node = this.createNode(session.id());
-        this._nodes[node.id()] = node;
-        node._init(session, this._event_bus);
+        node._init(session, this._event_bus, this).then(() => {
+            this._nodes[node.id()] = node;
+            this._internals.nodesChanged();
+        });
     }
     _on_remove_remote(session) {
         let node = this._nodes[session.id().id];
@@ -872,15 +911,52 @@ class Server {
             node._destroy();
             this.destroyNode(node);
             delete this._nodes[session.id().id];
+            this._internals.nodesChanged();
         }
     }
+    _check_server_has_subscribers(module, topic) {
+        return this._webif.checkServerHasSubscribers(module, topic);
+    }
+    _check_node_has_subscribers(nodeid, module, topic) {
+        return this._webif.checkNodeHasSubscribers(nodeid, module, topic);
+    }
+    _do_publish_server(module, topic, event, ...data) {
+        this._webif.doPublishServer(module, topic, event, ...data);
+    }
+    _do_publish_node(nodeid, module, topic, event, ...data) {
+        this._webif.doPublishNode(nodeid, module, topic, event, ...data);
+    }
     _notify_join_server_room(socket, module, topic) {
+        if (this._modules[module])
+            this._modules[module].joined(socket, topic);
+        else
+            log.warn(`Server module '${module}' not found. Could not deliver join notification`);
     }
     _notify_join_node_room(socket, nodeid, module, topic) {
+        if (this._nodes[nodeid]) {
+            if (this._nodes[nodeid]._modules[module])
+                this._nodes[nodeid]._modules[module].joined(socket, topic);
+            else
+                log.warn(`Node module '${module}' not found. Could not deliver join notification`);
+        }
+        else
+            log.warn(`Node ${nodeid} not found. Could not deliver join notification`);
     }
     _notify_leave_server_room(socket, module, topic) {
+        if (this._modules[module])
+            this._modules[module].left(socket, topic);
+        else
+            log.warn(`Server module '${module}' not found. Could not deliver leave notification`);
     }
     _notify_leave_node_room(socket, nodeid, module, topic) {
+        if (this._nodes[nodeid]) {
+            if (this._nodes[nodeid]._modules[module])
+                this._nodes[nodeid]._modules[module].left(socket, topic);
+            else
+                log.warn(`Node module '${module}' not found. Could not deliver leave notification`);
+        }
+        else
+            log.warn(`Node ${nodeid} not found. Could not deliver leave notification`);
     }
 }
 exports.Server = Server;

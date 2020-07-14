@@ -3,6 +3,7 @@ export declare class UserData {
     id: string;
     channel: number;
     headtracker: number;
-    source_ids: string[];
+    room: string;
+    input_ids: string[];
 }
 export declare function basicUserData(name: string, channel: number): UserData;

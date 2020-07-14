@@ -81,6 +81,8 @@ export declare class NodeAudioDevices extends NodeModule {
     _is_open: boolean;
     _is_enabled: boolean;
     _config: AudioDeviceConfiguration;
+    joined(socket: SocketIO.Socket, topic: string): void;
+    left(socket: SocketIO.Socket, topic: string): void;
     refresh(): Promise<void>;
     getNodeDevicesInformation(): Promise<NodeAudioDevicesInformation>;
     getChannelList(): Promise<ChannelList>;
@@ -102,6 +104,8 @@ export declare class NodeAudioDevices extends NodeModule {
     constructor();
 }
 export declare class AudioDevices extends ServerModule {
+    joined(socket: SocketIO.Socket, topic: string): void;
+    left(socket: SocketIO.Socket, topic: string): void;
     init(): void;
     endTransaction(socket: SocketIO.Socket): void;
     endTransactionWithError(socket: SocketIO.Socket, error: any): void;

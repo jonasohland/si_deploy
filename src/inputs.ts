@@ -227,6 +227,16 @@ export class NodeAudioInputManager extends NodeModule {
         });
     }
 
+    joined(socket: SocketIO.Socket, topic: string)
+    {
+
+    }
+
+    left(socket: SocketIO.Socket, topic: string)
+    {
+        
+    }
+
     _input_list: NodeAudioInputList;
 
     constructor()
@@ -238,6 +248,16 @@ export class NodeAudioInputManager extends NodeModule {
 }
 
 export class AudioInputsManager extends ServerModule {
+
+    joined(socket: SocketIO.Socket, topic: string)
+    {
+
+    }
+
+    left(socket: SocketIO.Socket, topic: string)
+    {
+        
+    }
 
     broadcastUpdate(node: DSPNode)
     {

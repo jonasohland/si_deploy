@@ -11,8 +11,15 @@ export default class WebInterface extends ServerModule {
     private _webif_root;
     private _server;
     private _clients;
+    private _web_interface_advertiser;
+    joined(socket: SocketIO.Socket): void;
+    left(socket: SocketIO.Socket): void;
     init(): void;
     constructor(options: any);
+    checkServerHasSubscribers(module: string, topic: string): boolean;
+    checkNodeHasSubscribers(nodeid: string, module: string, topic: string): boolean;
+    doPublishNode(nodeid: string, module: string, topic: string, event: string, ...data: any[]): void;
+    doPublishServer(module: string, topic: string, event: string, ...data: any[]): void;
     attachServer(server: Server): void;
     reportDispatchError(error_string: string, command: string): void;
     error(err: any): void;

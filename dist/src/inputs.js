@@ -182,9 +182,17 @@ class NodeAudioInputManager extends data_1.NodeModule {
             log.error('Could write data to node ' + err);
         });
     }
+    joined(socket, topic) {
+    }
+    left(socket, topic) {
+    }
 }
 exports.NodeAudioInputManager = NodeAudioInputManager;
 class AudioInputsManager extends data_1.ServerModule {
+    joined(socket, topic) {
+    }
+    left(socket, topic) {
+    }
     broadcastUpdate(node) {
         this.webif.broadcastEvent('inputs.update', node.id(), node.inputs.getRawInputDescriptionList());
     }

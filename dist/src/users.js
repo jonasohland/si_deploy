@@ -318,6 +318,10 @@ class NodeUsersManager extends data_1.NodeModule {
         this._users = new UserList();
         this.add(this._users, 'users');
     }
+    joined(socket, topic) {
+    }
+    left(socket, topic) {
+    }
     init() {
     }
     start(remote) {
@@ -332,6 +336,10 @@ exports.NodeUsersManager = NodeUsersManager;
 class UsersManager extends data_1.ServerModule {
     constructor() {
         super('users');
+    }
+    joined(socket, topic) {
+    }
+    left(socket, topic) {
     }
     init() {
     }

@@ -1,3 +1,4 @@
+/// <reference types="socket.io" />
 import { NodeMessageInterceptor, Message, Requester, Connection } from './communication';
 import { IPCServer } from './ipc';
 import { NodeModule } from './data';
@@ -25,6 +26,8 @@ export declare class DSPController extends NodeModule {
     destroy(): void;
     init(): void;
     start(remote: Connection): void;
+    joined(socket: SocketIO.Socket, topic: string): void;
+    left(socket: SocketIO.Socket, topic: string): void;
     _remote: Requester;
     _remote_graph: Requester;
     _running: boolean;
