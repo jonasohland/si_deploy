@@ -28,7 +28,7 @@ const communication_1 = require("./communication");
 const util_1 = require("./util");
 // i will have to write this myself
 const event_to_promise_1 = __importDefault(require("event-to-promise"));
-const data_1 = require("./data");
+const core_1 = require("./core");
 const dsp_1 = require("./dsp");
 const log = Logger.get("DSPROC");
 class LocalNodeController extends communication_1.NodeMessageInterceptor {
@@ -168,7 +168,7 @@ class LocalNodeController extends communication_1.NodeMessageInterceptor {
     }
 }
 exports.LocalNodeController = LocalNodeController;
-class DSPController extends data_1.NodeModule {
+class DSPController extends core_1.NodeModule {
     constructor(vst) {
         super("dsp-process");
         this._closed = false;

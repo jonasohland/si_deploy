@@ -1,6 +1,6 @@
 /// <reference types="socket.io" />
 import { Connection, Requester } from './communication';
-import { ManagedNodeStateMapRegister, ManagedNodeStateObject, NodeModule, ServerModule } from './data';
+import { ManagedNodeStateMapRegister, ManagedNodeStateObject, NodeModule, ServerModule } from './core';
 export interface Channel {
     i: number;
     name: string;

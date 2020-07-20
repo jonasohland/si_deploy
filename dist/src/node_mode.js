@@ -12,7 +12,7 @@ const communication_1 = require("./communication");
 const IPC = __importStar(require("./ipc"));
 const server_config = __importStar(require("./server_config"));
 const dsp_process_1 = require("./dsp_process");
-const data_1 = require("./data");
+const core_1 = require("./core");
 const local_addresses = [];
 const ifaces = os.networkInterfaces();
 Object.keys(ifaces).forEach(function (ifname) {
@@ -30,7 +30,7 @@ function default_1(options) {
     const ipc = new IPC.IPCServer();
     const wsclient = new communication_1.SINodeWSClient(config, ipc);
     const dspp = new dsp_process_1.LocalNodeController(config, ipc);
-    const state = new data_1.NodeDataStorage(config);
+    const state = new core_1.NodeDataStorage(config);
     wsclient.addWSInterceptor(dspp);
     wsclient.addWSInterceptor(state);
 }

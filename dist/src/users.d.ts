@@ -2,14 +2,14 @@
 /// <reference types="node" />
 import EventEmitter from 'events';
 import * as Audio from './audio_devices';
+import { Connection } from './communication';
+import { ManagedNodeStateListRegister, ManagedNodeStateObject, NodeModule, ServerModule } from './core';
 import { BasicUserModule, SpatializationModule } from './dsp_modules';
+import { Headtracking } from './headtracking';
 import * as Inputs from './inputs';
 import * as Instance from './instance';
-import { Headtracking } from './headtracking';
+import { SpatializedInputData, UserData } from './users_defs';
 import WebInterface from './web_interface';
-import { NodeModule, ServerModule, ManagedNodeStateListRegister, ManagedNodeStateObject } from './data';
-import { Connection } from './communication';
-import { UserData } from './users_defs';
 export interface OwnedInput {
     id: number;
     input: Inputs.Input;
@@ -77,18 +77,34 @@ declare class User extends ManagedNodeStateObject<UserData> {
     set(val: UserData): Promise<void>;
     get(): UserData;
 }
+declare class SpatializedInput extends ManagedNodeStateObject<SpatializedInputData> {
+    data: SpatializedInputData;
+    constructor(data: SpatializedInputData);
+    set(val: SpatializedInputData): Promise<void>;
+    get(): SpatializedInputData;
+}
 declare class UserList extends ManagedNodeStateListRegister {
     remove(obj: ManagedNodeStateObject<any>): Promise<void>;
     insert(obj: any): Promise<User>;
 }
+declare class SpatializedInputsList extends ManagedNodeStateListRegister {
+    remove(obj: ManagedNodeStateObject<any>): Promise<void>;
+    insert(data: any): Promise<SpatializedInput>;
+}
 export declare class NodeUsersManager extends NodeModule {
     _users: UserList;
+    _inputs: SpatializedInputsList;
     constructor();
+    addUser(userdata: UserData): void;
+    removeUser(userid: string): void;
     joined(socket: SocketIO.Socket, topic: string): void;
     left(socket: SocketIO.Socket, topic: string): void;
     init(): void;
+    updateWebInterfaces(): void;
+    listUsers(): any[];
     start(remote: Connection): void;
     destroy(): void;
+    getUsersInputs(userid: string): ManagedNodeStateObject<SpatializedInputData>[];
 }
 export declare class UsersManager extends ServerModule {
     constructor();

@@ -1,7 +1,7 @@
 /// <reference types="socket.io" />
 import { NodeMessageInterceptor, Message, Requester, Connection } from './communication';
 import { IPCServer } from './ipc';
-import { NodeModule } from './data';
+import { NodeModule } from './core';
 import { Graph } from './dsp';
 import { VSTScanner } from './vst';
 export declare class LocalNodeController extends NodeMessageInterceptor {

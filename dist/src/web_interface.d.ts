@@ -1,5 +1,5 @@
 import SocketIO from 'socket.io';
-import { ServerModule, Node, Server } from './data';
+import { ServerModule, Node, Server } from './core';
 interface WEBIFEventHandler {
     thisarg: any;
     handler: (...args: any[]) => void;

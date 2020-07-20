@@ -5,7 +5,7 @@ import SocketIO from 'socket.io';
 
 import * as Logger from './log';
 import {defaultIF} from './util';
-import { ServerModule, Node, Server } from './data';
+import { ServerModule, Node, Server } from './core';
 import { getWebinterfaceAdvertiser } from './discovery';
 
 import { nodeRoomName, serverRoomName } from './web_interface_defs'
@@ -334,10 +334,10 @@ export default class WebInterface extends ServerModule {
     broadcastError(title: string, err: any)
     {
         if(err instanceof Error) {
-            this.io.emit('error', title, err.message);
+            this.io.emit('showerror', title, err.message);
         } 
         else if(typeof err == 'string') {
-            this.io.emit('error', title, err);
+            this.io.emit('showerror', title, err);
         } else {
             log.error("Unrecognized error type: Error: " + err);
         }

@@ -1,8 +1,8 @@
 /// <reference types="node" />
 import { EventEmitter } from 'events';
 import * as COM from './communication';
-import { VSTScanner } from './vst';
 import { PortTypes } from './dsp_defs';
+import { VSTScanner } from './vst';
 export declare class AmbisonicsProperties {
     order: number;
     normalization: string;

@@ -16,7 +16,7 @@ const http = __importStar(require("http"));
 const socket_io_1 = __importDefault(require("socket.io"));
 const Logger = __importStar(require("./log"));
 const util_1 = require("./util");
-const data_1 = require("./data");
+const core_1 = require("./core");
 const discovery_1 = require("./discovery");
 const web_interface_defs_1 = require("./web_interface_defs");
 const lodash_1 = __importDefault(require("lodash"));
@@ -117,7 +117,7 @@ class WebInterfaceClient {
         return this._socket;
     }
 }
-class WebInterface extends data_1.ServerModule {
+class WebInterface extends core_1.ServerModule {
     constructor(options) {
         super('webinterface');
         this._webif_root = __dirname + '/../../../interface/dist';
@@ -227,10 +227,10 @@ class WebInterface extends data_1.ServerModule {
     }
     broadcastError(title, err) {
         if (err instanceof Error) {
-            this.io.emit('error', title, err.message);
+            this.io.emit('showerror', title, err.message);
         }
         else if (typeof err == 'string') {
-            this.io.emit('error', title, err);
+            this.io.emit('showerror', title, err);
         }
         else {
             log.error("Unrecognized error type: Error: " + err);

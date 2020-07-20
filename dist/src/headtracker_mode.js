@@ -195,7 +195,7 @@ function runLatencyTest(p, options) {
     });
 }
 function runNormalMode(p, options) {
-    let headtracking = new headtracking_1.Headtracking(new web_interface_1.default(options), sfman);
+    let headtracking = new headtracking_1.Headtracking(new web_interface_1.default(options));
     if (options.oscControl)
         new OSCController(headtracking, options);
     let adapter;

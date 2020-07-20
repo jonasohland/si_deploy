@@ -1,9 +1,10 @@
 import { AudioDevices } from './audio_devices';
 import { NodeIdentification } from './communication';
+import { Headtracking } from './headtracking';
 import { AudioInputsManager } from './inputs';
 import { SIDSPNode } from './instance';
 import WebInterface from './web_interface';
-import { Server, Node } from './data';
+import { Server, Node } from './core';
 import { UsersManager } from './users';
 import { Rooms } from './rooms';
 export interface SocketAndInstance {
@@ -17,5 +18,6 @@ export declare class SpatialIntercomServer extends Server {
     inputs: AudioInputsManager;
     users: UsersManager;
     rooms: Rooms;
+    headtracking: Headtracking;
     constructor(config: any);
 }

@@ -16,7 +16,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const data_1 = require("./data");
+const core_1 = require("./core");
 const Logger = __importStar(require("./log"));
 const showfiles_1 = require("./showfiles");
 const log = Logger.get('INP');
@@ -122,7 +122,7 @@ class InputManager extends showfiles_1.ShowfileTarget {
     }
 }
 exports.InputManager = InputManager;
-class NodeAudioInput extends data_1.ManagedNodeStateObject {
+class NodeAudioInput extends core_1.ManagedNodeStateObject {
     constructor(desc) {
         super();
         this._description = desc;
@@ -137,7 +137,7 @@ class NodeAudioInput extends data_1.ManagedNodeStateObject {
     }
 }
 exports.NodeAudioInput = NodeAudioInput;
-class NodeAudioInputList extends data_1.ManagedNodeStateListRegister {
+class NodeAudioInputList extends core_1.ManagedNodeStateListRegister {
     remove(obj) {
         return __awaiter(this, void 0, void 0, function* () {
         });
@@ -149,7 +149,7 @@ class NodeAudioInputList extends data_1.ManagedNodeStateListRegister {
     }
 }
 exports.NodeAudioInputList = NodeAudioInputList;
-class NodeAudioInputManager extends data_1.NodeModule {
+class NodeAudioInputManager extends core_1.NodeModule {
     constructor() {
         super('nodeinputs');
         this._input_list = new NodeAudioInputList();
@@ -188,7 +188,7 @@ class NodeAudioInputManager extends data_1.NodeModule {
     }
 }
 exports.NodeAudioInputManager = NodeAudioInputManager;
-class AudioInputsManager extends data_1.ServerModule {
+class AudioInputsManager extends core_1.ServerModule {
     joined(socket, topic) {
     }
     left(socket, topic) {

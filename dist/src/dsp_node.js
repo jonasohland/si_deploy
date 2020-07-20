@@ -1,13 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const data_1 = require("./data");
+const core_1 = require("./core");
 const inputs_1 = require("./inputs");
 const dsp_process_1 = require("./dsp_process");
 const vst_1 = require("./vst");
 const audio_devices_1 = require("./audio_devices");
 const users_1 = require("./users");
 const rooms_1 = require("./rooms");
-class DSPNode extends data_1.Node {
+const uuid_1 = require("uuid");
+console.log(uuid_1.v1());
+class DSPNode extends core_1.Node {
     constructor(id) {
         super(id);
         this.inputs = new inputs_1.NodeAudioInputManager();

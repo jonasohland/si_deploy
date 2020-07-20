@@ -8,8 +8,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const events_1 = require("events");
-const Logger = __importStar(require("./log"));
 const dsp_defs_1 = require("./dsp_defs");
+const Logger = __importStar(require("./log"));
 const log = Logger.get('DSP');
 function _portarr_chcount(ports) {
     return ports.reduce((count, port) => { return count + port.c; }, 0);
@@ -299,8 +299,7 @@ class Graph {
         this.vst = vst;
     }
     addNode(node) {
-        let node_id = this.node_count;
-        ++this.node_count;
+        let node_id = this.node_count++;
         node._set_nodeid(node_id);
         this.nodes.push(node);
         if (node instanceof NativeNode)
@@ -366,7 +365,7 @@ class Graph {
     removeModule(mod) {
         let mod_idx = this.modules.indexOf(mod);
         if (mod_idx == -1)
-            return null && log.error("Could not find Module to remove");
+            return null && log.error('Could not find Module to remove');
         let removed = this.modules.splice(mod_idx, 1)[0];
         if (removed)
             removed.destroy(this);

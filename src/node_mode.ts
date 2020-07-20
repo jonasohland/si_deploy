@@ -8,7 +8,7 @@ import * as IPC from './ipc'
 import * as server_config from './server_config'
 import { LocalNodeController } from './dsp_process';
 import { log } from 'winston';
-import { NodeDataStorage } from './data';
+import { NodeDataStorage } from './core';
 
 const local_addresses = <string[]>[];
 

@@ -9,7 +9,7 @@ import { ignore, promisifyEventWithTimeout } from './util';
 
 // i will have to write this myself
 import eventToPromise from 'event-to-promise';
-import { Node, NodeModule } from './data';
+import { Node, NodeModule } from './core';
 import { Graph } from './dsp';
 import { VSTScanner } from './vst';
 

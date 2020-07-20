@@ -1,4 +1,4 @@
-import { Node } from './data';
+import { Node } from './core';
 import { NodeIdentification } from './communication';
 import { NodeAudioInputManager } from './inputs';
 import { DSPController } from './dsp_process';

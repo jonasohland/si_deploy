@@ -20,10 +20,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const events_1 = __importDefault(require("events"));
+const core_1 = require("./core");
 const dsp_modules_1 = require("./dsp_modules");
 const Logger = __importStar(require("./log"));
-const data_1 = require("./data");
-const log = Logger.get('USR');
+const log = Logger.get('USERSM');
 class OLDUser {
     constructor(instance, name) {
         this.htrk = -1;
@@ -106,7 +106,8 @@ class OLDUsersManager extends events_1.default {
     }
     addUser(userdata) {
         /* let ins  = this.inputs.devices.instances.find(ins => ins.id
-                                                            == userdata.nodeid); */
+                                                            == userdata.nodeid);
+         */
         /* let user = new User(ins, userdata.username);
 
         user.advanced       = false;
@@ -153,7 +154,8 @@ class OLDUsersManager extends events_1.default {
                         inputs: user.inputs.map(input => {
                             let obj = {};
                             Object.assign(obj, input);
-                            // this needs to be deleted because it contains circular dependencies
+                            // this needs to be deleted because it contains circular
+                            // dependencies
                             delete obj.dspModule;
                             return obj;
                         })
@@ -169,7 +171,8 @@ class OLDUsersManager extends events_1.default {
             });
             // let channels = await this.inputs.devices.getAllChannelLists();
             socket.emit('users.update', { nodes: update_users, inputs: update_aux, channels: null });
-            socket.emit('users.headtrackers.update', this.htrks.trackers.filter(trk => trk.remote.conf).map(trk => trk.remote.id));
+            socket.emit('users.headtrackers.update', this.htrks.trackers.filter(trk => trk.remote.conf)
+                .map(trk => trk.remote.id));
         });
     }
     userInputsChanged(data) {
@@ -260,7 +263,8 @@ class OLDUsersManager extends events_1.default {
         usr.htrk = htrkId;
         if (usr.dspModule)
             usr.dspModule.assignHeadtracker(htrkId);
-        let trk = this.htrks.trackers.find(htrk => htrk.remote.conf.deviceID() == htrkId);
+        let trk = this.htrks.trackers.find(htrk => htrk.remote.conf.deviceID()
+            == htrkId);
         if (trk) {
             return (trk.setStreamDest(node.si.addresses[0], 45667));
         }
@@ -283,12 +287,13 @@ class OLDUsersManager extends events_1.default {
         if (!usr.advanced)
             return;
         usr.inputs.forEach(input => {
-            input.dspModule.setRoomCharacter(value);
+            input.dspModule
+                .setRoomCharacter(value);
         });
     }
 }
 exports.OLDUsersManager = OLDUsersManager;
-class User extends data_1.ManagedNodeStateObject {
+class User extends core_1.ManagedNodeStateObject {
     constructor(data) {
         super();
         this.data = data;
@@ -301,7 +306,21 @@ class User extends data_1.ManagedNodeStateObject {
         return this.data;
     }
 }
-class UserList extends data_1.ManagedNodeStateListRegister {
+class SpatializedInput extends core_1.ManagedNodeStateObject {
+    constructor(data) {
+        super();
+        this.data = data;
+    }
+    set(val) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.data = val;
+        });
+    }
+    get() {
+        return this.data;
+    }
+}
+class UserList extends core_1.ManagedNodeStateListRegister {
     remove(obj) {
         return __awaiter(this, void 0, void 0, function* () {
         });
@@ -312,17 +331,73 @@ class UserList extends data_1.ManagedNodeStateListRegister {
         });
     }
 }
-class NodeUsersManager extends data_1.NodeModule {
+class SpatializedInputsList extends core_1.ManagedNodeStateListRegister {
+    remove(obj) {
+        return __awaiter(this, void 0, void 0, function* () {
+        });
+    }
+    insert(data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new SpatializedInput(data);
+        });
+    }
+}
+class NodeUsersManager extends core_1.NodeModule {
     constructor() {
-        super('nodeusers');
+        super('users');
         this._users = new UserList();
+        this._inputs = new SpatializedInputsList();
         this.add(this._users, 'users');
+        this.add(this._inputs, 'inputs');
+    }
+    addUser(userdata) {
+        this._users.add(new User(userdata));
+        this._users.save();
+        this.updateWebInterfaces();
+    }
+    removeUser(userid) {
+        let obj = this._users._objects.find((obj) => obj.get().id === userid);
+        if (obj) {
+            let userdata = obj.get();
+            let inputs_changed = false;
+            userdata.inputs
+                .forEach((input) => {
+                let inp = this._inputs._objects.find((obj) => obj.get().id === input);
+                if (inp) {
+                    this._inputs.removeItem(inp);
+                    inputs_changed = true;
+                }
+            });
+            this._users.removeItem(obj);
+            this._users.save();
+            if (inputs_changed)
+                this._inputs.save();
+            this.updateWebInterfaces();
+        }
     }
     joined(socket, topic) {
+        if (topic == 'users')
+            socket.emit('node.users.update', this.myNodeId(), this.listUsers());
+        else if (topic.startsWith('userinputs-')) {
+            let userid = topic.slice(11);
+            try {
+                let inputs = this.getUsersInputs(userid);
+                socket.emit('user.inputs.update', userid, inputs.map(input => input.get()));
+            }
+            catch (err) {
+                this._server._webif.error(err);
+            }
+        }
     }
     left(socket, topic) {
     }
     init() {
+    }
+    updateWebInterfaces() {
+        this.publish('users', 'node.users.update', this.myNodeId(), this.listUsers());
+    }
+    listUsers() {
+        return this._users._object_iter().map(obj => obj.get());
     }
     start(remote) {
         this.save().catch(err => {
@@ -331,9 +406,24 @@ class NodeUsersManager extends data_1.NodeModule {
     }
     destroy() {
     }
+    getUsersInputs(userid) {
+        let user = this._users._objects.find((obj) => obj.get().id == userid);
+        if (user == null)
+            throw 'User not found';
+        let userdata = user.get();
+        let inputs = [];
+        userdata.inputs.forEach(input => {
+            let ip = this._inputs
+                ._objects.find((inp) => inp.get().id
+                === input);
+            if (ip)
+                inputs.push(ip);
+        });
+        return inputs;
+    }
 }
 exports.NodeUsersManager = NodeUsersManager;
-class UsersManager extends data_1.ServerModule {
+class UsersManager extends core_1.ServerModule {
     constructor() {
         super('users');
     }
@@ -342,6 +432,19 @@ class UsersManager extends data_1.ServerModule {
     left(socket, topic) {
     }
     init() {
+        this.handle('add.user', (socket, node, data) => {
+            if (data.channel != null) {
+                node.users.addUser(data);
+            }
+            else
+                this.webif.broadcastWarning(node.name(), 'Could not add user: Missing data');
+        });
+        this.handle('add.userinput', (socket, node, data) => {
+        });
+        this.handle('modify.user', (socket, node, data) => {
+        });
+        this.handle('modify.userinput', (socket, node, data) => {
+        });
     }
 }
 exports.UsersManager = UsersManager;

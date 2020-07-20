@@ -16,7 +16,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const data_1 = require("./data");
+const core_1 = require("./core");
 const Logger = __importStar(require("./log"));
 const web_interface_defs_1 = require("./web_interface_defs");
 const log = Logger.get('AUDDEV');
@@ -31,7 +31,7 @@ class AudioDeviceConfiguration {
     }
 }
 exports.AudioDeviceConfiguration = AudioDeviceConfiguration;
-class NodeSelectedAudioDeviceSettings extends data_1.ManagedNodeStateObject {
+class NodeSelectedAudioDeviceSettings extends core_1.ManagedNodeStateObject {
     constructor(ctrl, input, output) {
         super();
         this.controller = ctrl;
@@ -53,7 +53,7 @@ class NodeSelectedAudioDeviceSettings extends data_1.ManagedNodeStateObject {
     }
 }
 exports.NodeSelectedAudioDeviceSettings = NodeSelectedAudioDeviceSettings;
-class NodePlaybackSettings extends data_1.ManagedNodeStateObject {
+class NodePlaybackSettings extends core_1.ManagedNodeStateObject {
     constructor(controller, srate, bufsize) {
         super();
         this.controller = controller;
@@ -75,7 +75,7 @@ class NodePlaybackSettings extends data_1.ManagedNodeStateObject {
     }
 }
 exports.NodePlaybackSettings = NodePlaybackSettings;
-class NodeAudioDeviceSettings extends data_1.ManagedNodeStateMapRegister {
+class NodeAudioDeviceSettings extends core_1.ManagedNodeStateMapRegister {
     constructor(ctrl) {
         super();
         this.controller = ctrl;
@@ -128,7 +128,7 @@ class NodeAudioDeviceSettings extends data_1.ManagedNodeStateMapRegister {
     }
 }
 exports.NodeAudioDeviceSettings = NodeAudioDeviceSettings;
-class NodeAudioDevices extends data_1.NodeModule {
+class NodeAudioDevices extends core_1.NodeModule {
     constructor() {
         super('node-audio-devices');
         this._chlis_valid = false;
@@ -351,7 +351,7 @@ class NodeAudioDevices extends data_1.NodeModule {
     }
 }
 exports.NodeAudioDevices = NodeAudioDevices;
-class AudioDevices extends data_1.ServerModule {
+class AudioDevices extends core_1.ServerModule {
     joined(socket, topic) {
     }
     left(socket, topic) {

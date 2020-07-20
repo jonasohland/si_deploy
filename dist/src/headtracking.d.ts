@@ -1,9 +1,13 @@
 /// <reference types="socket.io" />
 import dnssd from 'dnssd';
 import { Headtracker, HeadtrackerConfigPacket } from './headtracker';
-import { ShowfileTarget, Showfile, ShowfileManager } from './showfiles';
+import { Showfile } from './showfiles';
 import WebInterface from './web_interface';
-export declare class Headtracking extends ShowfileTarget {
+import { ServerModule } from './core';
+export declare class Headtracking extends ServerModule {
+    init(): void;
+    joined(sock: SocketIO.Socket, topic: string): void;
+    left(): void;
     onShowfileLoad(s: Showfile): void;
     onEmptyShowfileCreate(s: Showfile): void;
     targetName(): string;
@@ -12,7 +16,7 @@ export declare class Headtracking extends ShowfileTarget {
     trackers: Headtracker[];
     saved_htrk_data: HeadtrackerConfigPacket[];
     webif: WebInterface;
-    constructor(interf: WebInterface, man: ShowfileManager, netif?: string);
+    constructor(interf: WebInterface, netif?: string);
     serviceFound(service: dnssd.Service): void;
     addHeadtracker(trk: Headtracker, id: number, address: string): void;
     serviceRemoved(service: dnssd.Service): void;

@@ -1,6 +1,6 @@
 /// <reference types="socket.io" />
 import { Requester, Connection } from './communication';
-import { NodeModule } from './data';
+import { NodeModule } from './core';
 export interface PluginDescription {
     category: string;
     display_name: string;

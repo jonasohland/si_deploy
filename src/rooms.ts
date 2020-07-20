@@ -1,4 +1,4 @@
-import { ServerModule, NodeModule, ManagedNodeStateListRegister, ManagedNodeStateObject, ManagedNodeStateMapRegister } from "./data";
+import { ServerModule, NodeModule, ManagedNodeStateListRegister, ManagedNodeStateObject, ManagedNodeStateMapRegister } from "./core";
 import { Connection } from "./communication";
 import { defaultRoom, RoomData } from './rooms_defs';
 import * as Logger from './log';

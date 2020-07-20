@@ -17,9 +17,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Logger = __importStar(require("./log"));
-const data_1 = require("./data");
+const core_1 = require("./core");
 const log = Logger.get("VST");
-class VSTScanner extends data_1.NodeModule {
+class VSTScanner extends core_1.NodeModule {
     constructor() {
         super('vst-scanner');
         this.knownPlugins = [];

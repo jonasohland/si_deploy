@@ -14,13 +14,13 @@ const dnssd_1 = __importDefault(require("dnssd"));
 const Logger = __importStar(require("./log"));
 const headtracker_network_1 = require("./headtracker_network");
 const headtracker_1 = require("./headtracker");
-const showfiles_1 = require("./showfiles");
+const core_1 = require("./core");
 // import mkbonjour, { Bonjour, Browser } from 'bonjour-hap';
 let comCheckInterval = 10000;
 const log = Logger.get('HTKHST');
-class Headtracking extends showfiles_1.ShowfileTarget {
-    constructor(interf, man, netif) {
-        super();
+class Headtracking extends core_1.ServerModule {
+    constructor(interf, netif) {
+        super('headtracking');
         this.trackers = [];
         this.local_interface = netif;
         this.webif = interf;
@@ -31,7 +31,6 @@ class Headtracking extends showfiles_1.ShowfileTarget {
         this.browser.on('serviceDown', this.serviceRemoved.bind(this));
         this.browser.start();
         let self = this;
-        man.register(this);
         this.webif.io.on('connection', socket => {
             socket.on('htrk.update.req', () => {
                 self.updateRemote(socket);
@@ -63,6 +62,12 @@ class Headtracking extends showfiles_1.ShowfileTarget {
             socket.on('htrk.reset.orientation', (id) => self.getHeadtracker(id)
                 .resetOrientation());
         });
+    }
+    init() {
+    }
+    joined(sock, topic) {
+    }
+    left() {
     }
     onShowfileLoad(s) {
         log.info("");

@@ -1,5 +1,5 @@
 /// <reference types="socket.io" />
-import { ServerModule, NodeModule, ManagedNodeStateObject, ManagedNodeStateMapRegister } from "./data";
+import { ServerModule, NodeModule, ManagedNodeStateObject, ManagedNodeStateMapRegister } from "./core";
 import { Connection } from "./communication";
 import { RoomData } from './rooms_defs';
 export declare class Room extends ManagedNodeStateObject<RoomData> {
