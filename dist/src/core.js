@@ -474,7 +474,7 @@ class NodeModule extends Publisher {
 }
 exports.NodeModule = NodeModule;
 class NodeDataStorage extends communication_1.NodeMessageInterceptor {
-    constructor(config) {
+    constructor(config, options) {
         super();
         this._modules = {};
         this._saving = false;
@@ -484,6 +484,10 @@ class NodeDataStorage extends communication_1.NodeMessageInterceptor {
             + '.json';
         if (!fs.existsSync(files_1.configFileDir('nodestate')))
             fs.mkdirSync(files_1.configFileDir('nodestate'));
+        if (options.reset) {
+            if (fs.existsSync(this._local_file))
+                fs.unlinkSync(this._local_file);
+        }
         if (!fs.existsSync(this._local_file)) {
             fs.writeFileSync(this._local_file, JSON.stringify({ modules: {} }));
         }

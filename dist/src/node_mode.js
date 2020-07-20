@@ -27,10 +27,11 @@ Object.keys(ifaces).forEach(function (ifname) {
 function default_1(options) {
     server_config.loadServerConfigFile(options.config);
     const config = server_config.merge(options);
+    console.log(config);
     const ipc = new IPC.IPCServer();
     const wsclient = new communication_1.SINodeWSClient(config, ipc);
     const dspp = new dsp_process_1.LocalNodeController(config, ipc);
-    const state = new core_1.NodeDataStorage(config);
+    const state = new core_1.NodeDataStorage(config, options);
     wsclient.addWSInterceptor(dspp);
     wsclient.addWSInterceptor(state);
 }

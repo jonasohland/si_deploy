@@ -493,9 +493,13 @@
         "version": "7a7223451c8c807b23df799b4bd15d94613769f3d44f2a981c216ec8b2cdf01b",
         "signature": "6b01b290f6d56cfc80f88e684d48c5d3b58e9e3a07ae9ae30dd2d2d18bd87be0"
       },
+      "../node_modules/commander/typings/index.d.ts": {
+        "version": "448682e0bbbfe68f3723e255d94092d65a17a6e82f140c597b08b960e05aa151",
+        "signature": "448682e0bbbfe68f3723e255d94092d65a17a6e82f140c597b08b960e05aa151"
+      },
       "../src/core.ts": {
-        "version": "b7bc882a184574e5b080303dce4649a56e53bc0f9f9282aa543791b4ef8749b1",
-        "signature": "3bd7488410e4217cf5838d2bd7993b56d9c7d315ab477044505d3c0ce61c0a39"
+        "version": "3652b32740100a58daee92bca5171926c87f44672e38172d0c4658f605ccdde3",
+        "signature": "1008ccc4dcbbff481130039ce8fe863590dbb3f047a0217fe4b57e5790024ec6"
       },
       "../src/dsp_defs.ts": {
         "version": "09a6f05e3be5988b8f93e37d3bd0d49ba0cf26561936b72f9ac7b7a8cdb17a48",
@@ -566,7 +570,7 @@
         "signature": "4301325ba217c2831d9716e17b7c7e6f2ae7e8712ac7f41d2ff9c04dddb2a49f"
       },
       "../src/users.ts": {
-        "version": "5342cf7c8d90dcc2231e55394d716c0a45b197c73d470494706cba3064104208",
+        "version": "409b63110a0ba0aaf0e5b2b58f6ccd67d2b1c9fae49e3eb7ffa59d4accd93aae",
         "signature": "84414cf7eabb29d7b5f4a43b509f03511edb855d1e3c4017593e4be11c72bc70"
       },
       "../src/rooms_defs.ts": {
@@ -817,10 +821,6 @@
         "version": "271bd5a312bafaf8ca946c0851f7cc9fc687de37f955cf8024f3092f93829f0e",
         "signature": "a8845c6916af9277ba3ad6b9c4c99cab3c745cf205806e7feecf9449d95739e1"
       },
-      "../node_modules/commander/typings/index.d.ts": {
-        "version": "448682e0bbbfe68f3723e255d94092d65a17a6e82f140c597b08b960e05aa151",
-        "signature": "448682e0bbbfe68f3723e255d94092d65a17a6e82f140c597b08b960e05aa151"
-      },
       "../node_modules/@types/ini/index.d.ts": {
         "version": "3cc26d1f94c768ae2896d3900ffa268e0657a332b399e94c1fb52da1f9e07625",
         "signature": "3cc26d1f94c768ae2896d3900ffa268e0657a332b399e94c1fb52da1f9e07625"
@@ -830,7 +830,7 @@
         "signature": "d49f4da749068f301db7ae9f5cc78b0eb755a11b258bab5fd665755471382890"
       },
       "../src/node_mode.ts": {
-        "version": "ba4da61cb04fa9e8b8a4f054d0ff48b1e5e7e4de7a5233731aadf695572577f4",
+        "version": "71bf01bb782b3edb4934cbb99dda92d4bbdd62b01232d04126cf2aa9a149e3d7",
         "signature": "ad015745dadccdbcfad819c08bb54af1e4ce899f015b108ee0c6d3b45f55f988"
       },
       "../src/server.ts": {
@@ -842,7 +842,7 @@
         "signature": "ad015745dadccdbcfad819c08bb54af1e4ce899f015b108ee0c6d3b45f55f988"
       },
       "../src/si.ts": {
-        "version": "3734fa8517ff52d690069eb724f22c1c63fffdc939284ab33a7e7fbd0031704f",
+        "version": "2b69baf4721f04cff08169900cc3333e8ddf9bbb24413b5b8c894dddceac72f7",
         "signature": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
       },
       "../node_modules/@types/bonjour/index.d.ts": {
@@ -1946,6 +1946,13 @@
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
+      "../node_modules/commander/typings/index.d.ts": [
+        "../node_modules/@types/node/ts3.2/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
       "../src/core.ts": [
         "../node_modules/@types/node/events.d.ts",
         "../node_modules/@types/node/fs.d.ts",
@@ -1956,6 +1963,7 @@
         "../src/log.ts",
         "../src/util.ts",
         "../src/web_interface.ts",
+        "../node_modules/commander/typings/index.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
@@ -2749,13 +2757,6 @@
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
       "../src/install_service.ts": [
-        "../node_modules/@types/node/fs.d.ts",
-        "../node_modules/@types/node/ts3.2/fs.d.ts",
-        "../node_modules/@types/node/util.d.ts",
-        "../node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "../node_modules/commander/typings/index.d.ts": [
-        "../node_modules/@types/node/ts3.2/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -3868,6 +3869,13 @@
         "../node_modules/@types/socket.io/index.d.ts",
         "../src/core.ts"
       ],
+      "../node_modules/commander/typings/index.d.ts": [
+        "../node_modules/@types/node/ts3.2/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
       "../src/core.ts": [
         "../src/communication.ts",
         "../node_modules/@types/node/events.d.ts",
@@ -4448,13 +4456,6 @@
         "../src/users_defs.ts",
         "../src/web_interface_defs.ts"
       ],
-      "../node_modules/commander/typings/index.d.ts": [
-        "../node_modules/@types/node/ts3.2/index.d.ts",
-        "../node_modules/@types/node/fs.d.ts",
-        "../node_modules/@types/node/ts3.2/fs.d.ts",
-        "../node_modules/@types/node/util.d.ts",
-        "../node_modules/@types/node/ts3.2/util.d.ts"
-      ],
       "../node_modules/@types/ini/index.d.ts": [
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
@@ -4628,7 +4629,8 @@
       "../node_modules/@types/body-parser/index.d.ts",
       "../node_modules/@types/express/index.d.ts",
       "../src/web_interface_defs.ts",
-      "../src/core.ts",
+      "../src/web_interface.ts",
+      "../node_modules/commander/typings/index.d.ts",
       "../src/dsp_defs.ts",
       "../src/inputs_defs.ts",
       "../node_modules/dependency-graph/lib/index.d.ts",
@@ -4709,7 +4711,6 @@
       "../src/headtracker_mode.ts",
       "../src/index.ts",
       "../src/install_service.ts",
-      "../node_modules/commander/typings/index.d.ts",
       "../node_modules/@types/ini/index.d.ts",
       "../src/server_config.ts",
       "../src/node_mode.ts",
@@ -4720,7 +4721,7 @@
       "../node_modules/@types/checksum/index.d.ts",
       "../node_modules/@types/minimatch/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/web_interface.ts"
+      "../src/core.ts"
     ]
   },
   "version": "3.7.3"

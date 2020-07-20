@@ -29,10 +29,12 @@ export default function(options: any)
 
     const config  = server_config.merge(options);
 
+    console.log(config);
+
     const ipc = new IPC.IPCServer();
     const wsclient = new SINodeWSClient(config, ipc);
     const dspp = new LocalNodeController(config, ipc);
-    const state = new NodeDataStorage(config);
+    const state = new NodeDataStorage(config, options);
     wsclient.addWSInterceptor(dspp);
     wsclient.addWSInterceptor(state);
 }

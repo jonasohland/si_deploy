@@ -225,7 +225,7 @@ export declare class NodeDataStorage extends NodeMessageInterceptor {
     _save_timeout: NodeJS.Timeout;
     _saving: boolean;
     _save_again: boolean;
-    constructor(config: any);
+    constructor(config: any, options: any);
     restoreStateFromFile(): Promise<any>;
     writeState(): Promise<unknown>;
     saveLater(): boolean;

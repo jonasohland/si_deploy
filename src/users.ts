@@ -631,7 +631,7 @@ export class NodeUsersManager extends NodeModule {
         if (user == null)
             throw 'User not found';
 
-        let userdata = <UserData>user.get();
+        let userdata = <UserData> user.get();
         let inputs: ManagedNodeStateObject<SpatializedInputData>[]  = [];
 
         userdata.inputs.forEach(input => {
