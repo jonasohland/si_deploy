@@ -23,6 +23,7 @@ const events_1 = __importDefault(require("events"));
 const core_1 = require("./core");
 const dsp_modules_1 = require("./dsp_modules");
 const Logger = __importStar(require("./log"));
+const users_defs_1 = require("./users_defs");
 const log = Logger.get('USERSM');
 class OLDUser {
     constructor(instance, name) {
@@ -300,6 +301,7 @@ class User extends core_1.ManagedNodeStateObject {
     }
     set(val) {
         return __awaiter(this, void 0, void 0, function* () {
+            this.data = val;
         });
     }
     get() {
@@ -355,13 +357,20 @@ class NodeUsersManager extends core_1.NodeModule {
         this._users.save();
         this.updateWebInterfaces();
     }
+    modifyUser(userdata) {
+        let user = this.findUserForId(userdata.id);
+        if (user) {
+            user.set(userdata).then(() => {
+                user.save();
+            });
+        }
+    }
     removeUser(userid) {
         let obj = this._users._objects.find((obj) => obj.get().id === userid);
         if (obj) {
             let userdata = obj.get();
             let inputs_changed = false;
-            userdata.inputs
-                .forEach((input) => {
+            userdata.inputs.forEach((input) => {
                 let inp = this._inputs._objects.find((obj) => obj.get().id === input);
                 if (inp) {
                     this._inputs.removeItem(inp);
@@ -373,6 +382,46 @@ class NodeUsersManager extends core_1.NodeModule {
             if (inputs_changed)
                 this._inputs.save();
             this.updateWebInterfaces();
+        }
+    }
+    addInputToUser(userid, input) {
+        let user = this.findUserForId(userid);
+        if (user == null)
+            throw 'User not found';
+        if (this.findUserInput(userid, input.get().id))
+            throw 'Input already assigned';
+        let newinput = users_defs_1.basicSpatializedInput(input.get().id, userid);
+        let userdata = user.get();
+        if (userdata.room != null)
+            newinput.room = userdata.room;
+        userdata.inputs.push(newinput.id);
+        user.set(userdata);
+        user.save();
+        let newinputobj = new SpatializedInput(newinput);
+        this._inputs.add(newinputobj);
+        newinputobj.save();
+    }
+    removeInputFromUser(userid, input) {
+        let sinput = this.findUserInput(userid, input.inputid);
+        let user = this.findUserForId(userid);
+        let userdata = user.get();
+        let iidx = userdata.inputs.findIndex(uinp => uinp == input.id);
+        if (iidx != -1) {
+            userdata.inputs.splice(iidx, 1);
+            user.set(userdata);
+            user.save();
+        }
+        this._inputs.removeItem(sinput);
+        this._inputs.save();
+        this.updateWebInterfaces();
+        this.publishUserInputs(userid);
+    }
+    modifyUserInput(userid, input, recompile) {
+        let inp = this.findInputById(input.id);
+        if (inp) {
+            inp.set(input).then(() => {
+                inp.save();
+            });
         }
     }
     joined(socket, topic) {
@@ -396,8 +445,27 @@ class NodeUsersManager extends core_1.NodeModule {
     updateWebInterfaces() {
         this.publish('users', 'node.users.update', this.myNodeId(), this.listUsers());
     }
+    publishUserInputs(userid) {
+        try {
+            this.publish(`userinputs-${userid}`, 'user.inputs.update', userid, this.getUsersInputs(userid).map(inp => inp.get()));
+        }
+        catch (err) {
+            this.events.emit('webif-node-error', this.myNodeId(), err);
+        }
+    }
     listUsers() {
         return this._users._object_iter().map(obj => obj.get());
+    }
+    findInputById(id) {
+        return this._inputs._objects.find((obj) => obj.get().id === id);
+    }
+    findUserInput(userid, inputid) {
+        return this._inputs._objects.find((obj) => obj.get().inputid === inputid
+            && obj.get().userid === userid);
+    }
+    findUserForId(id) {
+        return this._users._objects.find((obj) => obj.get().id
+            == id);
     }
     start(remote) {
         this.save().catch(err => {
@@ -413,9 +481,7 @@ class NodeUsersManager extends core_1.NodeModule {
         let userdata = user.get();
         let inputs = [];
         userdata.inputs.forEach(input => {
-            let ip = this._inputs
-                ._objects.find((inp) => inp.get().id
-                === input);
+            let ip = this._inputs._objects.find((inp) => inp.get().id === input);
             if (ip)
                 inputs.push(ip);
         });
@@ -439,11 +505,30 @@ class UsersManager extends core_1.ServerModule {
             else
                 this.webif.broadcastWarning(node.name(), 'Could not add user: Missing data');
         });
-        this.handle('add.userinput', (socket, node, data) => {
+        this.handle('user.add.inputs', (socket, node, data) => {
+            data.inputs.forEach(input => {
+                let nodein = node.inputs.findInputForId(input.id);
+                if (nodein) {
+                    let user = node.users.findUserForId(data.userid);
+                    if (user)
+                        node.users.addInputToUser(user.get().id, nodein);
+                    else
+                        this.webif.error(`User ${data.userid} not found`);
+                }
+                else
+                    this.webif.error(`Input ${input.name} not found`);
+            });
+            node.users.publishUserInputs(data.userid);
+            node.users.updateWebInterfaces();
         });
-        this.handle('modify.user', (socket, node, data) => {
+        this.handle('user.delete.input', (socket, node, data) => {
+            node.users.removeInputFromUser(data.userid, data.input);
         });
-        this.handle('modify.userinput', (socket, node, data) => {
+        this.handle('user.modify.input', (socket, node, data) => {
+            node.users.modifyUserInput(data.userid, data.input, data.recompile);
+        });
+        this.handle('user.modify', (socket, node, data) => {
+            node.users.modifyUser(data);
         });
     }
 }

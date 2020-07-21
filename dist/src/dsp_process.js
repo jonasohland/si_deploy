@@ -29,7 +29,7 @@ const util_1 = require("./util");
 // i will have to write this myself
 const event_to_promise_1 = __importDefault(require("event-to-promise"));
 const core_1 = require("./core");
-const dsp_1 = require("./dsp");
+const dsp_graph_1 = require("./dsp_graph");
 const log = Logger.get("DSPROC");
 class LocalNodeController extends communication_1.NodeMessageInterceptor {
     constructor(options, ipc) {
@@ -173,7 +173,7 @@ class DSPController extends core_1.NodeModule {
         super("dsp-process");
         this._closed = false;
         this._vst = vst;
-        this._graph = new dsp_1.Graph(vst);
+        this._graph = new dsp_graph_1.Graph(vst);
     }
     destroy() {
         this._closed = true;

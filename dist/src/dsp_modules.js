@@ -16,7 +16,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const dsp_1 = require("./dsp");
+const dsp_graph_1 = require("./dsp_graph");
 const Logger = __importStar(require("./log"));
 const log = Logger.get('DSP');
 function normalizeRads(value) {
@@ -30,11 +30,11 @@ function normalizeDegs(value) {
 function normalizeIEMStWidthDegs(value) {
     return (value + 360) / (360 * 2);
 }
-class BasicSpatializer extends dsp_1.NativeNode {
+class BasicSpatializer extends dsp_graph_1.NativeNode {
     constructor(name) {
         super(name, 'basic_spatializer');
-        this.addInputBus(dsp_1.Bus.createMainAny(2));
-        this.addOutputBus(dsp_1.AmbiBus.createMainForOrder(3, 1));
+        this.addInputBus(dsp_graph_1.Bus.createMainAny(2));
+        this.addOutputBus(dsp_graph_1.AmbiBus.createMainForOrder(3, 1));
     }
     remoteAttached() {
         console.log('Remote attached!');
@@ -66,11 +66,11 @@ class BasicSpatializer extends dsp_1.NativeNode {
     }
 }
 exports.BasicSpatializer = BasicSpatializer;
-class AdvancedSpatializer extends dsp_1.NativeNode {
+class AdvancedSpatializer extends dsp_graph_1.NativeNode {
     constructor(name) {
         super(name, 'advanced_spatializer');
-        this.addInputBus(dsp_1.Bus.createMainAny(1));
-        this.addOutputBus(dsp_1.AmbiBus.createMainForOrder(3, 1));
+        this.addInputBus(dsp_graph_1.Bus.createMainAny(1));
+        this.addOutputBus(dsp_graph_1.AmbiBus.createMainForOrder(3, 1));
     }
     remoteAttached() {
         console.log('Remote attached!');
@@ -102,20 +102,20 @@ class AdvancedSpatializer extends dsp_1.NativeNode {
     }
 }
 exports.AdvancedSpatializer = AdvancedSpatializer;
-class BasicBinauralDecoder extends dsp_1.NativeNode {
+class BasicBinauralDecoder extends dsp_graph_1.NativeNode {
     constructor(name) {
         super(name, 'basic_binaural_decoder');
-        this.addInputBus(dsp_1.AmbiBus.createMainForOrder(3, 1));
-        this.addOutputBus(dsp_1.Bus.createMainStereo(1));
+        this.addInputBus(dsp_graph_1.AmbiBus.createMainForOrder(3, 1));
+        this.addOutputBus(dsp_graph_1.Bus.createMainStereo(1));
     }
     remoteAttached() { }
 }
 exports.BasicBinauralDecoder = BasicBinauralDecoder;
-class AdvancedBinauralDecoder extends dsp_1.NativeNode {
+class AdvancedBinauralDecoder extends dsp_graph_1.NativeNode {
     constructor(name) {
         super(name, 'advanced_binaural_decoder');
-        this.addInputBus(dsp_1.AmbiBus.createMainForOrder(3, 1));
-        this.addOutputBus(dsp_1.Bus.createMainStereo(1));
+        this.addInputBus(dsp_graph_1.AmbiBus.createMainForOrder(3, 1));
+        this.addOutputBus(dsp_graph_1.Bus.createMainStereo(1));
     }
     remoteAttached() { }
     setHeadtrackerId(id) {
@@ -130,7 +130,7 @@ class AdvancedBinauralDecoder extends dsp_1.NativeNode {
     }
 }
 exports.AdvancedBinauralDecoder = AdvancedBinauralDecoder;
-class SpatializationModule extends dsp_1.Module {
+class SpatializationModule extends dsp_graph_1.Module {
 }
 exports.SpatializationModule = SpatializationModule;
 class BasicSpatializerModule extends SpatializationModule {
@@ -277,7 +277,7 @@ class AdvancedSpatializerModule extends SpatializationModule {
     }
 }
 exports.AdvancedSpatializerModule = AdvancedSpatializerModule;
-class BasicUserModule extends dsp_1.Module {
+class BasicUserModule extends dsp_graph_1.Module {
     constructor(user) {
         super();
         this.decoder_nid = -1;

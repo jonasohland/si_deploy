@@ -2,7 +2,7 @@
 import { NodeMessageInterceptor, Message, Requester, Connection } from './communication';
 import { IPCServer } from './ipc';
 import { NodeModule } from './core';
-import { Graph } from './dsp';
+import { Graph } from './dsp_graph';
 import { VSTScanner } from './vst';
 export declare class LocalNodeController extends NodeMessageInterceptor {
     private _autorestart;

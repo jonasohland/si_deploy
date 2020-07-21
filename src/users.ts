@@ -23,7 +23,14 @@ import {Headtracking} from './headtracking';
 import * as Inputs from './inputs';
 import * as Instance from './instance';
 import * as Logger from './log';
-import {SpatializedInputData, UserData} from './users_defs';
+import {
+    basicSpatializedInput,
+    SpatializedInputData,
+    UserAddInputsMessage,
+    UserData,
+    UserDeleteInputMessage,
+    UserModifyInputMessage
+} from './users_defs';
 import WebInterface from './web_interface';
 
 const log = Logger.get('USERSM');
@@ -481,7 +488,9 @@ class User extends ManagedNodeStateObject<UserData> {
 
     async set(val: UserData)
     {
+        this.data = val;
     }
+
     get(): UserData
     {
         return this.data;
@@ -553,24 +562,32 @@ export class NodeUsersManager extends NodeModule {
         this.updateWebInterfaces();
     }
 
+    modifyUser(userdata: UserData)
+    {
+        let user = this.findUserForId(userdata.id);
+        if (user) {
+            user.set(userdata).then(() => {
+                user.save();
+            });
+        }
+    }
+
     removeUser(userid: string)
     {
-        let obj = this._users._objects.find(
-            (obj: ManagedNodeStateObject<UserData>) => obj.get().id === userid);
+        let obj
+            = this._users._objects.find((obj: User) => obj.get().id === userid);
         if (obj) {
             let userdata       = <UserData>obj.get();
             let inputs_changed = false;
-            userdata.inputs
-                .forEach((input) => {
-                    let inp = this._inputs._objects.find(
-                        (obj: ManagedNodeStateObject<
-                            SpatializedInputData>) => obj.get().id === input);
-                    if (inp) {
-                        this._inputs.removeItem(inp);
-                        inputs_changed = true;
-                    }
-                });
-                this._users.removeItem(obj);
+            userdata.inputs.forEach((input) => {
+                let inp = this._inputs._objects.find(
+                    (obj: SpatializedInput) => obj.get().id === input);
+                if (inp) {
+                    this._inputs.removeItem(inp);
+                    inputs_changed = true;
+                }
+            });
+            this._users.removeItem(obj);
             this._users.save();
 
             if (inputs_changed)
@@ -580,16 +597,75 @@ export class NodeUsersManager extends NodeModule {
         }
     }
 
+    addInputToUser(userid: string, input: Inputs.NodeAudioInput)
+    {
+        let user = this.findUserForId(userid);
+        if (user == null)
+            throw 'User not found';
+
+        if (this.findUserInput(userid, input.get().id))
+            throw 'Input already assigned';
+
+        let newinput = 
+            basicSpatializedInput(input.get().id, userid);
+
+        let userdata = user.get();
+
+        if(userdata.room != null)
+            newinput.room = userdata.room;
+
+        userdata.inputs.push(newinput.id);
+        user.set(userdata);
+        user.save();
+
+        let newinputobj = new SpatializedInput(newinput);
+        this._inputs.add(newinputobj);
+        newinputobj.save();
+    }
+
+    removeInputFromUser(userid: string, input: SpatializedInputData)
+    {
+        let sinput   = this.findUserInput(userid, input.inputid);
+        let user     = this.findUserForId(userid);
+        let userdata = user.get();
+
+        let iidx = userdata.inputs.findIndex(uinp => uinp == input.id);
+
+        if (iidx != -1) {
+            userdata.inputs.splice(iidx, 1);
+            user.set(userdata);
+            user.save();
+        }
+
+        this._inputs.removeItem(sinput);
+        this._inputs.save();
+        this.updateWebInterfaces();
+        this.publishUserInputs(userid);
+    }
+
+    modifyUserInput(userid: string, input: SpatializedInputData,
+                    recompile?: boolean)
+    {
+        let inp = this.findInputById(input.id);
+        if (inp) {
+            inp.set(input).then(() => {
+                inp.save();
+            })
+        }
+    }
+
     joined(socket: SocketIO.Socket, topic: string)
     {
         if (topic == 'users')
             socket.emit('node.users.update', this.myNodeId(), this.listUsers());
         else if (topic.startsWith('userinputs-')) {
-            let userid  = topic.slice(11);
+            let userid = topic.slice(11);
             try {
                 let inputs = this.getUsersInputs(userid);
-                socket.emit('user.inputs.update', userid, inputs.map(input => input.get()));
-            } catch (err) {
+                socket.emit('user.inputs.update', userid,
+                            inputs.map(input => input.get()));
+            }
+            catch (err) {
                 this._server._webif.error(err);
             }
         }
@@ -609,9 +685,39 @@ export class NodeUsersManager extends NodeModule {
             'users', 'node.users.update', this.myNodeId(), this.listUsers());
     }
 
+    publishUserInputs(userid: string)
+    {
+        try {
+            this.publish(`userinputs-${userid}`, 'user.inputs.update', userid,
+                         this.getUsersInputs(userid).map(inp => inp.get()));
+        }
+        catch (err) {
+            this.events.emit('webif-node-error', this.myNodeId(), err);
+        }
+    }
+
     listUsers()
     {
         return this._users._object_iter().map(obj => obj.get());
+    }
+
+    findInputById(id: string)
+    {
+        return <SpatializedInput>this._inputs._objects.find(
+            (obj: SpatializedInput) => obj.get().id === id);
+    }
+
+    findUserInput(userid: string, inputid: string)
+    {
+        return <SpatializedInput>this._inputs._objects.find(
+            (obj: SpatializedInput) => obj.get().inputid === inputid
+                                       && obj.get().userid === userid);
+    }
+
+    findUserForId(id: string)
+    {
+        return <User>this._users._objects.find((obj: User) => obj.get().id
+                                                              == id);
     }
 
     start(remote: Connection)
@@ -628,18 +734,16 @@ export class NodeUsersManager extends NodeModule {
     {
         let user = this._users._objects.find(
             (obj: ManagedNodeStateObject<UserData>) => obj.get().id == userid);
+
         if (user == null)
             throw 'User not found';
 
-        let userdata = <UserData> user.get();
-        let inputs: ManagedNodeStateObject<SpatializedInputData>[]  = [];
+        let userdata                   = <UserData>user.get();
+        let inputs: SpatializedInput[] = [];
 
         userdata.inputs.forEach(input => {
-            let ip
-                = <ManagedNodeStateObject<SpatializedInputData>>this._inputs
-                      ._objects.find((inp: ManagedNodeStateObject<
-                                         SpatializedInputData>) => inp.get().id
-                                                                   === input);
+            let ip = <SpatializedInput>this._inputs._objects.find(
+                (inp: SpatializedInput) => inp.get().id === input);
             if (ip)
                 inputs.push(ip);
         });
@@ -665,7 +769,6 @@ export class UsersManager extends ServerModule {
 
     init()
     {
-
         this.handle('add.user', (socket: SocketIO.Socket, node: DSPNode,
                                  data: UserData) => {
             if (data.channel != null) {
@@ -676,19 +779,39 @@ export class UsersManager extends ServerModule {
                     node.name(), 'Could not add user: Missing data');
         });
 
-        this.handle('add.userinput', (socket: SocketIO.Socket, node: DSPNode,
-                                      data: SpatializedInputData) => {
+        this.handle('user.add.inputs', (socket: SocketIO.Socket, node: DSPNode,
+                                        data: UserAddInputsMessage) => {
+            data.inputs.forEach(input => {
+                let nodein = node.inputs.findInputForId(input.id);
+                if (nodein) {
+                    let user = node.users.findUserForId(data.userid);
+                    if (user)
+                        node.users.addInputToUser(user.get().id, nodein);
+                    else
+                        this.webif.error(`User ${data.userid} not found`);
+                }
+                else
+                    this.webif.error(`Input ${input.name} not found`);
+            });
+            node.users.publishUserInputs(data.userid);
+            node.users.updateWebInterfaces();
+        });
 
-                                     });
+        this.handle(
+            'user.delete.input', (socket: SocketIO.Socket, node: DSPNode,
+                                  data: UserDeleteInputMessage) => {
+                node.users.removeInputFromUser(data.userid, data.input);
+            });
 
-        this.handle('modify.user', (socket: SocketIO.Socket, node: DSPNode,
+        this.handle('user.modify.input', (socket: SocketIO.Socket,
+                                          node: DSPNode,
+                                          data: UserModifyInputMessage) => {
+            node.users.modifyUserInput(data.userid, data.input, data.recompile);
+        });
+
+        this.handle('user.modify', (socket: SocketIO.Socket, node: DSPNode,
                                     data: UserData) => {
-
-                                   });
-
-        this.handle('modify.userinput', (socket: SocketIO.Socket, node: DSPNode,
-                                         data: UserData) => {
-
-                                        });
+            node.users.modifyUser(data);
+        });
     }
 }

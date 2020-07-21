@@ -1,6 +1,6 @@
 import * as mdns from 'dnssd';
 import io from 'socket.io';
-import * as DSP from './dsp';
+import * as DSP from './dsp_graph';
 import * as VST from './vst';
 import { Connection } from './communication';
 import { TimecodeNode } from './timecode';

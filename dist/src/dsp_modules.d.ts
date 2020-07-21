@@ -1,4 +1,4 @@
-import { Bus, Connection, Graph, Module, NativeNode } from './dsp';
+import { Bus, Connection, Graph, Module, NativeNode } from './dsp_graph';
 import { OwnedInput, OLDUser } from './users';
 export declare class BasicSpatializer extends NativeNode {
     constructor(name: string);

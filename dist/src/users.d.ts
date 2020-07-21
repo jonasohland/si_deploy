@@ -96,15 +96,23 @@ export declare class NodeUsersManager extends NodeModule {
     _inputs: SpatializedInputsList;
     constructor();
     addUser(userdata: UserData): void;
+    modifyUser(userdata: UserData): void;
     removeUser(userid: string): void;
+    addInputToUser(userid: string, input: Inputs.NodeAudioInput): void;
+    removeInputFromUser(userid: string, input: SpatializedInputData): void;
+    modifyUserInput(userid: string, input: SpatializedInputData, recompile?: boolean): void;
     joined(socket: SocketIO.Socket, topic: string): void;
     left(socket: SocketIO.Socket, topic: string): void;
     init(): void;
     updateWebInterfaces(): void;
+    publishUserInputs(userid: string): void;
     listUsers(): any[];
+    findInputById(id: string): SpatializedInput;
+    findUserInput(userid: string, inputid: string): SpatializedInput;
+    findUserForId(id: string): User;
     start(remote: Connection): void;
     destroy(): void;
-    getUsersInputs(userid: string): ManagedNodeStateObject<SpatializedInputData>[];
+    getUsersInputs(userid: string): SpatializedInput[];
 }
 export declare class UsersManager extends ServerModule {
     constructor();
