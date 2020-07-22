@@ -806,8 +806,8 @@
         "signature": "59579e538b2a4792f8d29bca9e643913a705fa15cde80f828819d670bee1fb03"
       },
       "../src/index.ts": {
-        "version": "f93e9aaf35b27e07817c1152f5011cc9487d3f357f170a5265ae85a2ce41623b",
-        "signature": "b584eb8ef7b7b4779010ad2f14d6806f7083392005110f88accde4496829c552"
+        "version": "cf1d774a7bc7e546b2505375e2cc304fa104c3057bae143cb2cb16bca1df42b5",
+        "signature": "61e809a9ef4fbb25cc765bce12072eb1dcd4b58ce91d135755ec01d4ae29eeec"
       },
       "../src/install_service.ts": {
         "version": "271bd5a312bafaf8ca946c0851f7cc9fc687de37f955cf8024f3092f93829f0e",
@@ -4680,6 +4680,7 @@
       "../src/dsp_node.ts",
       "../src/vst.ts",
       "../src/dsp_graph.ts",
+      "../src/dsp_defs.ts",
       "../src/util.ts",
       "../src/communication.ts",
       "../src/audio_devices.ts",
@@ -4739,7 +4740,6 @@
       "../node_modules/usb-detection/index.d.ts",
       "../src/headtracker_bridge_mode.ts",
       "../src/headtracker_mode.ts",
-      "../src/index.ts",
       "../src/install_service.ts",
       "../src/modules.ts",
       "../node_modules/commander/typings/index.d.ts",
@@ -4754,7 +4754,7 @@
       "../node_modules/@types/checksum/index.d.ts",
       "../node_modules/@types/minimatch/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/dsp_defs.ts"
+      "../src/index.ts"
     ]
   },
   "version": "3.7.3"
