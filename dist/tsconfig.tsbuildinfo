@@ -550,11 +550,11 @@
         "signature": "972e032804e85b22dffdb3d91dd1502b3584ae6f4726622eb11b33876d05c516"
       },
       "../src/headtracker_network.ts": {
-        "version": "d11425a07838173b658f5d5e92f260847dab5c58a53b87cea4dc897357018b7b",
+        "version": "4fdeb4742c0c18e9b2be6564b27997846fcded7d1cb7818e7ade92dd84adac38",
         "signature": "19930a3f570631507f3268f5c7763a7d42072df30255e922b050b81cc6a11f24"
       },
       "../src/headtracking.ts": {
-        "version": "0e59f6ff8397597f90b772310edc9e3a6f5096f74d9895fe4d091a234fa2f521",
+        "version": "df59345e106692b77337085f67dd6e54fb07bd08ecac1883311b7a789f410a0c",
         "signature": "4118fcc3a24ce555780116319dbaf6adb99806655b0845a8efe0d9db3bfe01f7"
       },
       "../src/source_behaviours.ts": {
@@ -798,7 +798,7 @@
         "signature": "522c60f6e6fea8c7a6ed6864ce5a7972d66f35d1e9629d3366d5aed33975fe0f"
       },
       "../src/headtracker_serial.ts": {
-        "version": "447b330ac84e1cda742b1bb02250e81b87ae03535afea3381168541d14e78766",
+        "version": "a9b638030ca58915ab0d7bcacbd95bfcbe380202949a05b56ae78345fb88f13b",
         "signature": "3dda1613a468ce767d2556bc205236220c2a31df3bbc90daa2fad486cf9c0adc"
       },
       "../src/headtracker_bridge.ts": {
@@ -846,7 +846,7 @@
         "signature": "ad015745dadccdbcfad819c08bb54af1e4ce899f015b108ee0c6d3b45f55f988"
       },
       "../src/server.ts": {
-        "version": "0aa88d5eb53024a2e31e3c6fba609f914622d783d6730b48c959bccf09faaa3c",
+        "version": "47026b25aa1684df85f76114cddb080b5e84fc6dc89b64b011a455c339bbc0f5",
         "signature": "8b77160c4e3600c8da7fffda4c865fbde6d7bee2c8bfa5e9f5e8a447c486458d"
       },
       "../src/server_mode.ts": {
@@ -4706,6 +4706,7 @@
       "../src/dsp_modules.ts",
       "../src/headtracker.ts",
       "../src/headtracker_network.ts",
+      "../src/headtracking.ts",
       "../src/source_behaviours.ts",
       "../src/sources.ts",
       "../src/interface.ts",
@@ -4766,7 +4767,6 @@
       "../node_modules/@types/terminal-kit/textbuffer.d.ts",
       "../node_modules/@types/terminal-kit/rect.d.ts",
       "../node_modules/@types/terminal-kit/index.d.ts",
-      "../src/headtracker_serial.ts",
       "../src/headtracker_bridge.ts",
       "../node_modules/usb-detection/index.d.ts",
       "../src/headtracker_bridge_mode.ts",
@@ -4785,7 +4785,7 @@
       "../node_modules/@types/checksum/index.d.ts",
       "../node_modules/@types/minimatch/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/headtracking.ts"
+      "../src/headtracker_serial.ts"
     ]
   },
   "version": "3.7.3"

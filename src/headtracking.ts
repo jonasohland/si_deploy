@@ -138,7 +138,7 @@ export class Headtracking extends ServerModule {
 
         trk.on('update', this.updateRemote.bind(this));
         trk.on('connected', () => {
-            this.events.emit('heatracker-connected', id);
+            this.events.emit('headtracker-connected', id);
         });
 
         let dup = this.trackers.find(trk => trk.remote.id == id)

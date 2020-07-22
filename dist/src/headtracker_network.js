@@ -103,13 +103,13 @@ class NetworkHeadtracker extends headtracker_1.Headtracker {
                 this.remote.conf = p;
                 this.local.conf = p;
                 this._setState(HTRKDevState.CONNECTED);
+                this.emit("connected");
                 this._updateRemote();
                 this._askAliveLater();
                 return;
             }
             if (this._state(HTRKDevState.BUSY)) {
                 this._setState(HTRKDevState.CONNECTED);
-                this.emit("connected");
                 this._handleStateUpdate(p, true);
                 if (this.update_required)
                     this._updateDevice();

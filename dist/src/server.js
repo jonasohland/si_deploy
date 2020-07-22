@@ -26,6 +26,11 @@ class SpatialIntercomServer extends core_1.Server {
         let webif = new web_interface_1.default(config);
         super(new communication_1.SIServerWSServer(config), webif);
         webif.attachServer(this);
+        this._event_bus.on('headtracker-connected', (id) => {
+            log.info("Set stream destination of new headtracker");
+            let htrk = this.headtracking.getHeadtracker(id);
+            htrk.setStreamDest("192.168.178.99", 4009);
+        });
         this.webif = webif;
         this.audio_devices = new audio_devices_1.AudioDevices();
         this.inputs = new inputs_1.AudioInputsManager();

@@ -79,7 +79,7 @@ export abstract class UDPOutputAdapter extends OutputAdapter {
     setRemote(addr: string, port: number)
     {
         log.info(`Headtracking output address set to: ${addr}:${port}`);
-        
+
         this.addr = addr;
         this.port = port;
     }
@@ -931,6 +931,8 @@ export class SerialHeadtracker extends SerialConnection {
     {
         if (this._req_current && this._req_current.vty == ty)
             this._end_request(data);
+        else
+            log.warn("Unexpected response " + si_gy_values[ty]);
     }
 }
 

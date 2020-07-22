@@ -717,6 +717,8 @@ class SerialHeadtracker extends SerialConnection {
     onResponse(ty, data) {
         if (this._req_current && this._req_current.vty == ty)
             this._end_request(data);
+        else
+            log.warn("Unexpected response " + si_gy_values[ty]);
     }
 }
 exports.SerialHeadtracker = SerialHeadtracker;
