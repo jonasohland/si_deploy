@@ -1,4 +1,3 @@
-import { User } from "./interface";
 import { v4 as uniqueId } from 'uuid';
 import { NodeAudioInputDescription } from "./inputs_defs";
 

@@ -26,6 +26,7 @@ const dsp_node_1 = require("./dsp_node");
 const Logger = __importStar(require("./log"));
 const users_defs_1 = require("./users_defs");
 const dsp_defs_1 = require("./dsp_defs");
+const util_1 = require("./util");
 const log = Logger.get('USERSM');
 class OLDUser {
     constructor(instance, name) {
@@ -297,9 +298,10 @@ class OLDUsersManager extends events_1.default {
 }
 exports.OLDUsersManager = OLDUsersManager;
 class User extends core_1.ManagedNodeStateObject {
-    constructor(data) {
+    constructor(data, manager) {
         super();
         this.data = data;
+        this._man = manager;
     }
     set(val) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -309,7 +311,11 @@ class User extends core_1.ManagedNodeStateObject {
     get() {
         return this.data;
     }
+    inputs() {
+        return this._man.getUsersInputs(this.data.id);
+    }
 }
+exports.User = User;
 class SpatializedInput extends core_1.ManagedNodeStateObject {
     constructor(data, inputsModule) {
         super();
@@ -327,22 +333,34 @@ class SpatializedInput extends core_1.ManagedNodeStateObject {
     findSourceType() {
         let source = this.inputsModule.findInputForId(this.data.inputid);
         if (source)
-            return source.get().type;
+            return util_1.ensurePortTypeEnum(source.get().type);
         else {
             log.error("Could not find input source for input " + this.data.id + " input: " + this.data.inputid);
             return dsp_defs_1.PortTypes.Mono;
         }
     }
+    findSourceChannel() {
+        let source = this.inputsModule.findInputForId(this.data.inputid);
+        if (source)
+            return source.get().channel;
+        else {
+            log.error("Could not find input source for input " + this.data.id + " input: " + this.data.inputid);
+            return 0;
+        }
+    }
 }
 exports.SpatializedInput = SpatializedInput;
 class UserList extends core_1.ManagedNodeStateListRegister {
+    constructor(manager) {
+        super();
+    }
     remove(obj) {
         return __awaiter(this, void 0, void 0, function* () {
         });
     }
     insert(obj) {
         return __awaiter(this, void 0, void 0, function* () {
-            return new User(obj);
+            return new User(obj, this._man);
         });
     }
 }
@@ -365,13 +383,13 @@ class NodeUsersManager extends core_1.NodeModule {
     constructor(inputsModule) {
         super(dsp_node_1.DSPModuleNames.USERS);
         this._inputs_module = inputsModule;
-        this._users = new UserList();
+        this._users = new UserList(this);
         this._inputs = new SpatializedInputsList(inputsModule);
         this.add(this._users, 'users');
         this.add(this._inputs, 'inputs');
     }
     addUser(userdata) {
-        this._users.add(new User(userdata));
+        this._users.add(new User(userdata, this));
         this._users.save();
         this.updateWebInterfaces();
     }
@@ -444,7 +462,7 @@ class NodeUsersManager extends core_1.NodeModule {
     }
     joined(socket, topic) {
         if (topic == 'users')
-            socket.emit('node.users.update', this.myNodeId(), this.listUsers());
+            socket.emit('node.users.update', this.myNodeId(), this.listRawUsersData());
         else if (topic.startsWith('userinputs-')) {
             let userid = topic.slice(11);
             try {
@@ -461,7 +479,7 @@ class NodeUsersManager extends core_1.NodeModule {
     init() {
     }
     updateWebInterfaces() {
-        this.publish('users', 'node.users.update', this.myNodeId(), this.listUsers());
+        this.publish('users', 'node.users.update', this.myNodeId(), this.listRawUsersData());
     }
     publishUserInputs(userid) {
         try {
@@ -471,8 +489,11 @@ class NodeUsersManager extends core_1.NodeModule {
             this.events.emit('webif-node-error', this.myNodeId(), err);
         }
     }
-    listUsers() {
+    listRawUsersData() {
         return this._users._object_iter().map(obj => obj.get());
+    }
+    listUsers() {
+        return this._users._objects;
     }
     findInputById(id) {
         return this._inputs._objects.find((obj) => obj.get().id === id);

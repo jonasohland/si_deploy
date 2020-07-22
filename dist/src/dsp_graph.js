@@ -31,7 +31,7 @@ class Port {
         this.c = 1;
         this.type = type;
         this.name = name;
-        this.c = dsp_defs_1.PortTypeChannelCount[type];
+        this.c = dsp_defs_1.SourceUtils[type].channels;
     }
     isAmbiPort() {
         return this instanceof AmbiPort;
@@ -91,17 +91,24 @@ class Bus {
     portCount() {
         return this.ports.length;
     }
+    portCountForChannels(channels) {
+        let port_chcount = dsp_defs_1.SourceUtils[this.type].channels;
+        return Math.ceil(channels / port_chcount);
+    }
     connect(other) {
-        return this.connectIdxNIdx(other, 0, 1, 0);
+        return this.connectIdxNIdx(other, 0, this.portCountForChannels(other.channelCount()), 0);
     }
     connectIdx(other, thisIndex) {
-        return this.connectIdxNIdx(other, thisIndex, 1, 0);
+        return this.connectIdxNIdx(other, thisIndex, this.portCountForChannels(other.channelCount()), 0);
+    }
+    connectOtherIdx(other, otherIndex) {
+        return this.connectIdxNIdx(other, 0, this.portCountForChannels(other.channelCount()), otherIndex);
     }
     connectIdxN(other, thisIndex, thisCount) {
         return this.connectIdxNIdx(other, thisIndex, thisCount, 0);
     }
     connectIdxIdx(other, thisIndex, otherIndex) {
-        return this.connectIdxNIdx(other, thisIndex, 1, otherIndex);
+        return this.connectIdxNIdx(other, thisIndex, this.portCountForChannels(other.channelCount()), otherIndex);
     }
     connectIdxNIdx(other, thisIndex, thisCount, otherIndex) {
         let sources = [];
@@ -122,7 +129,7 @@ class Bus {
     _set_start_idx(idx) {
         for (let i in this.ports) {
             this.ports[i].ni
-                = idx + (Number.parseInt(i) * dsp_defs_1.PortTypeChannelCount[this.type]);
+                = idx + (Number.parseInt(i) * dsp_defs_1.SourceUtils[this.type].channels);
         }
     }
     _set_nodeid(id) {
@@ -283,9 +290,13 @@ class NativeNode extends Node {
         this.connection = con;
         this.native_event_name = `${this.native_node_type}_${this.id}`;
         this.remote = this.connection.getRequester(this.native_event_name);
-        this.remote.on('alive', () => {
-        });
+        this.remote.on('alive', this.onRemoteAlive.bind(this));
         this.remoteAttached();
+    }
+    destroy() {
+        log.info("Destroy native node");
+        this.remote.removeAllListeners('alive');
+        this.remote.destroy();
     }
 }
 exports.NativeNode = NativeNode;
@@ -300,8 +311,11 @@ class Graph {
         this.node_count = 1;
         this.vst = vst;
     }
+    attachConnection(connection) {
+        this.connection = connection;
+    }
     addNode(node) {
-        let node_id = this.node_count++;
+        let node_id = ++this.node_count;
         node._set_nodeid(node_id);
         this.nodes.push(node);
         if (node instanceof NativeNode)
@@ -320,8 +334,11 @@ class Graph {
             rmv_node = this.nodes.splice(this.nodes.indexOf(node))[0];
         else if (typeof node == 'number')
             rmv_node = this.nodes.splice(this.nodes.findIndex(n => n.id === node), 1)[0];
-        if (rmv_node)
+        if (rmv_node) {
             rmv_node._unset_nodeid(true);
+            if (rmv_node instanceof NativeNode)
+                rmv_node.destroy();
+        }
         this.fix();
         return rmv_node;
     }
@@ -347,10 +364,10 @@ class Graph {
     getOutputNode() {
         return this.nodes.find(n => n.type == '__output');
     }
-    mainInBus() {
+    graphRootBus() {
         return this.getInputNode().getMainOutputBus();
     }
-    mainOutBus() {
+    graphExitBus() {
         return this.getOutputNode().getMainInputBus();
     }
     addModule(mod) {
@@ -393,9 +410,10 @@ class Graph {
         return out;
     }
     clear() {
-        this.node_count = 0;
-        this.nodes = [];
+        [...this.modules].forEach(module => this.removeModule(module));
         this.modules = [];
+        this.node_count = 1;
+        this.nodes = [];
         this.connections = [];
     }
 }

@@ -41,8 +41,10 @@ export declare class Bus {
     constructor(name: string, type: PortTypes);
     channelCount(): number;
     portCount(): number;
+    portCountForChannels(channels: number): number;
     connect(other: Bus): Connection;
     connectIdx(other: Bus, thisIndex: number): Connection;
+    connectOtherIdx(other: Bus, otherIndex: number): Connection;
     connectIdxN(other: Bus, thisIndex: number, thisCount: number): Connection;
     connectIdxIdx(other: Bus, thisIndex: number, otherIndex: number): Connection;
     connectIdxNIdx(other: Bus, thisIndex: number, thisCount: number, otherIndex: number): Connection;
@@ -112,6 +114,7 @@ export declare abstract class NativeNode extends Node {
     native_event_name: string;
     constructor(name: string, native_node_type: string);
     attachEventListener(con: COM.Connection): void;
+    destroy(): void;
     abstract onRemoteAlive(): void;
     abstract remoteAttached(): void;
 }
@@ -133,6 +136,7 @@ export declare class Graph {
     remote: COM.Requester;
     vst: VSTScanner;
     constructor(vst: VSTScanner);
+    attachConnection(connection: COM.Connection): void;
     addNode(node: Node): number;
     addConnection(connection: Connection): void;
     removeNode(node: number): Node;
@@ -143,8 +147,8 @@ export declare class Graph {
     setOutputNode(count: number): void;
     getInputNode(): InputNode;
     getOutputNode(): OutputNode;
-    mainInBus(): Bus;
-    mainOutBus(): Bus;
+    graphRootBus(): Bus;
+    graphExitBus(): Bus;
     addModule(mod: Module): void;
     hasModule(mod: Module): boolean;
     removeModule(mod: Module): Module;

@@ -1,7 +1,7 @@
 /// <reference types="socket.io" />
 import { NodeModule, ServerModule } from "./core";
 import { Connection } from "./communication";
-import { BasicUserModule, AdvancedSpatializerModule, MulitSpatializerModule } from "./dsp_modules";
+import { AdvancedSpatializerModule, MulitSpatializerModule, SimpleUsersModule } from "./dsp_modules";
 import { NodeUsersManager } from "./users";
 import { NodeAudioInputManager } from "./inputs";
 import { DSPController } from "./dsp_process";
@@ -11,7 +11,7 @@ export declare const GraphBuilderInputEvents: {
 };
 export declare const GraphBuilderOutputEvents: {};
 export declare class NodeDSPGraphBuilder extends NodeModule {
-    user_modules: Record<string, BasicUserModule>;
+    user_modules: Record<string, SimpleUsersModule>;
     basic_spatializers: Record<string, Record<string, MulitSpatializerModule>>;
     room_spatializers: Record<string, Record<string, AdvancedSpatializerModule>>;
     constructor();

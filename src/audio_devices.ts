@@ -10,6 +10,7 @@ import {DSPNode, DSPModuleNames} from './dsp_node';
 import * as Logger from './log'
 import { lowerFirst } from 'lodash';
 import { webifResponseEvent } from './web_interface_defs';
+import { GraphBuilderInputEvents } from './dsp_graph_builder';
 
 const log = Logger.get('AUDDEV');
 
@@ -535,7 +536,10 @@ export class AudioDevices extends ServerModule {
         this.handleWebInterfaceEvent('dspenabled', (socket, node: DSPNode, data: boolean) => {
             if (data) {
                 node.audio_devices.enable()
-                    .then(this.endTransaction.bind(this, socket))
+                    .then(() => {
+                        socket.emit('audiosettings.done');
+                        this.emitToModule(node.id(), DSPModuleNames.GRAPH_BUILDER, GraphBuilderInputEvents.FULL_REBUILD);
+                    })
                     .catch(this.endTransactionWithError.bind(this, socket));
             }
             else {

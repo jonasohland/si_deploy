@@ -1,7 +1,7 @@
 import {EventEmitter} from 'events';
 
 import * as COM from './communication';
-import {PortTypeChannelCount, PortTypes, stringToPortType} from './dsp_defs'
+import { PortTypes, stringToPortType, SourceUtils} from './dsp_defs'
 import * as IPC from './ipc'
 import * as Logger from './log';
 import {VSTScanner} from './vst';
@@ -40,7 +40,7 @@ export class Port {
     {
         this.type = type;
         this.name = name;
-        this.c    = PortTypeChannelCount[type];
+        this.c    = SourceUtils[type].channels;
     }
 
     isAmbiPort()
@@ -132,14 +132,25 @@ export class Bus {
         return this.ports.length;
     }
 
+    portCountForChannels(channels: number)
+    {
+        let port_chcount = SourceUtils[this.type].channels;
+        return Math.ceil(channels / port_chcount);
+    }
+
     connect(other: Bus)
     {
-        return this.connectIdxNIdx(other, 0, 1, 0);
+        return this.connectIdxNIdx(other, 0, this.portCountForChannels(other.channelCount()), 0);
     }
 
     connectIdx(other: Bus, thisIndex: number)
     {
-        return this.connectIdxNIdx(other, thisIndex, 1, 0);
+        return this.connectIdxNIdx(other, thisIndex, this.portCountForChannels(other.channelCount()), 0);
+    }
+
+    connectOtherIdx(other: Bus, otherIndex: number)
+    {
+        return this.connectIdxNIdx(other, 0, this.portCountForChannels(other.channelCount()), otherIndex);
     }
 
     connectIdxN(other: Bus, thisIndex: number, thisCount: number)
@@ -149,7 +160,7 @@ export class Bus {
 
     connectIdxIdx(other: Bus, thisIndex: number, otherIndex: number)
     {
-        return this.connectIdxNIdx(other, thisIndex, 1, otherIndex);
+        return this.connectIdxNIdx(other, thisIndex, this.portCountForChannels(other.channelCount()), otherIndex);
     }
 
     connectIdxNIdx(other: Bus, thisIndex: number, thisCount: number,
@@ -181,7 +192,7 @@ export class Bus {
     {
         for (let i in this.ports) {
             this.ports[i].ni
-                = idx + (Number.parseInt(i) * PortTypeChannelCount[this.type]);
+                = idx + (Number.parseInt(i) * SourceUtils[this.type].channels);
         }
     }
 
@@ -434,12 +445,15 @@ export abstract class NativeNode extends Node {
         this.connection        = con;
         this.native_event_name = `${this.native_node_type}_${this.id}`;
         this.remote = this.connection.getRequester(this.native_event_name);
-
-        this.remote.on('alive', () => {
-
-        });
-
+        this.remote.on('alive', this.onRemoteAlive.bind(this));
         this.remoteAttached();
+    }
+
+    destroy()
+    {
+        log.info("Destroy native node");
+        this.remote.removeAllListeners('alive');
+        this.remote.destroy();
     }
 
     abstract onRemoteAlive(): void;
@@ -473,9 +487,14 @@ export class Graph {
         this.vst = vst;
     }
 
+    attachConnection(connection: COM.Connection)
+    {
+        this.connection = connection;
+    }
+
     addNode(node: Node)
     {
-        let node_id = this.node_count++;
+        let node_id = ++this.node_count;
         node._set_nodeid(node_id);
 
         this.nodes.push(node);
@@ -508,8 +527,11 @@ export class Graph {
             rmv_node = this.nodes.splice(
                 this.nodes.findIndex(n => n.id === node), 1)[0];
 
-        if (rmv_node)
+        if (rmv_node) {
             rmv_node._unset_nodeid(true);
+            if(rmv_node instanceof NativeNode)
+                rmv_node.destroy();
+        }
 
         this.fix();
 
@@ -551,12 +573,12 @@ export class Graph {
         return <OutputNode>this.nodes.find(n => n.type == '__output');
     }
 
-    mainInBus()
+    graphRootBus()
     {
         return this.getInputNode().getMainOutputBus();
     }
 
-    mainOutBus()
+    graphExitBus()
     {
         return this.getOutputNode().getMainInputBus();
     }
@@ -621,9 +643,10 @@ export class Graph {
 
     clear() 
     {
-        this.node_count = 0;
-        this.nodes = [];
+        [...this.modules].forEach(module => this.removeModule(module));
         this.modules = [];
+        this.node_count = 1;
+        this.nodes = [];
         this.connections = [];
     }
 }

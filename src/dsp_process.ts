@@ -207,11 +207,6 @@ export class DSPController extends NodeModule {
 
         this._remote.on('dsp-started', () => {
             log.verbose('DSP startup event');
-
-            this.syncGraph().catch(err => {
-                log.error("Could not sync DSP process " + err);
-            });
-            
             this.events.emit('dsp-started');
             this._running = false;
         });
@@ -223,6 +218,7 @@ export class DSPController extends NodeModule {
         });
 
         this._connection = remote;
+        this._graph.attachConnection(remote);
 
         log.info("Graph service running");
     }
@@ -250,16 +246,15 @@ export class DSPController extends NodeModule {
         super(DSPModuleNames.DSP_PROCESS);
         this._vst = vst;
         this._graph = new Graph(vst);
+
+        this._graph.setInputNode(128);
+        this._graph.setOutputNode(128);
     }
 
 
     async syncGraph()
     {
         let self = this;
-
-        console.log();
-        console.log(JSON.stringify(this._graph._export_graph()));
-        console.log();
 
         await this._vst.waitPluginsScanned();
 
@@ -308,5 +303,7 @@ export class DSPController extends NodeModule {
     async resetGraph() {
         await this._remote_graph.request('reset')
         this._graph.clear();
+        this._graph.setInputNode(128);
+        this._graph.setOutputNode(128);
     }
 }

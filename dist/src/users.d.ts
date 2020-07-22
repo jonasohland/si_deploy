@@ -72,11 +72,13 @@ export declare class OLDUsersManager extends EventEmitter {
     setReflections(usr_id: number, nid: string, value: number): void;
     setRoomCharacter(usr_id: number, nid: string, value: number): void;
 }
-declare class User extends ManagedNodeStateObject<UserData> {
+export declare class User extends ManagedNodeStateObject<UserData> {
     data: UserData;
-    constructor(data: UserData);
+    _man: NodeUsersManager;
+    constructor(data: UserData, manager: NodeUsersManager);
     set(val: UserData): Promise<void>;
     get(): UserData;
+    inputs(): SpatializedInput[];
 }
 export declare class SpatializedInput extends ManagedNodeStateObject<SpatializedInputData> {
     data: SpatializedInputData;
@@ -85,8 +87,11 @@ export declare class SpatializedInput extends ManagedNodeStateObject<Spatialized
     set(val: SpatializedInputData): Promise<void>;
     get(): SpatializedInputData;
     findSourceType(): PortTypes.Any | PortTypes;
+    findSourceChannel(): number;
 }
 declare class UserList extends ManagedNodeStateListRegister {
+    _man: NodeUsersManager;
+    constructor(manager: NodeUsersManager);
     remove(obj: ManagedNodeStateObject<any>): Promise<void>;
     insert(obj: any): Promise<User>;
 }
@@ -112,7 +117,8 @@ export declare class NodeUsersManager extends NodeModule {
     init(): void;
     updateWebInterfaces(): void;
     publishUserInputs(userid: string): void;
-    listUsers(): UserData[];
+    listRawUsersData(): UserData[];
+    listUsers(): User[];
     findInputById(id: string): SpatializedInput;
     findUserInput(userid: string, inputid: string): SpatializedInput;
     findUserForId(id: string): User;

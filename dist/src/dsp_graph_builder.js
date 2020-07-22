@@ -37,25 +37,35 @@ class NodeDSPGraphBuilder extends core_1.NodeModule {
     }
     _do_rebuild_graph_full() {
         this.dsp().resetGraph().then(() => {
-            this._build_spatializer_modules();
-            this._build_user_modules();
+            try {
+                this._build_spatializer_modules();
+                this._build_user_modules();
+            }
+            catch (err) {
+                console.log(err);
+            }
+            this.dsp().syncGraph();
         }).catch(err => {
             log.error("Could not reset graph: " + err);
         });
     }
     _build_spatializer_modules() {
-        this.nodeUsers().listUsers().forEach(usr => {
-            log.verbose("Build input modules for user " + usr.name);
-            this.basic_spatializers[usr.id] = {};
-            this.nodeUsers().getUsersInputs(usr.id).forEach(input => {
+        this.nodeUsers().listUsers().forEach(user => {
+            let userdata = user.get();
+            log.verbose("Build input modules for user " + userdata.name);
+            this.basic_spatializers[userdata.id] = {};
+            this.nodeUsers().getUsersInputs(userdata.id).forEach(input => {
                 log.verbose(`Build input module for ${input.get().id}`);
                 let mod = new dsp_modules_1.MulitSpatializerModule(input);
-                this.basic_spatializers[usr.id][input.get().id] = mod;
+                this.basic_spatializers[userdata.id][input.get().id] = mod;
+                this.graph().addModule(mod);
             });
+            let usermod = new dsp_modules_1.SimpleUsersModule(user);
+            this.graph().addModule(usermod);
         });
     }
     _build_user_modules() {
-        this.nodeUsers().listUsers().forEach((usr) => {
+        this.nodeUsers().listRawUsersData().forEach((usr) => {
         });
     }
     nodeUsers() {

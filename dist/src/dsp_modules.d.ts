@@ -1,5 +1,6 @@
+import { PortTypes } from './dsp_defs';
 import { Bus, Connection, Graph, Module, NativeNode } from './dsp_graph';
-import { OwnedInput, OLDUser, SpatializedInput } from './users';
+import { OLDUser, OwnedInput, SpatializedInput, User } from './users';
 export declare class BasicSpatializer extends NativeNode {
     onRemoteAlive(): void;
     constructor(name: string);
@@ -22,7 +23,7 @@ export declare class AdvancedSpatializer extends NativeNode {
 }
 export declare class BasicBinauralDecoder extends NativeNode {
     onRemoteAlive(): void;
-    constructor(name: string);
+    constructor(name: string, order: number);
     remoteAttached(): void;
 }
 export declare class AdvancedBinauralDecoder extends NativeNode {
@@ -98,12 +99,36 @@ export declare class BasicUserModule extends Module {
     build(graph: Graph): void;
     destroy(graph: Graph): void;
 }
+export interface MultiSpatializerChannelSettings {
+    a: number;
+    e: number;
+    gain: number;
+    mute: number;
+    solo: number;
+}
 export declare class MultiSpatializer extends NativeNode {
+    _chtype: PortTypes;
+    _chcount: number;
+    _chs: MultiSpatializerChannelSettings[];
+    setElevations(elevations: number[], startindex?: number): void;
+    setAzimuths(azmths: number[], startindex?: number): void;
     onRemoteAlive(): void;
     remoteAttached(): void;
-    constructor(name: string);
+    _set_all_channels(): Promise<import("./communication").Message>;
+    constructor(name: string, type: PortTypes);
+}
+export declare class SimpleUsersModule extends Module {
+    _usr: User;
+    _decoder_id: number;
+    constructor(user: User);
+    input(graph: Graph): Bus;
+    output(graph: Graph): Bus;
+    graphChanged(graph: Graph): void;
+    build(graph: Graph): void;
+    destroy(graph: Graph): void;
 }
 export declare class MulitSpatializerModule extends Module {
+    _input: SpatializedInput;
     _spatializer_node_id: number;
     input(graph: Graph): Bus;
     output(graph: Graph): Bus;
@@ -111,14 +136,4 @@ export declare class MulitSpatializerModule extends Module {
     build(graph: Graph): void;
     destroy(graph: Graph): void;
     constructor(input: SpatializedInput);
-}
-export declare class UsersModule extends Module {
-    input(graph: Graph): Bus;
-    output(graph: Graph): Bus;
-    graphChanged(graph: Graph): void;
-    build(graph: Graph): void;
-    destroy(graph: Graph): void;
-    _decoder_id: number;
-    _rotator_id: number;
-    constructor();
 }

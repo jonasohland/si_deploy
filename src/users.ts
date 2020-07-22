@@ -33,6 +33,8 @@ import {
 } from './users_defs';
 import WebInterface from './web_interface';
 import { PortTypes } from './dsp_defs';
+import { ensurePortTypeEnum } from './util';
+import { managers } from 'socket.io-client';
 
 const log = Logger.get('USERSM');
 
@@ -477,14 +479,16 @@ export class OLDUsersManager extends EventEmitter {
     }
 }
 
-class User extends ManagedNodeStateObject<UserData> {
+export class User extends ManagedNodeStateObject<UserData> {
 
     data: UserData;
+    _man: NodeUsersManager;
 
-    constructor(data: UserData)
+    constructor(data: UserData, manager: NodeUsersManager)
     {
         super();
         this.data = data
+        this._man = manager;
     }
 
     async set(val: UserData)
@@ -495,6 +499,10 @@ class User extends ManagedNodeStateObject<UserData> {
     get(): UserData
     {
         return this.data;
+    }
+
+    inputs() {
+        return this._man.getUsersInputs(this.data.id);
     }
 }
 
@@ -524,15 +532,32 @@ export class SpatializedInput extends ManagedNodeStateObject<SpatializedInputDat
         let source = this.inputsModule.findInputForId(this.data.inputid);
 
         if(source)
-            return source.get().type;
+            return ensurePortTypeEnum(source.get().type);
         else {
             log.error("Could not find input source for input " + this.data.id + " input: " + this.data.inputid);
             return PortTypes.Mono;
         }
     }
+
+    findSourceChannel() {
+        let source = this.inputsModule.findInputForId(this.data.inputid);
+
+        if(source)
+            return source.get().channel;
+        else {
+            log.error("Could not find input source for input " + this.data.id + " input: " + this.data.inputid);
+            return 0;
+        }
+    }
 }
 
 class UserList extends ManagedNodeStateListRegister {
+
+    _man: NodeUsersManager;
+
+    constructor(manager: NodeUsersManager) {
+        super();
+    }
 
     async remove(obj: ManagedNodeStateObject<any>)
     {
@@ -540,7 +565,7 @@ class UserList extends ManagedNodeStateListRegister {
 
     async insert(obj: any): Promise<User>
     {
-        return new User(obj);
+        return new User(obj, this._man);
     }
 }
 
@@ -574,7 +599,7 @@ export class NodeUsersManager extends NodeModule {
     {
         super(DSPModuleNames.USERS);
         this._inputs_module = inputsModule;
-        this._users  = new UserList();
+        this._users  = new UserList(this);
         this._inputs = new SpatializedInputsList(inputsModule);
         this.add(this._users, 'users');
         this.add(this._inputs, 'inputs');
@@ -582,7 +607,7 @@ export class NodeUsersManager extends NodeModule {
 
     addUser(userdata: UserData)
     {
-        this._users.add(new User(userdata));
+        this._users.add(new User(userdata, this));
         this._users.save();
         this.updateWebInterfaces();
     }
@@ -682,7 +707,7 @@ export class NodeUsersManager extends NodeModule {
     joined(socket: SocketIO.Socket, topic: string)
     {
         if (topic == 'users')
-            socket.emit('node.users.update', this.myNodeId(), this.listUsers());
+            socket.emit('node.users.update', this.myNodeId(), this.listRawUsersData());
         else if (topic.startsWith('userinputs-')) {
             let userid = topic.slice(11);
             try {
@@ -707,7 +732,7 @@ export class NodeUsersManager extends NodeModule {
     updateWebInterfaces()
     {
         this.publish(
-            'users', 'node.users.update', this.myNodeId(), this.listUsers());
+            'users', 'node.users.update', this.myNodeId(), this.listRawUsersData());
     }
 
     publishUserInputs(userid: string)
@@ -721,9 +746,14 @@ export class NodeUsersManager extends NodeModule {
         }
     }
 
-    listUsers()
+    listRawUsersData()
     {
         return <UserData[]> this._users._object_iter().map(obj => obj.get());
+    }
+
+    listUsers()
+    {
+        return <User[]> this._users._objects
     }
 
     findInputById(id: string)

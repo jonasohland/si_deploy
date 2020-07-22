@@ -331,6 +331,7 @@ class Requester extends events_1.EventEmitter {
         return new TypedMessagePromise(this.connection.set(this.request_target, value, timeout, data));
     }
     destroy() {
+        this.connection.removeAllListeners(this.request_target);
     }
 }
 exports.Requester = Requester;

@@ -10,6 +10,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const cp = __importStar(require("child_process"));
 const ip_1 = require("ip");
 const os = __importStar(require("os"));
+const dsp_defs_1 = require("./dsp_defs");
 function applyMixins(derivedCtor, baseCtors) {
     baseCtors.forEach(baseCtor => {
         Object.getOwnPropertyNames(baseCtor.prototype).forEach(name => {
@@ -92,4 +93,13 @@ function promisifyEventWithTimeout(eventemitter, event, timeout = 10000) {
     });
 }
 exports.promisifyEventWithTimeout = promisifyEventWithTimeout;
+function ensurePortTypeEnum(val) {
+    if (typeof val == 'string') {
+        let v = val;
+        return dsp_defs_1.PortTypes[v];
+    }
+    else
+        return val;
+}
+exports.ensurePortTypeEnum = ensurePortTypeEnum;
 //# sourceMappingURL=util.js.map

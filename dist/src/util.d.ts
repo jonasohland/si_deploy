@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import * as os from 'os';
 import { EventEmitter } from 'serialport';
+import { PortTypes } from './dsp_defs';
 export declare function applyMixins(derivedCtor: any, baseCtors: any[]): void;
 export declare function openForUser(thing: string): void;
 export declare function bitValue(bit: number): number;
@@ -14,3 +15,4 @@ export declare const LocalInterfaces: os.NetworkInterfaceInfo[];
 export declare function getMatchingLocalInterface(addr: string[]): os.NetworkInterfaceInfo[];
 export declare function ignore(...any: any): void;
 export declare function promisifyEventWithTimeout<EventReturnValueType>(eventemitter: EventEmitter, event: string, timeout?: number): Promise<EventReturnValueType>;
+export declare function ensurePortTypeEnum(val: string | PortTypes): PortTypes;
