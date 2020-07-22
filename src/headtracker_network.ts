@@ -177,6 +177,7 @@ export class NetworkHeadtracker extends Headtracker {
             if (this._state(HTRKDevState.BUSY)) {
 
                 this._setState(HTRKDevState.CONNECTED);
+                this.emit("connected");
                 this._handleStateUpdate(p, true);
 
                 if (this.update_required)

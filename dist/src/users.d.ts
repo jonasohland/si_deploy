@@ -10,6 +10,7 @@ import * as Inputs from './inputs';
 import * as Instance from './instance';
 import { SpatializedInputData, UserData } from './users_defs';
 import WebInterface from './web_interface';
+import { PortTypes } from './dsp_defs';
 export interface OwnedInput {
     id: number;
     input: Inputs.Input;
@@ -77,24 +78,29 @@ declare class User extends ManagedNodeStateObject<UserData> {
     set(val: UserData): Promise<void>;
     get(): UserData;
 }
-declare class SpatializedInput extends ManagedNodeStateObject<SpatializedInputData> {
+export declare class SpatializedInput extends ManagedNodeStateObject<SpatializedInputData> {
     data: SpatializedInputData;
-    constructor(data: SpatializedInputData);
+    inputsModule: Inputs.NodeAudioInputManager;
+    constructor(data: SpatializedInputData, inputsModule: Inputs.NodeAudioInputManager);
     set(val: SpatializedInputData): Promise<void>;
     get(): SpatializedInputData;
+    findSourceType(): PortTypes.Any | PortTypes;
 }
 declare class UserList extends ManagedNodeStateListRegister {
     remove(obj: ManagedNodeStateObject<any>): Promise<void>;
     insert(obj: any): Promise<User>;
 }
 declare class SpatializedInputsList extends ManagedNodeStateListRegister {
+    inputsManager: Inputs.NodeAudioInputManager;
+    constructor(inputsModule: Inputs.NodeAudioInputManager);
     remove(obj: ManagedNodeStateObject<any>): Promise<void>;
     insert(data: any): Promise<SpatializedInput>;
 }
 export declare class NodeUsersManager extends NodeModule {
     _users: UserList;
     _inputs: SpatializedInputsList;
-    constructor();
+    _inputs_module: Inputs.NodeAudioInputManager;
+    constructor(inputsModule: Inputs.NodeAudioInputManager);
     addUser(userdata: UserData): void;
     modifyUser(userdata: UserData): void;
     removeUser(userid: string): void;
@@ -106,7 +112,7 @@ export declare class NodeUsersManager extends NodeModule {
     init(): void;
     updateWebInterfaces(): void;
     publishUserInputs(userid: string): void;
-    listUsers(): any[];
+    listUsers(): UserData[];
     findInputById(id: string): SpatializedInput;
     findUserInput(userid: string, inputid: string): SpatializedInput;
     findUserForId(id: string): User;

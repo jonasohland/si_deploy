@@ -19,7 +19,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const events_1 = require("events");
+const eventemitter2_1 = require("eventemitter2");
 const fs = __importStar(require("fs"));
 const sanitize_filename_1 = __importDefault(require("sanitize-filename"));
 const uuid_1 = require("uuid");
@@ -471,6 +471,18 @@ class NodeModule extends Publisher {
             let lreg = this._registers[regname];
         });
     }
+    emitToModule(module, event, ...data) {
+        this.events.emit(`${this.myNodeId()}.${module}.${event}`, ...data);
+    }
+    emitToNode(event, ...data) {
+        this.events.emit(`${this.myNodeId()}.${event}`, ...data);
+    }
+    handleNodeEvent(event, handler) {
+        this.events.on(`${this.myNodeId()}.${event}`, handler);
+    }
+    handleModuleEvent(event, handler) {
+        this.events.on(`${this.myNodeId()}.${this._name}.${event}`, handler);
+    }
 }
 exports.NodeModule = NodeModule;
 class NodeDataStorage extends communication_1.NodeMessageInterceptor {
@@ -703,10 +715,15 @@ class Node {
             for (let mod of modnames) {
                 this._modules[mod]._init(this, server);
             }
+            log.info("Reloading data from node " + this.name());
             yield this._reload_data_from_node();
+            log.info("Finished loading data from node " + this.name());
+            log.info("Start node modules");
             for (let mod of modnames) {
+                log.verbose("Start module " + mod);
                 this._modules[mod]._start(remote);
             }
+            log.info("Node modules started");
             this._start();
         });
     }
@@ -795,7 +812,6 @@ class Node {
                     }
                 }
             }));
-            this._start();
         });
     }
     name() {
@@ -818,6 +834,12 @@ class Node {
     }
     getModule(name) {
         return this._modules[name];
+    }
+    emitToModule(module, event, ...data) {
+        this.events.emit(`${this.id()}.${module}.${event}`, ...data);
+    }
+    emitToNode(event, ...data) {
+        this.events.emit(`${this.id()}.${event}`, ...data);
     }
 }
 exports.Node = Node;
@@ -842,7 +864,7 @@ class ServerModule extends Publisher {
     getNode(id) {
         return this.server._nodes[id];
     }
-    handle(event, handler) {
+    handleWebInterfaceEvent(event, handler) {
         this.webif.attachHandler(this, this._name, event, (socket, nodeid, data) => {
             let node = this.server._nodes[nodeid];
             if (!node) {
@@ -854,10 +876,16 @@ class ServerModule extends Publisher {
             handler(socket, node, data);
         });
     }
-    handleGlobal(event, handler) {
+    handleGlobalWebInterfaceEvent(event, handler) {
         this.webif.attachHandler(this, this._name, event, (socket, data) => {
             handler(socket, data);
         });
+    }
+    emitToModule(node, module, event, ...data) {
+        this.events.emit(`${node}.${module}.${event}`, ...data);
+    }
+    emitToNode(node, event, ...data) {
+        this.events.emit(`${node}.${event}`, ...data);
     }
 }
 exports.ServerModule = ServerModule;
@@ -888,17 +916,26 @@ class Server {
     constructor(wssrv, webif) {
         this._nodes = {};
         this._modules = {};
-        this._event_bus = new events_1.EventEmitter();
+        this._event_bus = new eventemitter2_1.EventEmitter2({ wildcard: true, delimiter: '.' });
         this._srv = wssrv;
         this._webif = webif;
         this._srv.on('add-session', this._on_add_remote.bind(this));
         this._srv.on('remove-session', this._on_remove_remote.bind(this));
         this._internals = new ServerInternalsModule();
         this.add(this._internals);
+        this._event_bus.onAny((eventname) => {
+            log.debug(`Server event [${eventname}]`);
+        });
     }
     add(module) {
         this._modules[module._name] = module;
         module._init(this, this._webif, this._event_bus);
+    }
+    emitToNodeModule(node, module, event, ...data) {
+        this._event_bus.emit(`${node}.${module}.${event}`, ...data);
+    }
+    emitToNode(node, event, ...data) {
+        this._event_bus.emit(`${node}.${event}`, ...data);
     }
     _on_add_remote(session) {
         log.info(`Create new node instance for [${communication_1.NODE_TYPE[session.id().type]}] ${session.id().name}`);

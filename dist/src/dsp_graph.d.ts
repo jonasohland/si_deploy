@@ -80,8 +80,8 @@ export declare class Node extends EventEmitter {
     receives: Connection[];
     constructor(name: string, type: string);
     addBus(input: boolean, bus: Bus): this;
-    mainIn(): Bus;
-    mainOut(): Bus;
+    getMainInputBus(): Bus;
+    getMainOutputBus(): Bus;
     getMainBus(input: boolean): Bus;
     getInputBus(name: string): void;
     getOutputBus(name: string): Bus;
@@ -106,12 +106,13 @@ export declare class PluginNode extends Node {
     constructor(name: string);
 }
 export declare abstract class NativeNode extends Node {
-    processor_type: string;
+    native_node_type: string;
     connection: COM.Connection;
     remote: COM.Requester;
     native_event_name: string;
     constructor(name: string, native_node_type: string);
     attachEventListener(con: COM.Connection): void;
+    abstract onRemoteAlive(): void;
     abstract remoteAttached(): void;
 }
 export declare abstract class Module {
@@ -152,4 +153,5 @@ export declare class Graph {
         nodes: any[];
         connections: Connection[];
     };
+    clear(): void;
 }

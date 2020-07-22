@@ -18,7 +18,7 @@ import {
     BasicUserModule,
     SpatializationModule
 } from './dsp_modules';
-import {DSPNode} from './dsp_node';
+import {DSPNode, DSPModuleNames} from './dsp_node';
 import {Headtracking} from './headtracking';
 import * as Inputs from './inputs';
 import * as Instance from './instance';
@@ -32,6 +32,7 @@ import {
     UserModifyInputMessage
 } from './users_defs';
 import WebInterface from './web_interface';
+import { PortTypes } from './dsp_defs';
 
 const log = Logger.get('USERSM');
 
@@ -497,14 +498,16 @@ class User extends ManagedNodeStateObject<UserData> {
     }
 }
 
-class SpatializedInput extends ManagedNodeStateObject<SpatializedInputData> {
+export class SpatializedInput extends ManagedNodeStateObject<SpatializedInputData> {
 
     data: SpatializedInputData;
+    inputsModule: Inputs.NodeAudioInputManager;
 
-    constructor(data: SpatializedInputData)
+    constructor(data: SpatializedInputData, inputsModule: Inputs.NodeAudioInputManager)
     {
         super();
         this.data = data;
+        this.inputsModule = inputsModule;
     }
 
     async set(val: SpatializedInputData): Promise<void>
@@ -515,6 +518,17 @@ class SpatializedInput extends ManagedNodeStateObject<SpatializedInputData> {
     get(): SpatializedInputData
     {
         return this.data;
+    }
+
+    findSourceType() {
+        let source = this.inputsModule.findInputForId(this.data.inputid);
+
+        if(source)
+            return source.get().type;
+        else {
+            log.error("Could not find input source for input " + this.data.id + " input: " + this.data.inputid);
+            return PortTypes.Mono;
+        }
     }
 }
 
@@ -531,13 +545,22 @@ class UserList extends ManagedNodeStateListRegister {
 }
 
 class SpatializedInputsList extends ManagedNodeStateListRegister {
+
+    inputsManager: Inputs.NodeAudioInputManager;
+
+    constructor(inputsModule: Inputs.NodeAudioInputManager)
+    {
+        super();
+        this.inputsManager = inputsModule;
+    }
+
     async remove(obj: ManagedNodeStateObject<any>)
     {
     }
 
     async insert(data: any)
     {
-        return new SpatializedInput(data);
+        return new SpatializedInput(data, this.inputsManager);
     }
 }
 
@@ -545,12 +568,14 @@ export class NodeUsersManager extends NodeModule {
 
     _users: UserList;
     _inputs: SpatializedInputsList;
+    _inputs_module: Inputs.NodeAudioInputManager;
 
-    constructor()
+    constructor(inputsModule: Inputs.NodeAudioInputManager)
     {
-        super('users');
+        super(DSPModuleNames.USERS);
+        this._inputs_module = inputsModule;
         this._users  = new UserList();
-        this._inputs = new SpatializedInputsList();
+        this._inputs = new SpatializedInputsList(inputsModule);
         this.add(this._users, 'users');
         this.add(this._inputs, 'inputs');
     }
@@ -618,7 +643,7 @@ export class NodeUsersManager extends NodeModule {
         user.set(userdata);
         user.save();
 
-        let newinputobj = new SpatializedInput(newinput);
+        let newinputobj = new SpatializedInput(newinput, this._inputs_module);
         this._inputs.add(newinputobj);
         newinputobj.save();
     }
@@ -698,7 +723,7 @@ export class NodeUsersManager extends NodeModule {
 
     listUsers()
     {
-        return this._users._object_iter().map(obj => obj.get());
+        return <UserData[]> this._users._object_iter().map(obj => obj.get());
     }
 
     findInputById(id: string)
@@ -769,7 +794,7 @@ export class UsersManager extends ServerModule {
 
     init()
     {
-        this.handle('add.user', (socket: SocketIO.Socket, node: DSPNode,
+        this.handleWebInterfaceEvent('add.user', (socket: SocketIO.Socket, node: DSPNode,
                                  data: UserData) => {
             if (data.channel != null) {
                 node.users.addUser(data);
@@ -779,7 +804,7 @@ export class UsersManager extends ServerModule {
                     node.name(), 'Could not add user: Missing data');
         });
 
-        this.handle('user.add.inputs', (socket: SocketIO.Socket, node: DSPNode,
+        this.handleWebInterfaceEvent('user.add.inputs', (socket: SocketIO.Socket, node: DSPNode,
                                         data: UserAddInputsMessage) => {
             data.inputs.forEach(input => {
                 let nodein = node.inputs.findInputForId(input.id);
@@ -797,19 +822,19 @@ export class UsersManager extends ServerModule {
             node.users.updateWebInterfaces();
         });
 
-        this.handle(
+        this.handleWebInterfaceEvent(
             'user.delete.input', (socket: SocketIO.Socket, node: DSPNode,
                                   data: UserDeleteInputMessage) => {
                 node.users.removeInputFromUser(data.userid, data.input);
             });
 
-        this.handle('user.modify.input', (socket: SocketIO.Socket,
+        this.handleWebInterfaceEvent('user.modify.input', (socket: SocketIO.Socket,
                                           node: DSPNode,
                                           data: UserModifyInputMessage) => {
             node.users.modifyUserInput(data.userid, data.input, data.recompile);
         });
 
-        this.handle('user.modify', (socket: SocketIO.Socket, node: DSPNode,
+        this.handleWebInterfaceEvent('user.modify', (socket: SocketIO.Socket, node: DSPNode,
                                     data: UserData) => {
             node.users.modifyUser(data);
         });

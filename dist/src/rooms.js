@@ -19,6 +19,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = require("./core");
 const rooms_defs_1 = require("./rooms_defs");
 const Logger = __importStar(require("./log"));
+const dsp_node_1 = require("./dsp_node");
 const log = Logger.get('NROOMS');
 class Room extends core_1.ManagedNodeStateObject {
     constructor(letter, data) {
@@ -53,7 +54,7 @@ class NodeRoomsList extends core_1.ManagedNodeStateMapRegister {
 exports.NodeRoomsList = NodeRoomsList;
 class NodeRooms extends core_1.NodeModule {
     constructor() {
-        super('rooms');
+        super(dsp_node_1.DSPModuleNames.ROOMS);
         this._rooms = new NodeRoomsList();
         this.add(this._rooms, 'rooms');
     }
@@ -92,21 +93,21 @@ class NodeRooms extends core_1.NodeModule {
 exports.NodeRooms = NodeRooms;
 class Rooms extends core_1.ServerModule {
     init() {
-        this.handle('reset', (socket, node, room) => {
+        this.handleWebInterfaceEvent('reset', (socket, node, room) => {
         });
-        this.handle('modify', (socket, node, data) => {
+        this.handleWebInterfaceEvent('modify', (socket, node, data) => {
             node.rooms.updateRoom(data);
         });
-        this.handle('set-main', (socket, node, data) => {
+        this.handleWebInterfaceEvent('set-main', (socket, node, data) => {
             console.log(`SET [main] [${data.key}] ${data.value}`);
         });
-        this.handle('set-attn', (socket, node, data) => {
+        this.handleWebInterfaceEvent('set-attn', (socket, node, data) => {
             console.log(`SET [attn] [${data.key}] ${data.value}`);
         });
-        this.handle('set-room', (socket, node, data) => {
+        this.handleWebInterfaceEvent('set-room', (socket, node, data) => {
             console.log(`SET [room] [${data.key}] ${data.value}`);
         });
-        this.handle('set-eq', (socket, node, data) => {
+        this.handleWebInterfaceEvent('set-eq', (socket, node, data) => {
             console.log(`SET [eq] [${data.key}] ${data.value}`);
         });
     }

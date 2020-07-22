@@ -39,4 +39,6 @@ export declare class DSPController extends NodeModule {
     syncGraph(): Promise<void>;
     _try_dsp_start(): Promise<void>;
     waitStart(): Promise<void>;
+    graph(): Graph;
+    resetGraph(): Promise<void>;
 }

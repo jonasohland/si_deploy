@@ -22,8 +22,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const events_1 = __importDefault(require("events"));
 const core_1 = require("./core");
 const dsp_modules_1 = require("./dsp_modules");
+const dsp_node_1 = require("./dsp_node");
 const Logger = __importStar(require("./log"));
 const users_defs_1 = require("./users_defs");
+const dsp_defs_1 = require("./dsp_defs");
 const log = Logger.get('USERSM');
 class OLDUser {
     constructor(instance, name) {
@@ -309,9 +311,10 @@ class User extends core_1.ManagedNodeStateObject {
     }
 }
 class SpatializedInput extends core_1.ManagedNodeStateObject {
-    constructor(data) {
+    constructor(data, inputsModule) {
         super();
         this.data = data;
+        this.inputsModule = inputsModule;
     }
     set(val) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -321,7 +324,17 @@ class SpatializedInput extends core_1.ManagedNodeStateObject {
     get() {
         return this.data;
     }
+    findSourceType() {
+        let source = this.inputsModule.findInputForId(this.data.inputid);
+        if (source)
+            return source.get().type;
+        else {
+            log.error("Could not find input source for input " + this.data.id + " input: " + this.data.inputid);
+            return dsp_defs_1.PortTypes.Mono;
+        }
+    }
 }
+exports.SpatializedInput = SpatializedInput;
 class UserList extends core_1.ManagedNodeStateListRegister {
     remove(obj) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -334,21 +347,26 @@ class UserList extends core_1.ManagedNodeStateListRegister {
     }
 }
 class SpatializedInputsList extends core_1.ManagedNodeStateListRegister {
+    constructor(inputsModule) {
+        super();
+        this.inputsManager = inputsModule;
+    }
     remove(obj) {
         return __awaiter(this, void 0, void 0, function* () {
         });
     }
     insert(data) {
         return __awaiter(this, void 0, void 0, function* () {
-            return new SpatializedInput(data);
+            return new SpatializedInput(data, this.inputsManager);
         });
     }
 }
 class NodeUsersManager extends core_1.NodeModule {
-    constructor() {
-        super('users');
+    constructor(inputsModule) {
+        super(dsp_node_1.DSPModuleNames.USERS);
+        this._inputs_module = inputsModule;
         this._users = new UserList();
-        this._inputs = new SpatializedInputsList();
+        this._inputs = new SpatializedInputsList(inputsModule);
         this.add(this._users, 'users');
         this.add(this._inputs, 'inputs');
     }
@@ -397,7 +415,7 @@ class NodeUsersManager extends core_1.NodeModule {
         userdata.inputs.push(newinput.id);
         user.set(userdata);
         user.save();
-        let newinputobj = new SpatializedInput(newinput);
+        let newinputobj = new SpatializedInput(newinput, this._inputs_module);
         this._inputs.add(newinputobj);
         newinputobj.save();
     }
@@ -498,14 +516,14 @@ class UsersManager extends core_1.ServerModule {
     left(socket, topic) {
     }
     init() {
-        this.handle('add.user', (socket, node, data) => {
+        this.handleWebInterfaceEvent('add.user', (socket, node, data) => {
             if (data.channel != null) {
                 node.users.addUser(data);
             }
             else
                 this.webif.broadcastWarning(node.name(), 'Could not add user: Missing data');
         });
-        this.handle('user.add.inputs', (socket, node, data) => {
+        this.handleWebInterfaceEvent('user.add.inputs', (socket, node, data) => {
             data.inputs.forEach(input => {
                 let nodein = node.inputs.findInputForId(input.id);
                 if (nodein) {
@@ -521,13 +539,13 @@ class UsersManager extends core_1.ServerModule {
             node.users.publishUserInputs(data.userid);
             node.users.updateWebInterfaces();
         });
-        this.handle('user.delete.input', (socket, node, data) => {
+        this.handleWebInterfaceEvent('user.delete.input', (socket, node, data) => {
             node.users.removeInputFromUser(data.userid, data.input);
         });
-        this.handle('user.modify.input', (socket, node, data) => {
+        this.handleWebInterfaceEvent('user.modify.input', (socket, node, data) => {
             node.users.modifyUserInput(data.userid, data.input, data.recompile);
         });
-        this.handle('user.modify', (socket, node, data) => {
+        this.handleWebInterfaceEvent('user.modify', (socket, node, data) => {
             node.users.modifyUser(data);
         });
     }

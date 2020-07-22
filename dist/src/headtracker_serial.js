@@ -62,6 +62,7 @@ class UDPOutputAdapter extends OutputAdapter {
         this.socket = dgram.createSocket('udp4');
     }
     setRemote(addr, port) {
+        log.info(`Headtracking output address set to: ${addr}:${port}`);
         this.addr = addr;
         this.port = port;
     }

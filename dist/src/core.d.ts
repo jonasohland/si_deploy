@@ -1,6 +1,6 @@
 /// <reference types="socket.io" />
 /// <reference types="node" />
-import { EventEmitter } from 'events';
+import { EventEmitter2 } from 'eventemitter2';
 import { Connection, Message, NODE_TYPE, NodeIdentification, NodeMessageInterceptor, Requester, SIServerWSServer, SIServerWSSession } from './communication';
 import WebInterface from './web_interface';
 export declare enum StateUpdateStrategy {
@@ -160,7 +160,7 @@ export declare abstract class NodeModule extends Publisher {
     _data: any;
     _registers: Record<string, ManagedNodeStateRegister>;
     _dirty: boolean;
-    events: EventEmitter;
+    events: EventEmitter2;
     abstract init(): void;
     abstract start(remote: Connection): void;
     abstract destroy(): void;
@@ -183,6 +183,10 @@ export declare abstract class NodeModule extends Publisher {
     applyModuleData(mod: ManagedNodeStateModuleData): Promise<(void | void[])[]>;
     applyRegisterData(name: string, reg: ManagedNodeStateRegisterData): Promise<void>;
     applyObjectData(regname: string, obj: ManagedNodeStateObjectData): Promise<void>;
+    emitToModule(module: string, event: string, ...data: any[]): void;
+    emitToNode(event: string, ...data: any[]): void;
+    handleNodeEvent(event: string, handler: (...data: any[]) => void): void;
+    handleModuleEvent(event: string, handler: (...data: any[]) => void): void;
 }
 interface UpdateObjectMessage {
     module: string;
@@ -244,13 +248,13 @@ export declare abstract class Node {
     _remote: Connection;
     _modules: Record<string, NodeModule>;
     _state_manager: Requester;
-    events: EventEmitter;
+    events: EventEmitter2;
     constructor(id: NodeIdentification);
     abstract init(): void;
     abstract start(): void;
     abstract destroy(): void;
     _destroy(): void;
-    _init(remote: Connection, node_events: EventEmitter, server: Server): Promise<void>;
+    _init(remote: Connection, node_events: EventEmitter2, server: Server): Promise<void>;
     _start(): void;
     _save_child(mod: NodeModule, reg?: ManagedNodeStateRegister, obj?: ManagedNodeStateObject<any>): Promise<Message>;
     _reload_data_from_node(): Promise<void>;
@@ -260,23 +264,27 @@ export declare abstract class Node {
     remote(): Connection;
     add(module: NodeModule): void;
     getModule<ModuleType>(name: string): ModuleType;
+    emitToModule(module: string, event: string, ...data: any[]): void;
+    emitToNode(event: string, ...data: any[]): void;
 }
 export declare type WEBIFNodeEventHandler = (socket: SocketIO.Socket, node: Node, data: any, transaction?: TransactionID) => void;
 export declare type WEBIFEventHandler = (socket: SocketIO.Socket, data: any) => void;
 export declare type TransactionID = string;
 export declare abstract class ServerModule extends Publisher {
     _name: string;
-    events: EventEmitter;
+    events: EventEmitter2;
     server: Server;
     webif: WebInterface;
-    _init(srv: Server, webif: WebInterface, events: EventEmitter): void;
+    _init(srv: Server, webif: WebInterface, events: EventEmitter2): void;
     publish(topic: string, event: string, ...data: any[]): void;
     hasSubs(topic: string): boolean;
     abstract init(): void;
     constructor(name: string);
     getNode(id: string): Node;
-    handle(event: string, handler: WEBIFNodeEventHandler): void;
-    handleGlobal(event: string, handler: WEBIFEventHandler): void;
+    handleWebInterfaceEvent(event: string, handler: WEBIFNodeEventHandler): void;
+    handleGlobalWebInterfaceEvent(event: string, handler: WEBIFEventHandler): void;
+    emitToModule(node: string, module: string, event: string, ...data: any[]): void;
+    emitToNode(node: string, event: string, ...data: any[]): void;
 }
 export declare class ServerInternalsModule extends ServerModule {
     joined(socket: SocketIO.Socket, topic: string): void;
@@ -291,10 +299,12 @@ export declare abstract class Server {
     _nodes: Record<string, Node>;
     _modules: Record<string, ServerModule>;
     _webif: WebInterface;
-    _event_bus: EventEmitter;
+    _event_bus: EventEmitter2;
     _internals: ServerInternalsModule;
     constructor(wssrv: SIServerWSServer, webif: WebInterface);
     add(module: ServerModule): void;
+    emitToNodeModule(node: string, module: string, event: string, ...data: any[]): void;
+    emitToNode(node: string, event: string, ...data: any[]): void;
     _on_add_remote(session: SIServerWSSession): void;
     _on_remove_remote(session: SIServerWSSession): void;
     _check_server_has_subscribers(module: string, topic: string): boolean;

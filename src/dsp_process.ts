@@ -12,6 +12,7 @@ import eventToPromise from 'event-to-promise';
 import { Node, NodeModule } from './core';
 import { Graph } from './dsp_graph';
 import { VSTScanner } from './vst';
+import { DSPModuleNames } from './dsp_node';
 
 const log = Logger.get("DSPROC");
 
@@ -198,6 +199,8 @@ export class DSPController extends NodeModule {
     start(remote: Connection): void {
 
         this._remote = remote.getRequester('dsp-controller');
+        this._remote_graph = remote.getRequester('graph');
+
         this._try_dsp_start().catch((err) => {
             log.error("DSP startup failed");
         });
@@ -220,11 +223,8 @@ export class DSPController extends NodeModule {
         });
 
         this._connection = remote;
-        this._remote_graph = remote.getRequester('graph');
 
-        this.events.on('dsp-started', () => {
-            
-        });
+        log.info("Graph service running");
     }
 
     joined(socket: SocketIO.Socket, topic: string)
@@ -247,7 +247,7 @@ export class DSPController extends NodeModule {
 
     constructor(vst: VSTScanner)
     {
-        super("dsp-process");
+        super(DSPModuleNames.DSP_PROCESS);
         this._vst = vst;
         this._graph = new Graph(vst);
     }
@@ -299,5 +299,14 @@ export class DSPController extends NodeModule {
     {
         if(this._running)
             return this._try_dsp_start();
+    }
+
+    graph() {
+        return this._graph;
+    }
+
+    async resetGraph() {
+        await this._remote_graph.request('reset')
+        this._graph.clear();
     }
 }

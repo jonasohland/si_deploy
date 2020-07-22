@@ -30,6 +30,7 @@ const util_1 = require("./util");
 const event_to_promise_1 = __importDefault(require("event-to-promise"));
 const core_1 = require("./core");
 const dsp_graph_1 = require("./dsp_graph");
+const dsp_node_1 = require("./dsp_node");
 const log = Logger.get("DSPROC");
 class LocalNodeController extends communication_1.NodeMessageInterceptor {
     constructor(options, ipc) {
@@ -170,7 +171,7 @@ class LocalNodeController extends communication_1.NodeMessageInterceptor {
 exports.LocalNodeController = LocalNodeController;
 class DSPController extends core_1.NodeModule {
     constructor(vst) {
-        super("dsp-process");
+        super(dsp_node_1.DSPModuleNames.DSP_PROCESS);
         this._closed = false;
         this._vst = vst;
         this._graph = new dsp_graph_1.Graph(vst);
@@ -182,6 +183,7 @@ class DSPController extends core_1.NodeModule {
     }
     start(remote) {
         this._remote = remote.getRequester('dsp-controller');
+        this._remote_graph = remote.getRequester('graph');
         this._try_dsp_start().catch((err) => {
             log.error("DSP startup failed");
         });
@@ -199,9 +201,7 @@ class DSPController extends core_1.NodeModule {
             this._running = true;
         });
         this._connection = remote;
-        this._remote_graph = remote.getRequester('graph');
-        this.events.on('dsp-started', () => {
-        });
+        log.info("Graph service running");
     }
     joined(socket, topic) {
     }
@@ -251,6 +251,15 @@ class DSPController extends core_1.NodeModule {
         return __awaiter(this, void 0, void 0, function* () {
             if (this._running)
                 return this._try_dsp_start();
+        });
+    }
+    graph() {
+        return this._graph;
+    }
+    resetGraph() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this._remote_graph.request('reset');
+            this._graph.clear();
         });
     }
 }

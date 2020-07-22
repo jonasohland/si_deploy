@@ -305,12 +305,12 @@ export class Node extends EventEmitter {
         return this;
     }
 
-    mainIn()
+    getMainInputBus()
     {
         return this.getMainBus(true);
     }
 
-    mainOut()
+    getMainOutputBus()
     {
         return this.getMainBus(false);
     }
@@ -418,7 +418,7 @@ export class PluginNode extends Node {
 
 export abstract class NativeNode extends Node {
 
-    processor_type: string;
+    native_node_type: string;
     connection: COM.Connection;
     remote: COM.Requester;
     native_event_name: string;
@@ -426,17 +426,23 @@ export abstract class NativeNode extends Node {
     constructor(name: string, native_node_type: string)
     {
         super(name, 'native_processor');
-        this.processor_type = native_node_type;
+        this.native_node_type = native_node_type;
     }
 
     attachEventListener(con: COM.Connection)
     {
         this.connection        = con;
-        this.native_event_name = `${this.processor_type}_${this.id}`;
+        this.native_event_name = `${this.native_node_type}_${this.id}`;
         this.remote = this.connection.getRequester(this.native_event_name);
+
+        this.remote.on('alive', () => {
+
+        });
+
         this.remoteAttached();
     }
 
+    abstract onRemoteAlive(): void;
     abstract remoteAttached(): void;
 }
 
@@ -547,12 +553,12 @@ export class Graph {
 
     mainInBus()
     {
-        return this.getInputNode().mainOut();
+        return this.getInputNode().getMainOutputBus();
     }
 
     mainOutBus()
     {
-        return this.getOutputNode().mainIn();
+        return this.getOutputNode().getMainInputBus();
     }
 
     addModule(mod: Module)
@@ -598,18 +604,26 @@ export class Graph {
                 {
                 }
 
-                obj.ins_count  = n.mainIn() ? n.mainIn().channelCount() : 0;
-                obj.outs_count = n.mainOut() ? n.mainOut().channelCount() : 0;
+                obj.ins_count  = n.getMainInputBus() ? n.getMainInputBus().channelCount() : 0;
+                obj.outs_count = n.getMainOutputBus() ? n.getMainOutputBus().channelCount() : 0;
 
                 obj.id             = n.id;
                 obj.type           = n.type;
                 obj.name           = n.name;
-                obj.processor_type = (<NativeNode>n).processor_type;
+                obj.processor_type = (<NativeNode>n).native_node_type;
 
                 return obj;
             }),
             connections : this.connections
         };
         return out;
+    }
+
+    clear() 
+    {
+        this.node_count = 0;
+        this.nodes = [];
+        this.modules = [];
+        this.connections = [];
     }
 }

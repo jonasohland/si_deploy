@@ -41,7 +41,6 @@ class SIOutputAdapter extends headtracker_serial_1.UDPOutputAdapter {
         return this._seq;
     }
     process(q) {
-        log.info('Output Quaternion.');
         let { buffer, offset } = q.data();
         if (q.float())
             this.sendData(headtracker_1.HeadtrackerDataPacket.newPacketFromFloatLEData(buffer, offset, this.id, this.seq()));

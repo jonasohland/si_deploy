@@ -199,10 +199,10 @@ class Node extends events_1.EventEmitter {
             this.outputs.push(bus);
         return this;
     }
-    mainIn() {
+    getMainInputBus() {
         return this.getMainBus(true);
     }
-    mainOut() {
+    getMainOutputBus() {
         return this.getMainBus(false);
     }
     getMainBus(input) {
@@ -277,12 +277,14 @@ exports.PluginNode = PluginNode;
 class NativeNode extends Node {
     constructor(name, native_node_type) {
         super(name, 'native_processor');
-        this.processor_type = native_node_type;
+        this.native_node_type = native_node_type;
     }
     attachEventListener(con) {
         this.connection = con;
-        this.native_event_name = `${this.processor_type}_${this.id}`;
+        this.native_event_name = `${this.native_node_type}_${this.id}`;
         this.remote = this.connection.getRequester(this.native_event_name);
+        this.remote.on('alive', () => {
+        });
         this.remoteAttached();
     }
 }
@@ -346,10 +348,10 @@ class Graph {
         return this.nodes.find(n => n.type == '__output');
     }
     mainInBus() {
-        return this.getInputNode().mainOut();
+        return this.getInputNode().getMainOutputBus();
     }
     mainOutBus() {
-        return this.getOutputNode().mainIn();
+        return this.getOutputNode().getMainInputBus();
     }
     addModule(mod) {
         ++this.node_count;
@@ -378,17 +380,23 @@ class Graph {
         let out = {
             nodes: this.nodes.map(n => {
                 let obj = {};
-                obj.ins_count = n.mainIn() ? n.mainIn().channelCount() : 0;
-                obj.outs_count = n.mainOut() ? n.mainOut().channelCount() : 0;
+                obj.ins_count = n.getMainInputBus() ? n.getMainInputBus().channelCount() : 0;
+                obj.outs_count = n.getMainOutputBus() ? n.getMainOutputBus().channelCount() : 0;
                 obj.id = n.id;
                 obj.type = n.type;
                 obj.name = n.name;
-                obj.processor_type = n.processor_type;
+                obj.processor_type = n.native_node_type;
                 return obj;
             }),
             connections: this.connections
         };
         return out;
+    }
+    clear() {
+        this.node_count = 0;
+        this.nodes = [];
+        this.modules = [];
+        this.connections = [];
     }
 }
 exports.Graph = Graph;

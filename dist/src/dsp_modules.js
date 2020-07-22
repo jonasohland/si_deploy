@@ -31,6 +31,7 @@ function normalizeIEMStWidthDegs(value) {
     return (value + 360) / (360 * 2);
 }
 class BasicSpatializer extends dsp_graph_1.NativeNode {
+    onRemoteAlive() { }
     constructor(name) {
         super(name, 'basic_spatializer');
         this.addInputBus(dsp_graph_1.Bus.createMainAny(2));
@@ -67,6 +68,7 @@ class BasicSpatializer extends dsp_graph_1.NativeNode {
 }
 exports.BasicSpatializer = BasicSpatializer;
 class AdvancedSpatializer extends dsp_graph_1.NativeNode {
+    onRemoteAlive() { }
     constructor(name) {
         super(name, 'advanced_spatializer');
         this.addInputBus(dsp_graph_1.Bus.createMainAny(1));
@@ -103,6 +105,7 @@ class AdvancedSpatializer extends dsp_graph_1.NativeNode {
 }
 exports.AdvancedSpatializer = AdvancedSpatializer;
 class BasicBinauralDecoder extends dsp_graph_1.NativeNode {
+    onRemoteAlive() { }
     constructor(name) {
         super(name, 'basic_binaural_decoder');
         this.addInputBus(dsp_graph_1.AmbiBus.createMainForOrder(3, 1));
@@ -112,6 +115,9 @@ class BasicBinauralDecoder extends dsp_graph_1.NativeNode {
 }
 exports.BasicBinauralDecoder = BasicBinauralDecoder;
 class AdvancedBinauralDecoder extends dsp_graph_1.NativeNode {
+    onRemoteAlive() {
+        throw new Error("Method not implemented.");
+    }
     constructor(name) {
         super(name, 'advanced_binaural_decoder');
         this.addInputBus(dsp_graph_1.AmbiBus.createMainForOrder(3, 1));
@@ -161,10 +167,10 @@ class BasicSpatializerModule extends SpatializationModule {
         graph.removeNode(this.encoder_nid);
     }
     input(graph) {
-        return graph.getNode(this.encoder_nid).mainIn();
+        return graph.getNode(this.encoder_nid).getMainInputBus();
     }
     output(graph) {
-        return graph.getNode(this.encoder_nid).mainOut();
+        return graph.getNode(this.encoder_nid).getMainOutputBus();
     }
     graphChanged(graph) { }
     build(graph) {
@@ -177,11 +183,11 @@ class BasicSpatializerModule extends SpatializationModule {
         let start_ch = this.owned_input.input.channels[0].i;
         if (this.owned_input.format == 'mono') {
             this.inputConn
-                = graph.mainInBus().connectIdxN(node.mainIn(), start_ch, 1);
+                = graph.mainInBus().connectIdxN(node.getMainInputBus(), start_ch, 1);
         }
         else {
             this.inputConn
-                = graph.mainInBus().connectIdxN(node.mainIn(), start_ch, 2);
+                = graph.mainInBus().connectIdxN(node.getMainInputBus(), start_ch, 2);
         }
         graph.addConnection(this.inputConn);
     }
@@ -231,10 +237,10 @@ class AdvancedSpatializerModule extends SpatializationModule {
             graph.removeNode(this.encoder_r_nid);
     }
     input(graph) {
-        return graph.getNode(this.encoder_l_nid).mainIn();
+        return graph.getNode(this.encoder_l_nid).getMainInputBus();
     }
     output(graph) {
-        return graph.getNode(this.encoder_l_nid).mainOut();
+        return graph.getNode(this.encoder_l_nid).getMainOutputBus();
     }
     graphChanged(graph) { }
     build(graph) {
@@ -246,7 +252,7 @@ class AdvancedSpatializerModule extends SpatializationModule {
         graph.addNode(node);
         this.encoder_l_nid = node.id;
         this.inputConnL
-            = graph.mainInBus().connectIdxN(node.mainIn(), start_ch, 1);
+            = graph.mainInBus().connectIdxN(node.getMainInputBus(), start_ch, 1);
         graph.addConnection(this.inputConnL);
         if (this.owned_input.format == 'stereo') {
             let rnode = new AdvancedSpatializer(this.owned_input.input.name
@@ -254,7 +260,7 @@ class AdvancedSpatializerModule extends SpatializationModule {
             this.processorR = rnode;
             graph.addNode(rnode);
             this.encoder_r_nid = rnode.id;
-            this.inputConnR = graph.mainInBus().connectIdxN(rnode.mainIn(), start_ch + 1, 1);
+            this.inputConnR = graph.mainInBus().connectIdxN(rnode.getMainInputBus(), start_ch + 1, 1);
             graph.addConnection(this.inputConnR);
         }
     }
@@ -286,10 +292,10 @@ class BasicUserModule extends dsp_graph_1.Module {
         this.user = user;
     }
     input(graph) {
-        return graph.getNode(this.decoder_nid).mainIn();
+        return graph.getNode(this.decoder_nid).getMainInputBus();
     }
     output(graph) {
-        return graph.getNode(this.decoder_nid).mainOut();
+        return graph.getNode(this.decoder_nid).getMainOutputBus();
     }
     assignHeadtracker(id) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -320,13 +326,13 @@ class BasicUserModule extends dsp_graph_1.Module {
                         return;
                 }
                 let conL = input.dspModule
-                    .processorL.mainOut()
+                    .processorL.getMainOutputBus()
                     .connect(this.input(graph));
                 this.inputCons.push(conL);
                 graph.addConnection(conL);
                 if (input.format == 'stereo') {
                     let conR = input.dspModule
-                        .processorR.mainOut()
+                        .processorR.getMainOutputBus()
                         .connect(this.input(graph));
                     this.inputCons.push(conR);
                     graph.addConnection(conR);
@@ -356,7 +362,7 @@ class BasicUserModule extends dsp_graph_1.Module {
         this.node = node;
         this.graph = graph;
         this.user.dspModule = this;
-        this.outputConn = node.mainOut().connectIdxNIdx(graph.mainOutBus(), 0, 2, this.user.outputChannels[0].i);
+        this.outputConn = node.getMainOutputBus().connectIdxNIdx(graph.mainOutBus(), 0, 2, this.user.outputChannels[0].i);
         this.decoder_nid = node.id;
         graph.addConnection(this.outputConn);
     }
@@ -365,4 +371,54 @@ class BasicUserModule extends dsp_graph_1.Module {
     }
 }
 exports.BasicUserModule = BasicUserModule;
+class MultiSpatializer extends dsp_graph_1.NativeNode {
+    onRemoteAlive() {
+    }
+    remoteAttached() {
+    }
+    constructor(name) {
+        super(name, 'multi_spatializer');
+    }
+}
+exports.MultiSpatializer = MultiSpatializer;
+class MulitSpatializerModule extends dsp_graph_1.Module {
+    constructor(input) {
+        super();
+        console.log(input.findSourceType());
+    }
+    input(graph) {
+        return graph.getNode(this._spatializer_node_id).getMainInputBus();
+    }
+    output(graph) {
+        return graph.getNode(this._spatializer_node_id).getMainOutputBus();
+    }
+    graphChanged(graph) {
+    }
+    build(graph) {
+    }
+    destroy(graph) {
+    }
+}
+exports.MulitSpatializerModule = MulitSpatializerModule;
+;
+class UsersModule extends dsp_graph_1.Module {
+    constructor() {
+        super();
+    }
+    input(graph) {
+        return graph.getNode(this._decoder_id).getMainInputBus();
+    }
+    output(graph) {
+        return graph.getNode(this._decoder_id).getMainOutputBus();
+    }
+    graphChanged(graph) {
+    }
+    build(graph) {
+    }
+    destroy(graph) {
+        graph.removeNode(this._decoder_id);
+        graph.removeNode(this._rotator_id);
+    }
+}
+exports.UsersModule = UsersModule;
 //# sourceMappingURL=dsp_modules.js.map

@@ -17,6 +17,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = require("./core");
+const dsp_node_1 = require("./dsp_node");
 const Logger = __importStar(require("./log"));
 const showfiles_1 = require("./showfiles");
 const log = Logger.get('INP');
@@ -151,7 +152,7 @@ class NodeAudioInputList extends core_1.ManagedNodeStateListRegister {
 exports.NodeAudioInputList = NodeAudioInputList;
 class NodeAudioInputManager extends core_1.NodeModule {
     constructor() {
-        super('nodeinputs');
+        super(dsp_node_1.DSPModuleNames.INPUTS);
         this._input_list = new NodeAudioInputList();
         this.add(this._input_list, 'input-list');
     }
@@ -197,7 +198,7 @@ class AudioInputsManager extends core_1.ServerModule {
         this.webif.broadcastEvent('inputs.update', node.id(), node.inputs.getRawInputDescriptionList());
     }
     init() {
-        this.handle('update', (socket, node, data) => {
+        this.handleWebInterfaceEvent('update', (socket, node, data) => {
             try {
                 socket.emit('inputs.update', node.id(), node.inputs.getRawInputDescriptionList());
             }
@@ -205,7 +206,7 @@ class AudioInputsManager extends core_1.ServerModule {
                 this.webif.error(err);
             }
         });
-        this.handle('add', (socket, node, data) => {
+        this.handleWebInterfaceEvent('add', (socket, node, data) => {
             try {
                 node.inputs.addInput(data);
                 this.broadcastUpdate(node);
@@ -215,7 +216,7 @@ class AudioInputsManager extends core_1.ServerModule {
                 this.webif.error(err);
             }
         });
-        this.handle('remove', (socket, node, data) => {
+        this.handleWebInterfaceEvent('remove', (socket, node, data) => {
             node.inputs.removeInput(data)
                 .then(() => {
                 this.webif.broadcastNodeNotification(node, `Input removed`);
@@ -225,7 +226,7 @@ class AudioInputsManager extends core_1.ServerModule {
                 this.webif.error(err);
             });
         });
-        this.handle('modify', (socket, node, data) => {
+        this.handleWebInterfaceEvent('modify', (socket, node, data) => {
             try {
                 let input = node.inputs.findInputForId(data.id);
                 if (input) {

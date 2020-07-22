@@ -1,6 +1,7 @@
 import { Bus, Connection, Graph, Module, NativeNode } from './dsp_graph';
-import { OwnedInput, OLDUser } from './users';
+import { OwnedInput, OLDUser, SpatializedInput } from './users';
 export declare class BasicSpatializer extends NativeNode {
+    onRemoteAlive(): void;
     constructor(name: string);
     remoteAttached(): void;
     setAzimuthDeg(value: number): Promise<void>;
@@ -10,6 +11,7 @@ export declare class BasicSpatializer extends NativeNode {
     setStereoWidthDegs(value: number): Promise<import("./communication").Message>;
 }
 export declare class AdvancedSpatializer extends NativeNode {
+    onRemoteAlive(): void;
     constructor(name: string);
     remoteAttached(): void;
     setAzimuthDeg(value: number): Promise<void>;
@@ -19,10 +21,12 @@ export declare class AdvancedSpatializer extends NativeNode {
     setStereoWidthDegs(value: number): Promise<import("./communication").Message>;
 }
 export declare class BasicBinauralDecoder extends NativeNode {
+    onRemoteAlive(): void;
     constructor(name: string);
     remoteAttached(): void;
 }
 export declare class AdvancedBinauralDecoder extends NativeNode {
+    onRemoteAlive(): void;
     constructor(name: string);
     remoteAttached(): void;
     setHeadtrackerId(id: number): Promise<import("./communication").Message>;
@@ -93,4 +97,28 @@ export declare class BasicUserModule extends Module {
     graphChanged(graph: Graph): void;
     build(graph: Graph): void;
     destroy(graph: Graph): void;
+}
+export declare class MultiSpatializer extends NativeNode {
+    onRemoteAlive(): void;
+    remoteAttached(): void;
+    constructor(name: string);
+}
+export declare class MulitSpatializerModule extends Module {
+    _spatializer_node_id: number;
+    input(graph: Graph): Bus;
+    output(graph: Graph): Bus;
+    graphChanged(graph: Graph): void;
+    build(graph: Graph): void;
+    destroy(graph: Graph): void;
+    constructor(input: SpatializedInput);
+}
+export declare class UsersModule extends Module {
+    input(graph: Graph): Bus;
+    output(graph: Graph): Bus;
+    graphChanged(graph: Graph): void;
+    build(graph: Graph): void;
+    destroy(graph: Graph): void;
+    _decoder_id: number;
+    _rotator_id: number;
+    constructor();
 }

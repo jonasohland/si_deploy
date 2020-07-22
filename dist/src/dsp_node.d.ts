@@ -7,6 +7,16 @@ import { VSTScanner } from './vst';
 import { NodeAudioDevices } from './audio_devices';
 import { NodeUsersManager } from './users';
 import { NodeRooms } from './rooms';
+import { NodeDSPGraphBuilder } from './dsp_graph_builder';
+export declare const DSPModuleNames: {
+    INPUTS: string;
+    USERS: string;
+    ROOMS: string;
+    DSP_PROCESS: string;
+    VST_SCANNER: string;
+    AUDIO_DEVICES: string;
+    GRAPH_BUILDER: string;
+};
 export declare class DSPNode extends Node {
     init(): void;
     start(): void;
@@ -16,6 +26,7 @@ export declare class DSPNode extends Node {
     rooms: NodeRooms;
     vst: VSTScanner;
     dsp_graph: Graph;
+    dsp_graph_builder: NodeDSPGraphBuilder;
     dsp_process: DSPController;
     audio_devices: NodeAudioDevices;
     constructor(id: NodeIdentification);
