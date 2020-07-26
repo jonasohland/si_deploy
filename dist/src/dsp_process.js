@@ -199,6 +199,9 @@ class DSPController extends core_1.NodeModule {
             this.events.emit('dsp-died');
             this._running = true;
         });
+        this._remote_graph.on('connect-failed', () => {
+            this._server._webif.broadcastWarning(this.myNode().name(), "Not all DSP objects could be connected correctly");
+        });
         this._connection = remote;
         this._graph.attachConnection(remote);
         log.info("Graph service running");
@@ -210,7 +213,6 @@ class DSPController extends core_1.NodeModule {
     syncGraph() {
         return __awaiter(this, void 0, void 0, function* () {
             let self = this;
-            yield this._vst.waitPluginsScanned();
             return new Promise((resolve, reject) => {
                 log.info('Syncing graph with DSP process');
                 self._remote_graph.request('set', this._graph._export_graph())
@@ -255,7 +257,7 @@ class DSPController extends core_1.NodeModule {
     }
     resetGraph() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this._remote_graph.request('reset');
+            // await this._remote_graph.request('reset')
             this._graph.clear();
             this._graph.setInputNode(128);
             this._graph.setOutputNode(128);

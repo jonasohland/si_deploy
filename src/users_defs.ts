@@ -1,5 +1,6 @@
 import { v4 as uniqueId } from 'uuid';
 import { NodeAudioInputDescription } from "./inputs_defs";
+import { PortTypes, SourceUtils } from './dsp_defs';
 
 export interface SpatializedInputData {
     id: string,
@@ -37,13 +38,27 @@ export interface UserModifyInputMessage {
     input: SpatializedInputData
 }
 
-export function basicSpatializedInput(inputid: string, userid: string): SpatializedInputData {
+export interface UserPanInputMessage {
+    userid: string;
+    spid: string,
+    value: number
+}
+
+export interface UserAssignHeadtrackerMessage {
+    userid: string,
+    headtrackerid: number
+}
+
+export function basicSpatializedInput(inputid: string, userid: string, type: PortTypes): SpatializedInputData {
+    let defaultSource = SourceUtils[type].defaults();
     return {
         inputid, userid,
         id: uniqueId(),
         room: null,
-        azm: 0,
-        elv: 0
+        azm: defaultSource.a,
+        elv: defaultSource.e,
+        width: defaultSource.width,
+        height: defaultSource.height
     }
 }
 

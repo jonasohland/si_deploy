@@ -123,6 +123,7 @@ export declare class SINodeWSClient {
  * Represents the connection to a node in the SI server
  */
 export declare class SIServerWSSession extends Connection {
+    remoteInfo(): string;
     begin(): void;
     send(msg: Message): void;
     isLocal(): boolean;

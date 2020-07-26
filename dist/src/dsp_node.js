@@ -47,7 +47,6 @@ class DSPNode extends core_1.Node {
     init() {
     }
     start() {
-        this.emitToModule(exports.DSPModuleNames.GRAPH_BUILDER, dsp_graph_builder_1.GraphBuilderInputEvents.FULL_REBUILD);
     }
     destroy() {
     }

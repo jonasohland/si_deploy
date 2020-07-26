@@ -305,6 +305,7 @@ export declare abstract class Server {
     add(module: ServerModule): void;
     emitToNodeModule(node: string, module: string, event: string, ...data: any[]): void;
     emitToNode(node: string, event: string, ...data: any[]): void;
+    nodes(): Node[];
     _on_add_remote(session: SIServerWSSession): void;
     _on_remove_remote(session: SIServerWSSession): void;
     _check_server_has_subscribers(module: string, topic: string): boolean;

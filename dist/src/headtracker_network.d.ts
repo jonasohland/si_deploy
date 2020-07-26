@@ -21,6 +21,8 @@ export declare class NetworkHeadtracker extends Headtracker {
     update_required: boolean;
     dumping: boolean;
     resetting_orientation: boolean;
+    calib_1: boolean;
+    calib_2: boolean;
     remote: {
         conf?: HeadtrackerConfigPacket;
         state?: HTRKDevState;

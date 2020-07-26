@@ -1,4 +1,5 @@
 import { NodeAudioInputDescription } from "./inputs_defs";
+import { PortTypes } from './dsp_defs';
 export interface SpatializedInputData {
     id: string;
     inputid: string;
@@ -30,5 +31,14 @@ export interface UserModifyInputMessage {
     recompile: boolean;
     input: SpatializedInputData;
 }
-export declare function basicSpatializedInput(inputid: string, userid: string): SpatializedInputData;
+export interface UserPanInputMessage {
+    userid: string;
+    spid: string;
+    value: number;
+}
+export interface UserAssignHeadtrackerMessage {
+    userid: string;
+    headtrackerid: number;
+}
+export declare function basicSpatializedInput(inputid: string, userid: string, type: PortTypes): SpatializedInputData;
 export declare function basicUserData(name: string, channel: number): UserData;

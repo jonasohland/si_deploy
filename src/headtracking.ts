@@ -104,15 +104,18 @@ export class Headtracking extends ServerModule {
                           log.info('Invertation changed on headtracker ' + id)
                           self.getHeadtracker(id).setInvertation(inv) });
 
-                          socket.on('htrk.save.settings',
-                                    (settings: HeadtrackerNetworkSettings) => {
-                                        self.getHeadtracker(settings.id)
-                                            .applyNetworkSettings(settings);
-                                    });
+            socket.on('htrk.save.settings',
+                    (settings: HeadtrackerNetworkSettings) => {
+                        self.getHeadtracker(settings.id)
+                            .applyNetworkSettings(settings);
+                    });
 
-                          socket.on('htrk.reset.orientation',
-                                    (id: number) => self.getHeadtracker(id)
-                                                        .resetOrientation());
+            socket.on('htrk.reset.orientation',
+                    (id: number) => self.getHeadtracker(id)
+                                        .resetOrientation());
+
+            socket.on('htrk.init.1', (id: number) => self.getHeadtracker(id).beginInit());
+            socket.on('htrk.init.2', (id: number) => self.getHeadtracker(id).finishInit());
         });
     }
 

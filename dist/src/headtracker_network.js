@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -75,6 +84,22 @@ class NetworkHeadtracker extends headtracker_1.Headtracker {
                     log.info('Orientation reset on Headtracker '
                         + p.deviceID());
                     this.resetting_orientation = false;
+                }
+            }
+            if (this.calib_1) {
+                if (!p.isStateFlagSet(headtracker_1.HeadtrackerStateFlags.CALIBRATE_1)) {
+                    log.info('Calibration step 1 completed on headtracker'
+                        + p.deviceID());
+                    this.calib_1 = false;
+                    this.local.conf.clearStateFlag(headtracker_1.HeadtrackerStateFlags.CALIBRATE_1);
+                }
+            }
+            if (this.calib_2) {
+                if (!p.isStateFlagSet(headtracker_1.HeadtrackerStateFlags.CALIBRATE_2)) {
+                    log.info('Calibration step 2 completed on headtracker'
+                        + p.deviceID());
+                    this.calib_2 = false;
+                    this.local.conf.clearStateFlag(headtracker_1.HeadtrackerStateFlags.CALIBRATE_2);
                 }
             }
             if (this._state() == HTRKDevState.TIMEOUT) {
@@ -249,10 +274,18 @@ class NetworkHeadtracker extends headtracker_1.Headtracker {
         });
     }
     beginInit() {
-        return undefined;
+        return __awaiter(this, void 0, void 0, function* () {
+            this.local.conf.setStateFlag(headtracker_1.HeadtrackerStateFlags.CALIBRATE_1);
+            this.calib_1 = true;
+            this._updateDevice();
+        });
     }
     finishInit() {
-        return undefined;
+        return __awaiter(this, void 0, void 0, function* () {
+            this.local.conf.setStateFlag(headtracker_1.HeadtrackerStateFlags.CALIBRATE_2);
+            this.calib_2 = true;
+            this._updateDevice();
+        });
     }
     applyNetworkSettings(settings) {
         if (settings.id)

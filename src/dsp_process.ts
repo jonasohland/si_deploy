@@ -217,6 +217,10 @@ export class DSPController extends NodeModule {
             this._running = true;
         });
 
+        this._remote_graph.on('connect-failed', () => {
+            this._server._webif.broadcastWarning(this.myNode().name(), "Not all DSP objects could be connected correctly");
+        });
+
         this._connection = remote;
         this._graph.attachConnection(remote);
 
@@ -255,8 +259,6 @@ export class DSPController extends NodeModule {
     async syncGraph()
     {
         let self = this;
-
-        await this._vst.waitPluginsScanned();
 
         return new Promise<void>((resolve, reject) => {
             log.info('Syncing graph with DSP process');
@@ -301,7 +303,7 @@ export class DSPController extends NodeModule {
     }
 
     async resetGraph() {
-        await this._remote_graph.request('reset')
+        // await this._remote_graph.request('reset')
         this._graph.clear();
         this._graph.setInputNode(128);
         this._graph.setOutputNode(128);

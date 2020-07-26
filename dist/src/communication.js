@@ -331,6 +331,7 @@ class Requester extends events_1.EventEmitter {
         return new TypedMessagePromise(this.connection.set(this.request_target, value, timeout, data));
     }
     destroy() {
+        log.debug("Remove all listeners to " + this.request_target);
         this.connection.removeAllListeners(this.request_target);
     }
 }
@@ -515,6 +516,10 @@ class SIServerWSSession extends Connection {
         this._sock.on('msg', this._on_msg.bind(this));
         this._sock.on('disconnect', this._on_disconnect.bind(this));
         this._state = SISessionState.CONNECT_NODE;
+    }
+    remoteInfo() {
+        let addr_arr = this._sock.handshake.address.split(':');
+        return addr_arr[addr_arr.length - 1];
     }
     begin() {
         throw new Error('Method not implemented.');

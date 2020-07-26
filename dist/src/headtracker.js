@@ -36,6 +36,8 @@ var HeadtrackerStateFlags;
     HeadtrackerStateFlags[HeadtrackerStateFlags["INVERT_X"] = 8] = "INVERT_X";
     HeadtrackerStateFlags[HeadtrackerStateFlags["INVERT_Y"] = 16] = "INVERT_Y";
     HeadtrackerStateFlags[HeadtrackerStateFlags["INVERT_Z"] = 32] = "INVERT_Z";
+    HeadtrackerStateFlags[HeadtrackerStateFlags["CALIBRATE_1"] = 64] = "CALIBRATE_1";
+    HeadtrackerStateFlags[HeadtrackerStateFlags["CALIBRATE_2"] = 128] = "CALIBRATE_2";
 })(HeadtrackerStateFlags = exports.HeadtrackerStateFlags || (exports.HeadtrackerStateFlags = {}));
 function stringToAddr(addr) {
     let arr = Buffer.alloc(4);
@@ -204,9 +206,9 @@ class HeadtrackerDataPacket {
     constructor(id, vals) {
         this.device_id = id;
         this.w = vals[0];
-        this.x = vals[0];
-        this.y = vals[0];
-        this.z = vals[0];
+        this.x = vals[1];
+        this.y = vals[2];
+        this.z = vals[3];
     }
     static check(m) { }
     static fromBuffer(m) {
@@ -229,10 +231,10 @@ class HeadtrackerDataPacket {
     }
     static newPacketFromFloatLEData(b, dataoffs, id, seq) {
         return new HeadtrackerDataPacket(id, [
-            b.readFloatLE(dataoffs) * 16384,
-            b.readFloatLE(dataoffs + 4) * 16384,
-            b.readFloatLE(dataoffs + 8) * 16384,
-            b.readFloatLE(dataoffs + 12) * 16384
+            16384.0 + b.readFloatLE(dataoffs) * 16384,
+            16384.0 + b.readFloatLE(dataoffs + 4) * 16384,
+            16384.0 + b.readFloatLE(dataoffs + 8) * 16384,
+            16384.0 + b.readFloatLE(dataoffs + 12) * 16384
         ]).toBuffer(seq);
     }
     static newPackerFromInt16Data(b, dataoffs, id, seq) {

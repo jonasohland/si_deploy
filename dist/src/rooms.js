@@ -20,6 +20,7 @@ const core_1 = require("./core");
 const rooms_defs_1 = require("./rooms_defs");
 const Logger = __importStar(require("./log"));
 const dsp_node_1 = require("./dsp_node");
+const dsp_graph_builder_1 = require("./dsp_graph_builder");
 const log = Logger.get('NROOMS');
 class Room extends core_1.ManagedNodeStateObject {
     constructor(letter, data) {
@@ -89,6 +90,9 @@ class NodeRooms extends core_1.NodeModule {
             this.publish('rooms', 'node.rooms', this.listrooms());
         }
     }
+    getRoom(room) {
+        return this._rooms._objects[room].get();
+    }
 }
 exports.NodeRooms = NodeRooms;
 class Rooms extends core_1.ServerModule {
@@ -97,18 +101,20 @@ class Rooms extends core_1.ServerModule {
         });
         this.handleWebInterfaceEvent('modify', (socket, node, data) => {
             node.rooms.updateRoom(data);
+            this.emitToModule(node.id(), dsp_node_1.DSPModuleNames.GRAPH_BUILDER, dsp_graph_builder_1.GraphBuilderInputEvents.ROOM_ENABLED, data.letter, data);
         });
         this.handleWebInterfaceEvent('set-main', (socket, node, data) => {
-            console.log(`SET [main] [${data.key}] ${data.value}`);
+            this.emitToModule(node.id(), dsp_node_1.DSPModuleNames.GRAPH_BUILDER, dsp_graph_builder_1.GraphBuilderInputEvents.ROOM_REFLECTIONS, data.letter, data);
         });
         this.handleWebInterfaceEvent('set-attn', (socket, node, data) => {
-            console.log(`SET [attn] [${data.key}] ${data.value}`);
+            this.emitToModule(node.id(), dsp_node_1.DSPModuleNames.GRAPH_BUILDER, dsp_graph_builder_1.GraphBuilderInputEvents.ROOM_ATTN, data.letter, data);
         });
         this.handleWebInterfaceEvent('set-room', (socket, node, data) => {
-            console.log(`SET [room] [${data.key}] ${data.value}`);
+            this.emitToModule(node.id(), dsp_node_1.DSPModuleNames.GRAPH_BUILDER, dsp_graph_builder_1.GraphBuilderInputEvents.ROOM_SHAPE, data.letter, data);
         });
         this.handleWebInterfaceEvent('set-eq', (socket, node, data) => {
-            console.log(`SET [eq] [${data.key}] ${data.value}`);
+            this.emitToModule(node.id(), dsp_node_1.DSPModuleNames.GRAPH_BUILDER, dsp_graph_builder_1.GraphBuilderInputEvents.ROOM_HIGHSHELF, data.letter, data);
+            this.emitToModule(node.id(), dsp_node_1.DSPModuleNames.GRAPH_BUILDER, dsp_graph_builder_1.GraphBuilderInputEvents.ROOM_LOWSHELF, data.letter, data);
         });
     }
     joined(socket, topic) {

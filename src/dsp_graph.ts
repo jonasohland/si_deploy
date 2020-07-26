@@ -2,7 +2,6 @@ import {EventEmitter} from 'events';
 
 import * as COM from './communication';
 import { PortTypes, stringToPortType, SourceUtils} from './dsp_defs'
-import * as IPC from './ipc'
 import * as Logger from './log';
 import {VSTScanner} from './vst';
 
@@ -117,6 +116,11 @@ export class Bus {
     {
         this.name = name;
         this.type = type;
+    }
+
+    addPort(port: Port) 
+    {
+        this.ports.push(port);
     }
 
     channelCount()
@@ -254,6 +258,17 @@ export class Bus {
     static createMainStereo(count: number)
     {
         return Bus.createMain(count, PortTypes.Stereo);
+    }
+
+    static join(name: string, ...buses: Bus[]) {
+        let ty = buses[0].type;
+        let newbus = new Bus(name, ty);
+
+        buses.forEach(bus => {
+            if(bus.type != ty)
+                throw "Type mismatch while joining busses";
+            bus.ports.forEach(port => newbus.addPort(port));
+        });
     }
 }
 
@@ -446,16 +461,19 @@ export abstract class NativeNode extends Node {
         this.native_event_name = `${this.native_node_type}_${this.id}`;
         this.remote = this.connection.getRequester(this.native_event_name);
         this.remote.on('alive', this.onRemoteAlive.bind(this));
+        this.remote.on('prepared', this.onRemotePrepared.bind(this));
         this.remoteAttached();
     }
 
     destroy()
     {
-        log.info("Destroy native node");
+        log.info("Destroy native node " + this.native_event_name);
         this.remote.removeAllListeners('alive');
+        this.remote.removeAllListeners('preapred');
         this.remote.destroy();
     }
 
+    abstract onRemotePrepared(): void;
     abstract onRemoteAlive(): void;
     abstract remoteAttached(): void;
 }
@@ -522,7 +540,7 @@ export class Graph {
         let rmv_node: Node;
 
         if (node instanceof Node)
-            rmv_node = this.nodes.splice(this.nodes.indexOf(node))[0];
+            rmv_node = this.nodes.splice(this.nodes.indexOf(node), 1)[0];
         else if (typeof node == 'number')
             rmv_node = this.nodes.splice(
                 this.nodes.findIndex(n => n.id === node), 1)[0];

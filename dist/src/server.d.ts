@@ -7,6 +7,7 @@ import WebInterface from './web_interface';
 import { Server, Node } from './core';
 import { UsersManager } from './users';
 import { Rooms } from './rooms';
+import { DSPGraphController } from './dsp_graph_builder';
 export interface SocketAndInstance {
     instance: SIDSPNode;
 }
@@ -19,5 +20,6 @@ export declare class SpatialIntercomServer extends Server {
     users: UsersManager;
     rooms: Rooms;
     headtracking: Headtracking;
+    graphcontroller: DSPGraphController;
     constructor(config: any);
 }

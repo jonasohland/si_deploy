@@ -36,12 +36,12 @@ export function stringToPortType(str: string)
     }
 }
 
-interface Source {
+export interface Source {
     a: number,
     e: number,
 }
 
-interface SourceParameterSet {
+export interface SourceParameterSet {
     a: number,
     e: number,
     height?: number,
@@ -95,7 +95,14 @@ function _panfunction_quad(params: SourceParameterSet): Source[] {
 }
 
 function _panfunction_surround_5_1(params: SourceParameterSet): Source[] {
-    return [];
+    return [ 
+        {a: params.a - (params.width / 2), e: params.e},
+        {a: params.a + (params.width / 2), e: params.e},
+        {a: params.a, e: params.e},
+        {a: params.a, e: params.e},
+        {a: params.a - 110, e: params.e},
+        {a: params.a + 110, e: params.e},
+    ];
 }
 
 
@@ -121,9 +128,9 @@ export interface SourceUtil {
 export const SourceUtils: Record<PortTypes, SourceUtil> = {
     [PortTypes.Any]:            { channels: 1, pan: _panfunction_any, defaults: _basic_defaults },
     [PortTypes.Mono]:           { channels: 1, pan: _panfunction_mono, defaults: _basic_defaults },
-    [PortTypes.Stereo]:         { channels: 2, pan: _panfunction_stereo, defaults: _basic_defaults_generator(45) },
+    [PortTypes.Stereo]:         { channels: 2, pan: _panfunction_stereo, defaults: _basic_defaults_generator(90) },
     [PortTypes.Quad]:           { channels: 4, pan: _panfunction_quad, defaults: _basic_defaults },
-    [PortTypes.Surround_5_1]:   { channels: 6, pan: _panfunction_surround_5_1, defaults: _basic_defaults_generator(30) },
+    [PortTypes.Surround_5_1]:   { channels: 6, pan: _panfunction_surround_5_1, defaults: _basic_defaults_generator(60) },
     [PortTypes.Surround_7_1]:   { channels: 8, pan: _panfunction_any, defaults: _basic_defaults_generator(30) },
     [PortTypes.x3D_4_0_4]:      { channels: 8, pan: _panfunction_any, defaults: _basic_defaults },
     [PortTypes.x3D_5_4_1]:      { channels: 10, pan: _panfunction_any, defaults: _basic_defaults_generator(30) },

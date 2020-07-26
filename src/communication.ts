@@ -439,6 +439,7 @@ export class Requester extends EventEmitter {
 
     destroy()
     {
+        log.debug("Remove all listeners to " + this.request_target);
         this.connection.removeAllListeners(this.request_target);
     }
 };
@@ -683,6 +684,12 @@ export class SINodeWSClient {
  * Represents the connection to a node in the SI server
  */
 export class SIServerWSSession extends Connection {
+
+    remoteInfo()
+    {
+        let addr_arr = this._sock.handshake.address.split(':');
+        return addr_arr[addr_arr.length - 1];
+    }
 
     begin(): void
     {

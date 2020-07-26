@@ -937,6 +937,13 @@ class Server {
     emitToNode(node, event, ...data) {
         this._event_bus.emit(`${node}.${event}`, ...data);
     }
+    nodes() {
+        let nodeids = Object.keys(this._nodes);
+        let out = [];
+        for (let id of nodeids)
+            out.push(this._nodes[id]);
+        return out;
+    }
     _on_add_remote(session) {
         log.info(`Create new node instance for [${communication_1.NODE_TYPE[session.id().type]}] ${session.id().name}`);
         let node = this.createNode(session.id());

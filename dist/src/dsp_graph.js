@@ -82,6 +82,9 @@ class Bus {
         this.name = name;
         this.type = type;
     }
+    addPort(port) {
+        this.ports.push(port);
+    }
     channelCount() {
         let count = 0;
         for (let port of this.ports)
@@ -166,6 +169,15 @@ class Bus {
     }
     static createMainStereo(count) {
         return Bus.createMain(count, dsp_defs_1.PortTypes.Stereo);
+    }
+    static join(name, ...buses) {
+        let ty = buses[0].type;
+        let newbus = new Bus(name, ty);
+        buses.forEach(bus => {
+            if (bus.type != ty)
+                throw "Type mismatch while joining busses";
+            bus.ports.forEach(port => newbus.addPort(port));
+        });
     }
 }
 exports.Bus = Bus;
@@ -291,11 +303,13 @@ class NativeNode extends Node {
         this.native_event_name = `${this.native_node_type}_${this.id}`;
         this.remote = this.connection.getRequester(this.native_event_name);
         this.remote.on('alive', this.onRemoteAlive.bind(this));
+        this.remote.on('prepared', this.onRemotePrepared.bind(this));
         this.remoteAttached();
     }
     destroy() {
-        log.info("Destroy native node");
+        log.info("Destroy native node " + this.native_event_name);
         this.remote.removeAllListeners('alive');
+        this.remote.removeAllListeners('preapred');
         this.remote.destroy();
     }
 }
@@ -331,7 +345,7 @@ class Graph {
     removeNode(node) {
         let rmv_node;
         if (node instanceof Node)
-            rmv_node = this.nodes.splice(this.nodes.indexOf(node))[0];
+            rmv_node = this.nodes.splice(this.nodes.indexOf(node), 1)[0];
         else if (typeof node == 'number')
             rmv_node = this.nodes.splice(this.nodes.findIndex(n => n.id === node), 1)[0];
         if (rmv_node) {

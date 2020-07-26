@@ -61,6 +61,8 @@ class Headtracking extends core_1.ServerModule {
             });
             socket.on('htrk.reset.orientation', (id) => self.getHeadtracker(id)
                 .resetOrientation());
+            socket.on('htrk.init.1', (id) => self.getHeadtracker(id).beginInit());
+            socket.on('htrk.init.2', (id) => self.getHeadtracker(id).finishInit());
         });
     }
     init() {

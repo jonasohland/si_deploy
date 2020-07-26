@@ -27,7 +27,9 @@ export declare enum HeadtrackerStateFlags {
     RESET_ORIENTATION = 4,
     INVERT_X = 8,
     INVERT_Y = 16,
-    INVERT_Z = 32
+    INVERT_Z = 32,
+    CALIBRATE_1 = 64,
+    CALIBRATE_2 = 128
 }
 export interface HeadtrackerNetworkSettings {
     id: number;

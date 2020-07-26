@@ -21,11 +21,11 @@ export declare enum PortTypes {
     Ambi_O11 = 19
 }
 export declare function stringToPortType(str: string): PortTypes.Any | PortTypes.Mono | PortTypes.Stereo | PortTypes.Surround_5_1;
-interface Source {
+export interface Source {
     a: number;
     e: number;
 }
-interface SourceParameterSet {
+export interface SourceParameterSet {
     a: number;
     e: number;
     height?: number;

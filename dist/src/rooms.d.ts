@@ -23,6 +23,7 @@ export declare class NodeRooms extends NodeModule {
     left(socket: SocketIO.Socket, topic: string): void;
     listrooms(): any[];
     updateRoom(data: RoomData): void;
+    getRoom(room: string): RoomData;
     constructor();
 }
 export declare class Rooms extends ServerModule {

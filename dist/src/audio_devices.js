@@ -20,7 +20,6 @@ const core_1 = require("./core");
 const dsp_node_1 = require("./dsp_node");
 const Logger = __importStar(require("./log"));
 const web_interface_defs_1 = require("./web_interface_defs");
-const dsp_graph_builder_1 = require("./dsp_graph_builder");
 const log = Logger.get('AUDDEV');
 class AudioDeviceConfiguration {
     constructor() {
@@ -392,7 +391,6 @@ class AudioDevices extends core_1.ServerModule {
                 node.audio_devices.enable()
                     .then(() => {
                     socket.emit('audiosettings.done');
-                    this.emitToModule(node.id(), dsp_node_1.DSPModuleNames.GRAPH_BUILDER, dsp_graph_builder_1.GraphBuilderInputEvents.FULL_REBUILD);
                 })
                     .catch(this.endTransactionWithError.bind(this, socket));
             }

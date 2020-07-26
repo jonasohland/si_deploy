@@ -39,6 +39,7 @@ export declare class Bus {
     type: PortTypes;
     ports: Port[];
     constructor(name: string, type: PortTypes);
+    addPort(port: Port): void;
     channelCount(): number;
     portCount(): number;
     portCountForChannels(channels: number): number;
@@ -59,6 +60,7 @@ export declare class Bus {
     static createMainAny(count: number): Bus;
     static createMainMono(count: number): Bus;
     static createMainStereo(count: number): Bus;
+    static join(name: string, ...buses: Bus[]): void;
 }
 export declare class AmbiBus extends Bus {
     order: number;
@@ -115,6 +117,7 @@ export declare abstract class NativeNode extends Node {
     constructor(name: string, native_node_type: string);
     attachEventListener(con: COM.Connection): void;
     destroy(): void;
+    abstract onRemotePrepared(): void;
     abstract onRemoteAlive(): void;
     abstract remoteAttached(): void;
 }

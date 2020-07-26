@@ -41,12 +41,17 @@ class SIOutputAdapter extends UDPOutputAdapter {
     {
         let { buffer, offset } = q.data();
 
+        if(q.float()) {
+            let quat = q.get();
+            console.log(`${quat.w.toFixed(3)} - ${quat.x.toFixed(3)} - ${quat.y.toFixed(3)} - ${quat.z.toFixed(3)}`);
+        }
+
         if (q.float())
             this.sendData(HeadtrackerDataPacket.newPacketFromFloatLEData(
                 buffer, offset, this.id, this.seq()));
         else
             this.sendData(HeadtrackerDataPacket.newPackerFromInt16Data(
-                buffer, offset, this.id, this.seq()));
+                buffer, offset, this.id, this.seq())); 
     }
 }
 
@@ -199,6 +204,16 @@ export class HeadtrackerBridgeDevice extends EventEmitter {
         if (conf.isStateFlagSet(HeadtrackerStateFlags.RESET_ORIENTATION)) {
             this.conf.clearStateFlag(HeadtrackerStateFlags.RESET_ORIENTATION);
             this.lhtrk.resetOrientation();
+        }
+
+        if (conf.isStateFlagSet(HeadtrackerStateFlags.CALIBRATE_1)) {
+            this.conf.clearStateFlag(HeadtrackerStateFlags.CALIBRATE_1);
+            this.lhtrk.beginInit();
+        }
+
+        if (conf.isStateFlagSet(HeadtrackerStateFlags.CALIBRATE_2)) {
+            this.conf.clearStateFlag(HeadtrackerStateFlags.CALIBRATE_2);
+            this.lhtrk.finishInit();
         }
 
         let inv_bits = HeadtrackerStateFlags.INVERT_X

@@ -490,8 +490,8 @@
         "signature": "6b01b290f6d56cfc80f88e684d48c5d3b58e9e3a07ae9ae30dd2d2d18bd87be0"
       },
       "../src/core.ts": {
-        "version": "b91f1491b83370cd57d0ba70eb7367b409cfe7e2df8f1218a335a36bdd6dad44",
-        "signature": "5b05a8e8a0cf09b1f8e65c52c0e7ca89e16da8fdef5d6fff95d0634bc02b9d81"
+        "version": "b2937b682f2c505f8eba3370f9a4b433f4cc7a4d7a2b008b98a3260a05503f55",
+        "signature": "8bb2768530d523f9d24f36663dca1d10768460de39499f955fe2e623521bbe71"
       },
       "../src/inputs_defs.ts": {
         "version": "863895bf45a449e72f5bcb2a92585cde33b141835925d1f79d1e7e1ce91ac183",
@@ -514,47 +514,59 @@
         "signature": "920efe3728fef8ce326928aee60297230ee31c4731feb21c17e4edf89d7128ea"
       },
       "../src/dsp_process.ts": {
-        "version": "6db11612f38782d6dfce02fe4f99c378131d34071391e75de88742b6f2110335",
+        "version": "711c4344e0051c3b4fa5fd4a528474d2830064c29e233a7c3d97750557abbfb3",
         "signature": "1ac4881861407828438131c8f14c357f3a5956d28beedca2ac7f1d669e3f4ca9"
       },
-      "../src/dsp_graph_builder.ts": {
-        "version": "40ed78fdd7adee425945fd8f0b6ebae6a77714fd35f8e6fbb149d375eef4a2e0",
-        "signature": "150e675b8121a5f7f854b00cf8a64519dbcc9905005be085be64792a5546c4d6"
-      },
       "../src/users_defs.ts": {
-        "version": "894ff5b1c03823edc96e3c2ec0537f9a52c712576c5a7253c50333b815b09b5f",
-        "signature": "e5d1e70a4016b323bcdd3f9dd731a0f3bdbe92a24dcaf83667cdeeaee04c73db"
+        "version": "e4d32f6399fba2b835fa256b389290be002d0a4d82cfd46c731c04fc362f2439",
+        "signature": "b5fb9d193ec948e45e4b6cba5e05499bdc3a636f245542bb57739f117f30158d"
       },
-      "../src/dsp_modules.ts": {
-        "version": "acb186a4af3276a8bbb47eaa6fbdc0d6205534845eca57d78e8a8e930fea5924",
-        "signature": "3933a376fc559c645fe74c0dafe678adb1860af842e9f915b616a05d1db95d4a"
-      },
-      "../src/headtracker.ts": {
-        "version": "f3bd212c53ec958888befd5e142b163fa9e3da4014816bd62160d16e5e840722",
-        "signature": "972e032804e85b22dffdb3d91dd1502b3584ae6f4726622eb11b33876d05c516"
-      },
-      "../src/headtracker_network.ts": {
-        "version": "4fdeb4742c0c18e9b2be6564b27997846fcded7d1cb7818e7ade92dd84adac38",
-        "signature": "19930a3f570631507f3268f5c7763a7d42072df30255e922b050b81cc6a11f24"
-      },
-      "../src/headtracking.ts": {
-        "version": "df59345e106692b77337085f67dd6e54fb07bd08ecac1883311b7a789f410a0c",
-        "signature": "4118fcc3a24ce555780116319dbaf6adb99806655b0845a8efe0d9db3bfe01f7"
-      },
-      "../src/users.ts": {
-        "version": "220f48aab6ff3664f1dcf5938718d8abe751ff7e60ef10cc310dc71243306200",
-        "signature": "81ec02f68ad2d768b51fa9c1668ef8528d27488258baaa6f8ec17449bc5ed29f"
+      "../src/rooms.ts": {
+        "version": "94065dc5d4bd273cb5d9a730821d93681c4d67a1ad5c15de0666566cad045fc2",
+        "signature": "415ef3060fdf36b2d1d635e9a704ecde6182e3d109beb40be572c9ba1634a914"
       },
       "../src/rooms_defs.ts": {
         "version": "adf6502eebb363a81b9a4e753f4efeaf7879b264ea8713e150edb5fe4666d638",
         "signature": "5f6d601834242cddac299ba72536e6bef06ca385474710d4898e389448ba8faa"
       },
-      "../src/rooms.ts": {
-        "version": "9a441a17a698756774ce553cd35df2f8dc4f1302f439f5489505062fc90a8ad5",
-        "signature": "36a335f61ba05c54361861e2b4269ed6011ee0c1a5ca5278690a99636fcec3aa"
+      "../src/dsp_modules.ts": {
+        "version": "8ee9530884058aabbccfcc2b15655ca3e9fcac2b85a8e38764d18414b1a9afb6",
+        "signature": "2515fe2985cb549f006425cbb0ead3252cb650d5ab622eab0ae23a8862e65fa6"
+      },
+      "../src/headtracker.ts": {
+        "version": "70da462b8bdcfd5093a11c407ef9b618e39c6f8741be672f9bd98b6a7ec7491c",
+        "signature": "ffd574cce0f036f456fe5301475438277e7f0fad205f764167b719d5e0bae8d6"
+      },
+      "../src/headtracker_network.ts": {
+        "version": "bcc89bd5d4d4d836b6f7648cc8adba271b01f74be2c4bacb0b58396b9d39ee8a",
+        "signature": "5aaeff31b20543d93e1ccd5afa7c11a960738bf39894990658b6709d5621d203"
+      },
+      "../src/headtracking.ts": {
+        "version": "5bbc1e8d15f35f8f767550407fdb4b1ab9bf34f33ee337d66e5de93a8275d0a5",
+        "signature": "4118fcc3a24ce555780116319dbaf6adb99806655b0845a8efe0d9db3bfe01f7"
+      },
+      "../typings/riedel_rrcs.d.ts": {
+        "version": "d751d1481a6a762f202c5a58863d8754a8a0f17cf24787cded20d78a8533add0",
+        "signature": "d751d1481a6a762f202c5a58863d8754a8a0f17cf24787cded20d78a8533add0"
+      },
+      "../src/rrcs.ts": {
+        "version": "f2fc403110167a511c574a73453fdc6d9da49bd25cdf18107e389938c6eeb472",
+        "signature": "9b99614ceb43ead73b935bf976a685dca18d7bc99e7f5fafd4715d3aab92b413"
+      },
+      "../src/server.ts": {
+        "version": "690ac96f1a92f32d5c13b27af43aa38e00d7a465b77779a5e31f63a8d8a7902d",
+        "signature": "fc4b5cf2be7d7d11370f6baa0d03e7283ec5099b40662fb3673825de7e8d60d1"
+      },
+      "../src/dsp_graph_builder.ts": {
+        "version": "1caae32594a3847688329f40b71fce894e2ee5519b3e66fb0b62ac9028130d51",
+        "signature": "5b319bb424957f5c11234c6839fd44a386132ae3828ad828c74747be704d4c28"
+      },
+      "../src/users.ts": {
+        "version": "30470f0c2e8be8b182c5fd402483ae4bdfe41a4bd96b405096b975dba528f06e",
+        "signature": "4ec5cda331a5909e028f8f3ecdcdc5193ee1137013a26c3aed134d9189978f8a"
       },
       "../src/dsp_node.ts": {
-        "version": "2cd70909153e9e5fe042534082e52fe44ecb54b6bd98ae379e9b8f5821ac639f",
+        "version": "4c16396eaac837917bd367cafc43fd3bcd7a13d4e0671da1c041d10b9d20448a",
         "signature": "9c92f4ac4e8da200bfd3ed5385a71704be2592c6670851d57d4ed5391c0f7dcb"
       },
       "../src/vst.ts": {
@@ -562,23 +574,23 @@
         "signature": "117f8523547c78299aae54afa651b7863b26ec69c098a34861c3f32c0800d37b"
       },
       "../src/dsp_graph.ts": {
-        "version": "4acb5f0f03f0b697328da0a6ede3ba20dac72f0108f72247dbd19b7b6f9701e5",
-        "signature": "9c6530f87b7d7cab188e1f117d4bf2f0630a841ec8840537f11ee88228475ef0"
+        "version": "2a3caf07f719d361db3f144db5025b8bfc2090f5bb5236f756857c60750f4722",
+        "signature": "12bc931027a5e6a2f187cda0cc9ea48bd3f60a5e9c154f1034362a8f5fd835a4"
       },
       "../src/dsp_defs.ts": {
-        "version": "710092dbe8546f4ddbe49e4389b83db9c1097e136861a6fb395b96bc323f2e08",
-        "signature": "e293730f010bf1c299ea2aa2922aa1403bfea88173a2e2b0ec1d85c6a17e0bf4"
+        "version": "a631d9c68801fa6ab610af94a90c9eba85a07be65698413680fb5d12539f9258",
+        "signature": "6b160a5373ce958c41798a0ae789f5508afceeab7476a628771023e1c041f8b8"
       },
       "../src/util.ts": {
         "version": "c2c151bed608227df626a4574828b5b55d27ce8d0d4b18666b30706960b43ebc",
         "signature": "d3810a953dbf0fd8697aab9d9a40db97621450b60ebb702186e047a8c20158d3"
       },
       "../src/communication.ts": {
-        "version": "0b23970e93440c3db5b6129e941df5a343dcabec6b9cb592e751e750f3d1cab6",
-        "signature": "996480226ca716893e57336a5af7a1710b667fb29f03dd5ac3bdae6fac7df26e"
+        "version": "0a26eefb20d1280789b7573f69c2e2b7affa26c16a374829be91d7783de325e4",
+        "signature": "3c8fca57fa2ad74030a2bba074f9c002332069f505b5d936949aa392626c8609"
       },
       "../src/audio_devices.ts": {
-        "version": "1042cbe69c8957352a1eb4cda8e7202a6f265ecde037672ad545684c2ea3b24a",
+        "version": "cc4316936f7b61d9a504561e69e6a3c5dbf11187d05ed4f219bce5107f6b1021",
         "signature": "6605ef79e38ab138ca251d4039b7029531ca85cd15652848ad7f48a431209f67"
       },
       "../src/instance.ts": {
@@ -790,7 +802,7 @@
         "signature": "3dda1613a468ce767d2556bc205236220c2a31df3bbc90daa2fad486cf9c0adc"
       },
       "../src/headtracker_bridge.ts": {
-        "version": "9e84e6922e5acbc44749f5fa3c7042c55e339e935d2cc2190502fe58a34496bb",
+        "version": "37143442ad472f85780610192125d09a86e901d27bf8882685022d0fe8a81679",
         "signature": "668d2e6487200fbf0ac83f3e7705017fc5fb8631d1ea5a136b32a2b002c41105"
       },
       "../node_modules/usb-detection/index.d.ts": {
@@ -832,10 +844,6 @@
       "../src/node_mode.ts": {
         "version": "71bf01bb782b3edb4934cbb99dda92d4bbdd62b01232d04126cf2aa9a149e3d7",
         "signature": "ad015745dadccdbcfad819c08bb54af1e4ce899f015b108ee0c6d3b45f55f988"
-      },
-      "../src/server.ts": {
-        "version": "47026b25aa1684df85f76114cddb080b5e84fc6dc89b64b011a455c339bbc0f5",
-        "signature": "8b77160c4e3600c8da7fffda4c865fbde6d7bee2c8bfa5e9f5e8a447c486458d"
       },
       "../src/server_mode.ts": {
         "version": "b5ead72aabb4620210ae6bc4b546f69b0d7bee6a3a86d415689ffdd8c6669e5b",
@@ -2011,23 +2019,30 @@
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
-      "../src/dsp_graph_builder.ts": [
-        "../src/core.ts",
-        "../src/communication.ts",
-        "../src/dsp_modules.ts",
-        "../src/log.ts",
-        "../src/dsp_node.ts",
-        "../src/users.ts",
-        "../src/inputs.ts",
-        "../src/dsp_process.ts",
+      "../src/users_defs.ts": [
+        "../node_modules/@types/uuid/index.d.ts",
+        "../src/inputs_defs.ts",
+        "../src/dsp_defs.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
-      "../src/users_defs.ts": [
-        "../node_modules/@types/uuid/index.d.ts",
-        "../src/inputs_defs.ts",
+      "../src/rooms.ts": [
+        "../src/core.ts",
+        "../src/communication.ts",
+        "../src/rooms_defs.ts",
+        "../src/log.ts",
+        "../src/dsp_node.ts",
+        "../src/web_interface_defs.ts",
+        "../src/dsp_graph_builder.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "../src/rooms_defs.ts": [
+        "../src/rooms.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -2040,6 +2055,9 @@
         "../src/log.ts",
         "../src/users.ts",
         "../src/users_defs.ts",
+        "../src/util.ts",
+        "../src/rooms_defs.ts",
+        "../src/rooms.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -2078,44 +2096,72 @@
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
-      "../src/users.ts": [
-        "../node_modules/@types/node/dgram.d.ts",
-        "../node_modules/@types/node/events.d.ts",
-        "../node_modules/@types/ip/index.d.ts",
-        "../node_modules/@types/lodash/ts3.1/index.d.ts",
+      "../typings/riedel_rrcs.d.ts": [
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "../src/rrcs.ts": [
+        "../typings/riedel_rrcs.d.ts",
+        "../src/log.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "../src/server.ts": [
+        "../node_modules/@types/express/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
         "../src/audio_devices.ts",
         "../src/communication.ts",
-        "../src/core.ts",
-        "../src/dsp_modules.ts",
-        "../src/dsp_node.ts",
+        "../src/dsp_process.ts",
         "../src/headtracking.ts",
         "../src/inputs.ts",
         "../src/instance.ts",
         "../src/log.ts",
-        "../src/users_defs.ts",
+        "../src/showfiles.ts",
+        "../src/timecode.ts",
         "../src/web_interface.ts",
-        "../src/dsp_defs.ts",
-        "../src/util.ts",
-        "../node_modules/@types/socket.io-client/index.d.ts",
-        "../node_modules/@types/node/fs.d.ts",
-        "../node_modules/@types/node/ts3.2/fs.d.ts",
-        "../node_modules/@types/node/util.d.ts",
-        "../node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "../src/rooms_defs.ts": [
+        "../src/core.ts",
+        "../src/dsp_node.ts",
+        "../src/users.ts",
         "../src/rooms.ts",
-        "../node_modules/@types/node/fs.d.ts",
+        "../src/dsp_graph_builder.ts",
+        "../src/rrcs.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
-      "../src/rooms.ts": [
+      "../src/dsp_graph_builder.ts": [
         "../src/core.ts",
         "../src/communication.ts",
-        "../src/rooms_defs.ts",
+        "../src/dsp_modules.ts",
         "../src/log.ts",
         "../src/dsp_node.ts",
-        "../src/web_interface_defs.ts",
+        "../src/users.ts",
+        "../src/inputs.ts",
+        "../src/dsp_process.ts",
+        "../src/dsp_defs.ts",
+        "../src/rooms.ts",
+        "../src/rooms_defs.ts",
+        "../node_modules/@types/lodash/ts3.1/index.d.ts",
+        "../src/server.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "../src/users.ts": [
+        "../src/communication.ts",
+        "../src/core.ts",
+        "../src/dsp_defs.ts",
+        "../src/dsp_graph_builder.ts",
+        "../src/dsp_node.ts",
+        "../src/inputs.ts",
+        "../src/log.ts",
+        "../src/users_defs.ts",
+        "../src/util.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -2154,7 +2200,6 @@
         "../node_modules/@types/node/events.d.ts",
         "../src/communication.ts",
         "../src/dsp_defs.ts",
-        "../src/ipc.ts",
         "../src/log.ts",
         "../src/vst.ts",
         "../node_modules/@types/node/fs.d.ts",
@@ -2809,27 +2854,6 @@
         "../node_modules/winston/index.d.ts",
         "../src/core.ts",
         "../node_modules/@types/node/fs.d.ts",
-        "../node_modules/@types/node/ts3.2/fs.d.ts",
-        "../node_modules/@types/node/util.d.ts",
-        "../node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "../src/server.ts": [
-        "../node_modules/@types/express/index.d.ts",
-        "../node_modules/@types/node/fs.d.ts",
-        "../src/audio_devices.ts",
-        "../src/communication.ts",
-        "../src/dsp_process.ts",
-        "../src/headtracking.ts",
-        "../src/inputs.ts",
-        "../src/instance.ts",
-        "../src/log.ts",
-        "../src/showfiles.ts",
-        "../src/timecode.ts",
-        "../src/web_interface.ts",
-        "../src/core.ts",
-        "../src/dsp_node.ts",
-        "../src/users.ts",
-        "../src/rooms.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
@@ -3932,23 +3956,21 @@
         "../src/vst.ts",
         "../src/core.ts"
       ],
-      "../src/dsp_graph_builder.ts": [
-        "../src/dsp_graph.ts",
-        "../src/dsp_modules.ts",
-        "../src/communication.ts",
-        "../src/users.ts",
-        "../src/inputs.ts",
-        "../src/dsp_process.ts",
-        "../src/core.ts"
-      ],
       "../src/users_defs.ts": [
-        "../src/inputs_defs.ts"
+        "../src/inputs_defs.ts",
+        "../src/dsp_defs.ts"
+      ],
+      "../src/rooms.ts": [
+        "../src/rooms_defs.ts",
+        "../src/core.ts",
+        "../src/communication.ts"
       ],
       "../src/dsp_modules.ts": [
         "../src/communication.ts",
         "../src/dsp_graph.ts",
-        "../src/users.ts",
-        "../src/dsp_defs.ts"
+        "../src/dsp_defs.ts",
+        "../src/rooms_defs.ts",
+        "../src/users.ts"
       ],
       "../src/headtracker.ts": [
         "../node_modules/@types/node/events.d.ts"
@@ -3965,22 +3987,42 @@
         "../src/web_interface.ts",
         "../src/core.ts"
       ],
-      "../src/users.ts": [
-        "../src/inputs.ts",
-        "../src/dsp_modules.ts",
+      "../typings/riedel_rrcs.d.ts": [
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "../src/server.ts": [
         "../src/instance.ts",
-        "../src/audio_devices.ts",
+        "../src/communication.ts",
+        "../src/core.ts",
         "../src/web_interface.ts",
+        "../src/audio_devices.ts",
+        "../src/inputs.ts",
+        "../src/users.ts",
+        "../src/rooms.ts",
         "../src/headtracking.ts",
-        "../node_modules/@types/node/events.d.ts",
+        "../src/dsp_graph_builder.ts"
+      ],
+      "../src/dsp_graph_builder.ts": [
+        "../src/headtracking.ts",
+        "../src/dsp_graph.ts",
+        "../src/dsp_modules.ts",
+        "../src/communication.ts",
+        "../src/dsp_defs.ts",
+        "../src/rooms_defs.ts",
+        "../src/rooms.ts",
+        "../src/users.ts",
+        "../src/inputs.ts",
+        "../src/dsp_process.ts",
+        "../src/core.ts"
+      ],
+      "../src/users.ts": [
         "../src/users_defs.ts",
         "../src/core.ts",
+        "../src/inputs.ts",
         "../src/dsp_defs.ts",
-        "../src/communication.ts"
-      ],
-      "../src/rooms.ts": [
-        "../src/rooms_defs.ts",
-        "../src/core.ts",
         "../src/communication.ts"
       ],
       "../src/dsp_node.ts": [
@@ -4497,17 +4539,6 @@
       "../src/server_config.ts": [
         "../node_modules/commander/typings/index.d.ts"
       ],
-      "../src/server.ts": [
-        "../src/instance.ts",
-        "../src/communication.ts",
-        "../src/core.ts",
-        "../src/web_interface.ts",
-        "../src/audio_devices.ts",
-        "../src/inputs.ts",
-        "../src/users.ts",
-        "../src/rooms.ts",
-        "../src/headtracking.ts"
-      ],
       "../node_modules/@types/bonjour/index.d.ts": [
         "../node_modules/@types/node/ts3.2/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
@@ -4668,15 +4699,17 @@
       "../src/inputs.ts",
       "../node_modules/@types/event-to-promise/index.d.ts",
       "../src/dsp_process.ts",
-      "../src/dsp_graph_builder.ts",
       "../src/users_defs.ts",
+      "../src/rooms.ts",
+      "../src/rooms_defs.ts",
       "../src/dsp_modules.ts",
       "../src/headtracker.ts",
-      "../src/headtracker_network.ts",
       "../src/headtracking.ts",
+      "../typings/riedel_rrcs.d.ts",
+      "../src/rrcs.ts",
+      "../src/server.ts",
+      "../src/dsp_graph_builder.ts",
       "../src/users.ts",
-      "../src/rooms_defs.ts",
-      "../src/rooms.ts",
       "../src/dsp_node.ts",
       "../src/vst.ts",
       "../src/dsp_graph.ts",
@@ -4740,13 +4773,13 @@
       "../node_modules/usb-detection/index.d.ts",
       "../src/headtracker_bridge_mode.ts",
       "../src/headtracker_mode.ts",
+      "../src/index.ts",
       "../src/install_service.ts",
       "../src/modules.ts",
       "../node_modules/commander/typings/index.d.ts",
       "../node_modules/@types/ini/index.d.ts",
       "../src/server_config.ts",
       "../src/node_mode.ts",
-      "../src/server.ts",
       "../src/server_mode.ts",
       "../src/si.ts",
       "../src/sources.ts",
@@ -4754,7 +4787,7 @@
       "../node_modules/@types/checksum/index.d.ts",
       "../node_modules/@types/minimatch/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/index.ts"
+      "../src/headtracker_network.ts"
     ]
   },
   "version": "3.7.3"
