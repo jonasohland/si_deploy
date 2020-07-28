@@ -20,7 +20,7 @@ const dsp_defs_1 = require("./dsp_defs");
 const dsp_graph_1 = require("./dsp_graph");
 const Logger = __importStar(require("./log"));
 const util_1 = require("./util");
-const log = Logger.get('DSP');
+const log = Logger.get('DSPMOD');
 function normalizeRads(value) {
     if (value < 0)
         value += 4 * Math.PI;
@@ -32,6 +32,20 @@ function normalizeDegs(value) {
 function normalizeIEMStWidthDegs(value) {
     return (value + 360) / (360 * 2);
 }
+class GainNode extends dsp_graph_1.NativeNode {
+    constructor(name, ty) {
+        super(name, "gain_node");
+        this.addInputBus(dsp_graph_1.Bus.createMain(1, ty));
+        this.addOutputBus(dsp_graph_1.Bus.createMain(1, ty));
+    }
+    onRemotePrepared() {
+    }
+    onRemoteAlive() {
+    }
+    remoteAttached() {
+    }
+}
+exports.GainNode = GainNode;
 class BasicSpatializer extends dsp_graph_1.NativeNode {
     onRemotePrepared() {
     }
@@ -131,6 +145,7 @@ class AdvancedBinauralDecoder extends dsp_graph_1.NativeNode {
                 log.error("Could not set headtracker id");
             });
         }
+        this.remote.set('mute', false);
     }
     remoteAttached() {
     }
@@ -321,7 +336,7 @@ class RoomSpatializer extends dsp_graph_1.NativeNode {
     onRemotePrepared() {
         this._remote_alive = true;
         this.panSource(this._cached_source);
-        this._set_roomdata().catch(err => log.error(err));
+        this._set_roomdata().catch(err => log.error("Could not set roomdata " + err));
     }
     panSource(source) {
         this._cached_source = source;
@@ -329,7 +344,7 @@ class RoomSpatializer extends dsp_graph_1.NativeNode {
     }
     setRoomData(room) {
         this._roomdata = room;
-        this._set_roomdata().catch(err => log.error(err));
+        this._set_roomdata().catch(err => log.error("Could not set roomdata " + err));
     }
     setRoomEnabled(room) {
         this._roomdata = room;
@@ -365,14 +380,16 @@ class RoomSpatializer extends dsp_graph_1.NativeNode {
     }
     _set_roomdata() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.remote.set('shape', this._roomdata.room);
-            yield this.remote.set('highshelf', this._roomdata.eq.high);
-            yield this.remote.set('lowshelf', this._roomdata.eq.low);
-            yield this.remote.set('attn', this._roomdata.attn);
-            if (this._roomdata.enabled)
-                yield this.remote.set('reflections', this._roomdata.reflections);
-            else
-                yield this.remote.set('reflections', 0.);
+            if (this.remote) {
+                yield this.remote.set('shape', this._roomdata.room);
+                yield this.remote.set('highshelf', this._roomdata.eq.high);
+                yield this.remote.set('lowshelf', this._roomdata.eq.low);
+                yield this.remote.set('attn', this._roomdata.attn);
+                if (this._roomdata.enabled)
+                    yield this.remote.set('reflections', this._roomdata.reflections);
+                else
+                    yield this.remote.set('reflections', 0.);
+            }
         });
     }
     _setxyz(a, e) {
@@ -490,7 +507,10 @@ class RoomSpatializerModule extends SpatializationModule {
         return null;
     }
     outputBuses(graph) {
-        return this._encoders.map(encoder => encoder.getMainOutputBus());
+        if (this._gain_node)
+            return [this._gain_node.getMainOutputBus()];
+        else
+            return this._encoders.map(encoder => encoder.getMainOutputBus());
     }
     graphChanged(graph) {
     }
@@ -498,22 +518,35 @@ class RoomSpatializerModule extends SpatializationModule {
         let sourcetype = this._input.findSourceType();
         let sourcechcount = dsp_defs_1.SourceUtils[sourcetype].channels;
         let firstchannel = this._input.findSourceChannel();
-        for (let i = 0; i < sourcechcount; ++i) {
-            let node = new RoomSpatializer('' + i);
-            node.setRoomData(this._roomdata);
-            this._encoder_nids.push(graph.addNode(node));
-            this._encoders.push(node);
-            let connection = graph.graphRootBus().connectIdx(node.getMainInputBus(), firstchannel + i);
+        if (dsp_defs_1.isAmbi(sourcetype)) {
+            this._gain_node = new GainNode("GainNode " + this._input.get().id, sourcetype);
+            this._encoder_nids.push(graph.addNode(this._gain_node));
+            let connection = graph.graphRootBus().connectIdx(this._gain_node.getMainInputBus(), firstchannel);
             if (connection)
                 graph.addConnection(connection);
-            else {
-                log.error(`Could not connect input for RoomSpatializer ${this._input.get().inputid}`);
-            }
+            else
+                log.error("Could not connect gain node for output");
         }
-        this.pan(this._cached_params);
+        else {
+            for (let i = 0; i < sourcechcount; ++i) {
+                let node = new RoomSpatializer('' + i);
+                node.setRoomData(this._roomdata);
+                this._encoder_nids.push(graph.addNode(node));
+                this._encoders.push(node);
+                let connection = graph.graphRootBus().connectIdx(node.getMainInputBus(), firstchannel + i);
+                if (connection)
+                    graph.addConnection(connection);
+                else {
+                    log.error(`Could not connect input for RoomSpatializer ${this._input.get().inputid}`);
+                }
+            }
+            this.pan(this._cached_params);
+        }
     }
     destroy(graph) {
         this._encoders.forEach(enc => graph.removeNode(enc));
+        if (this._gain_node)
+            graph.removeNode(this._gain_node);
     }
 }
 exports.RoomSpatializerModule = RoomSpatializerModule;
@@ -522,6 +555,7 @@ class MulitSpatializerModule extends SpatializationModule {
         super();
         this._input = input;
         this._params_cached = dsp_defs_1.SourceUtils[input.findSourceType()].defaults();
+        this._ambi = dsp_defs_1.isAmbi(input.findSourceType());
     }
     pan(params) {
         this._params_cached = params;
@@ -540,13 +574,13 @@ class MulitSpatializerModule extends SpatializationModule {
             this._spatializer_node.setElevation(e);
     }
     input(graph) {
-        return graph.getNode(this._spatializer_node_id).getMainInputBus();
+        return graph.getNode(this._node_id).getMainInputBus();
     }
     output(graph) {
-        return graph.getNode(this._spatializer_node_id).getMainOutputBus();
+        return graph.getNode(this._node_id).getMainOutputBus();
     }
     outputBuses(graph) {
-        return [graph.getNode(this._spatializer_node_id).getMainOutputBus()];
+        return [graph.getNode(this._node_id).getMainOutputBus()];
     }
     graphChanged(graph) {
     }
@@ -554,15 +588,23 @@ class MulitSpatializerModule extends SpatializationModule {
         return this._input.get().userid;
     }
     build(graph) {
-        let node = new MultiSpatializer(`MultiSpatializer [${this._input.findSourceType()}]`, this._input.findSourceType());
-        this._spatializer_node = node;
-        this._spatializer_node_id = graph.addNode(node);
-        this._spatializer_node.pan(this._params_cached);
+        let node;
+        if (this._ambi) {
+            node = new GainNode("AmbiSource Gain " + this._input.get().id, this._input.findSourceType());
+            this._gain_node = node;
+        }
+        else {
+            node = new MultiSpatializer(`MultiSpatializer [${this._input.findSourceType()}]`, this._input.findSourceType());
+            this._spatializer_node = node;
+        }
+        this._node_id = graph.addNode(node);
+        if (this._spatializer_node)
+            this._spatializer_node.pan(this._params_cached);
         let mainInputConnection = graph.graphRootBus().connectIdx(node.getMainInputBus(), this._input.findSourceChannel());
         graph.addConnection(mainInputConnection);
     }
     destroy(graph) {
-        if (graph.removeNode(this._spatializer_node_id))
+        if (graph.removeNode(this._node_id))
             log.debug(`Removed spatializer from graph node for spatializer module for input ${this._input.get().id}`);
         else
             log.warn(`Could not remove spatializer node from graph for spatializer module for input ${this._input.get().id}`);

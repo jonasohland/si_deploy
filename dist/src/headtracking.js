@@ -18,6 +18,13 @@ const core_1 = require("./core");
 // import mkbonjour, { Bonjour, Browser } from 'bonjour-hap';
 let comCheckInterval = 10000;
 const log = Logger.get('HTKHST');
+exports.HeadtrackerInputEvents = {
+    RESET_HEADTRACKER: 'headtracker-reset',
+    CALIBRATE_STEP1: 'calibrate-one',
+    CALIBRATE_STEP2: 'calibrate-two',
+    HEADTRACKER_ON: 'headtracker-on',
+    HEADTRACKER_OFF: 'headtracker-off'
+};
 class Headtracking extends core_1.ServerModule {
     constructor(interf, netif) {
         super('headtracking');
@@ -66,19 +73,49 @@ class Headtracking extends core_1.ServerModule {
         });
     }
     init() {
+        this.events.on(exports.HeadtrackerInputEvents.RESET_HEADTRACKER, (id) => {
+            let htrk = this.getHeadtracker(id);
+            if (htrk)
+                htrk.resetOrientation();
+            else
+                log.error(`Could not reset headtracker ${id}, headtracker not found`);
+        });
+        this.events.on(exports.HeadtrackerInputEvents.CALIBRATE_STEP1, (id) => {
+            let htrk = this.getHeadtracker(id);
+            if (htrk) {
+                htrk.beginInit().catch(err => {
+                    log.error("Could initialize headtracker vectors: ", err);
+                });
+            }
+            else
+                log.error(`Could initialize headtracker vectors: Headtracker ${id} not found`);
+        });
+        this.events.on(exports.HeadtrackerInputEvents.CALIBRATE_STEP2, (id) => {
+            let htrk = this.getHeadtracker(id);
+            if (htrk) {
+                htrk.finishInit().catch(err => {
+                    log.error("Could not finish headtracker initialization: " + err);
+                });
+            }
+            else
+                log.error(`Could not finish headtracker initialization: Headtracker ${id} not found`);
+        });
+        this.events.on(exports.HeadtrackerInputEvents.HEADTRACKER_ON, (id) => {
+            let htrk = this.getHeadtracker(id);
+            if (htrk) {
+                htrk.enableTx();
+            }
+        });
+        this.events.on(exports.HeadtrackerInputEvents.HEADTRACKER_OFF, (id) => {
+            let htrk = this.getHeadtracker(id);
+            if (htrk) {
+                htrk.disableTx();
+            }
+        });
     }
     joined(sock, topic) {
     }
     left() {
-    }
-    onShowfileLoad(s) {
-        log.info("");
-    }
-    onEmptyShowfileCreate(s) {
-        // nothing to do here
-    }
-    targetName() {
-        return "headtracking";
     }
     serviceFound(service) {
         log.info('Found new headtracking service on ' + service.addresses[0]);

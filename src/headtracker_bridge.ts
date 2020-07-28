@@ -43,15 +43,19 @@ class SIOutputAdapter extends UDPOutputAdapter {
 
         if(q.float()) {
             let quat = q.get();
-            console.log(`${quat.w.toFixed(3)} - ${quat.x.toFixed(3)} - ${quat.y.toFixed(3)} - ${quat.z.toFixed(3)}`);
+            // console.log(`${quat.w.toFixed(3)} - ${quat.x.toFixed(3)} - ${quat.y.toFixed(3)} - ${quat.z.toFixed(3)}`);
         }
 
-        if (q.float())
-            this.sendData(HeadtrackerDataPacket.newPacketFromFloatLEData(
-                buffer, offset, this.id, this.seq()));
-        else
-            this.sendData(HeadtrackerDataPacket.newPackerFromInt16Data(
-                buffer, offset, this.id, this.seq())); 
+        try {
+            if (q.float())
+                this.sendData(HeadtrackerDataPacket.newPacketFromFloatLEData(
+                    buffer, offset, this.id, this.seq()));
+            else
+                this.sendData(HeadtrackerDataPacket.newPackerFromInt16Data(
+                    buffer, offset, this.id, this.seq())); 
+        } catch (err) {
+            log.error(err);
+        }
     }
 }
 

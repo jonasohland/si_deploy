@@ -23,6 +23,10 @@ var PortTypes;
     PortTypes[PortTypes["Ambi_O10"] = 18] = "Ambi_O10";
     PortTypes[PortTypes["Ambi_O11"] = 19] = "Ambi_O11";
 })(PortTypes = exports.PortTypes || (exports.PortTypes = {}));
+function isAmbi(ty) {
+    return ty >= PortTypes.Ambi_O0;
+}
+exports.isAmbi = isAmbi;
 function stringToPortType(str) {
     switch (str.toLocaleLowerCase()) {
         case 'mono': return PortTypes.Mono;

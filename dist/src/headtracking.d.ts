@@ -1,16 +1,19 @@
 /// <reference types="socket.io" />
 import dnssd from 'dnssd';
 import { Headtracker, HeadtrackerConfigPacket } from './headtracker';
-import { Showfile } from './showfiles';
 import WebInterface from './web_interface';
 import { ServerModule } from './core';
+export declare const HeadtrackerInputEvents: {
+    RESET_HEADTRACKER: string;
+    CALIBRATE_STEP1: string;
+    CALIBRATE_STEP2: string;
+    HEADTRACKER_ON: string;
+    HEADTRACKER_OFF: string;
+};
 export declare class Headtracking extends ServerModule {
     init(): void;
     joined(sock: SocketIO.Socket, topic: string): void;
     left(): void;
-    onShowfileLoad(s: Showfile): void;
-    onEmptyShowfileCreate(s: Showfile): void;
-    targetName(): string;
     local_interface: string;
     browser: dnssd.Browser;
     trackers: Headtracker[];

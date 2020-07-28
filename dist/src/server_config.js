@@ -47,9 +47,12 @@ function merge(cmd_opts) {
     let output = {};
     if (!_config_file.network)
         _config_file.network = {};
+    if (!_config_file.artist)
+        _config_file.artist = {};
     let interface_ = cmd_opts.interface || _config_file.network.interface;
     let webif_opt = cmd_opts.webInterface || _config_file.network.web_interface
         || cmd_opts.interface || _config_file.network.interface;
+    output.rrcs = cmd_opts.rrcs || _config_file.artist.rrcs;
     const netifs = os.networkInterfaces();
     if (interface_)
         output.interface = (net.isIP(interface_))

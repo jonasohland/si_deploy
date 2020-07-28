@@ -2,6 +2,12 @@ import { PortTypes, SourceParameterSet, Source } from './dsp_defs';
 import { Bus, Connection, Graph, Module, NativeNode } from './dsp_graph';
 import { SpatializedInput, User } from './users';
 import { RoomData } from './rooms_defs';
+export declare class GainNode extends NativeNode {
+    constructor(name: string, ty: PortTypes);
+    onRemotePrepared(): void;
+    onRemoteAlive(): void;
+    remoteAttached(): void;
+}
 export declare class BasicSpatializer extends NativeNode {
     onRemotePrepared(): void;
     onRemoteAlive(): void;
@@ -135,6 +141,7 @@ export declare class RoomSpatializerModule extends SpatializationModule {
     _input: SpatializedInput;
     _encoder_nids: number[];
     _encoders: RoomSpatializer[];
+    _gain_node: GainNode;
     _cached_params: SourceParameterSet;
     _roomdata: RoomData;
     constructor(input: SpatializedInput, roomdata: RoomData);
@@ -159,9 +166,11 @@ export declare class RoomSpatializerModule extends SpatializationModule {
 }
 export declare class MulitSpatializerModule extends SpatializationModule {
     _input: SpatializedInput;
-    _spatializer_node_id: number;
+    _node_id: number;
     _spatializer_node: MultiSpatializer;
+    _gain_node: GainNode;
     _params_cached: SourceParameterSet;
+    _ambi: boolean;
     pan(params: SourceParameterSet): void;
     setAzimuth(a: number): void;
     setElevation(e: number): void;

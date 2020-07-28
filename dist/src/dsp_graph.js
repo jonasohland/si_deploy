@@ -10,7 +10,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const events_1 = require("events");
 const dsp_defs_1 = require("./dsp_defs");
 const Logger = __importStar(require("./log"));
-const log = Logger.get('DSP');
+const log = Logger.get('DSPGPH');
 function _portarr_chcount(ports) {
     return ports.reduce((count, port) => { return count + port.c; }, 0);
 }

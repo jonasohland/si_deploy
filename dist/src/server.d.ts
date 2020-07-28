@@ -8,6 +8,7 @@ import { Server, Node } from './core';
 import { UsersManager } from './users';
 import { Rooms } from './rooms';
 import { DSPGraphController } from './dsp_graph_builder';
+import { RRCSModule } from './rrcs';
 export interface SocketAndInstance {
     instance: SIDSPNode;
 }
@@ -21,5 +22,6 @@ export declare class SpatialIntercomServer extends Server {
     rooms: Rooms;
     headtracking: Headtracking;
     graphcontroller: DSPGraphController;
+    rrcs: RRCSModule;
     constructor(config: any);
 }

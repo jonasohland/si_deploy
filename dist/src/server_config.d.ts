@@ -7,4 +7,5 @@ export declare function merge(cmd_opts: commander.Command): {
     webserver?: boolean;
     server_port?: number;
     webserver_port?: number;
+    rrcs?: string;
 };

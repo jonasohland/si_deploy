@@ -20,6 +20,7 @@ export declare enum PortTypes {
     Ambi_O10 = 18,
     Ambi_O11 = 19
 }
+export declare function isAmbi(ty: PortTypes): boolean;
 export declare function stringToPortType(str: string): PortTypes.Any | PortTypes.Mono | PortTypes.Stereo | PortTypes.Surround_5_1;
 export interface Source {
     a: number;

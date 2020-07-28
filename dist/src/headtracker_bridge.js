@@ -44,12 +44,17 @@ class SIOutputAdapter extends headtracker_serial_1.UDPOutputAdapter {
         let { buffer, offset } = q.data();
         if (q.float()) {
             let quat = q.get();
-            console.log(`${quat.w.toFixed(3)} - ${quat.x.toFixed(3)} - ${quat.y.toFixed(3)} - ${quat.z.toFixed(3)}`);
+            // console.log(`${quat.w.toFixed(3)} - ${quat.x.toFixed(3)} - ${quat.y.toFixed(3)} - ${quat.z.toFixed(3)}`);
         }
-        if (q.float())
-            this.sendData(headtracker_1.HeadtrackerDataPacket.newPacketFromFloatLEData(buffer, offset, this.id, this.seq()));
-        else
-            this.sendData(headtracker_1.HeadtrackerDataPacket.newPackerFromInt16Data(buffer, offset, this.id, this.seq()));
+        try {
+            if (q.float())
+                this.sendData(headtracker_1.HeadtrackerDataPacket.newPacketFromFloatLEData(buffer, offset, this.id, this.seq()));
+            else
+                this.sendData(headtracker_1.HeadtrackerDataPacket.newPackerFromInt16Data(buffer, offset, this.id, this.seq()));
+        }
+        catch (err) {
+            log.error(err);
+        }
     }
 }
 class HeadtrackerBridgeDevice extends events_1.EventEmitter {

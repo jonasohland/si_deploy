@@ -33,7 +33,7 @@ class SpatialIntercomServer extends core_1.Server {
             let htrk = this.headtracking.getHeadtracker(id);
             htrk.setStreamDest("192.168.178.99", 4009);
         });
-        rrcs_1.startRRCS();
+        this.rrcs = new rrcs_1.RRCSModule(config);
         this.webif = webif;
         this.audio_devices = new audio_devices_1.AudioDevices();
         this.inputs = new inputs_1.AudioInputsManager();
@@ -41,6 +41,7 @@ class SpatialIntercomServer extends core_1.Server {
         this.rooms = new rooms_1.Rooms();
         this.headtracking = new headtracking_1.Headtracking(this.webif);
         this.graphcontroller = new dsp_graph_builder_1.DSPGraphController();
+        this.add(this.rrcs);
         this.add(this.webif);
         this.add(this.audio_devices);
         this.add(this.inputs);
