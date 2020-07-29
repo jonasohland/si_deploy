@@ -204,6 +204,9 @@ class DSPGraphController extends core_1.ServerModule {
                 }
             });
         });
+        this.handleWebInterfaceEvent('rebuildgraph', (socket, node) => {
+            this.emitToModule(node.id(), dsp_node_1.DSPModuleNames.GRAPH_BUILDER, exports.GraphBuilderInputEvents.FULL_REBUILD);
+        });
     }
     joined(socket, topic) {
     }

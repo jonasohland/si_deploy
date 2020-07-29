@@ -1,12 +1,19 @@
+/// <reference types="node" />
 /// <reference types="socket.io" />
-import { RRCS_Server } from 'riedel_rrcs';
+import { RRCSServerType } from 'riedel_rrcs';
 import { ServerModule } from './core';
+import { Socket } from 'dgram';
 export declare class RRCSModule extends ServerModule {
-    rrcssrv: RRCS_Server;
+    rrcssrv: RRCSServerType;
+    local_sock: Socket;
+    config: any;
     init(): void;
     joined(socket: SocketIO.Socket): void;
     left(socket: SocketIO.Socket): void;
     constructor(config: any);
+    reconnectRRCS(): void;
+    startRRCS(): void;
+    processOSCCommand(cmd: string[]): void;
     processStringCommand(str: string): void;
     processHeadtrackerCommand(cmd: string[]): void;
     processHeadtrackerOffCommand(cmd: string[]): void;

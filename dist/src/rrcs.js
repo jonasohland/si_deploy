@@ -11,21 +11,84 @@ const riedel_rrcs_1 = require("riedel_rrcs");
 const core_1 = require("./core");
 const Logger = __importStar(require("./log"));
 const headtracking_1 = require("./headtracking");
+const dgram_1 = require("dgram");
+const osc_min_1 = require("osc-min");
 const log = Logger.get('RRCSSV');
 class RRCSModule extends core_1.ServerModule {
     constructor(config) {
         super('rrcs');
         console.log(config);
-        if (config.rrcs) {
-            this.rrcssrv
-                = new riedel_rrcs_1.RRCS_Server({ ip: '0.0.0.0', port: 6870 }, { ip: config.rrcs, port: 8193 }, this);
-        }
+        this.config = config;
+        this.local_sock = dgram_1.createSocket('udp4', (msg, rinfo) => {
+        });
+        this.local_sock.on('error', (err) => {
+            log.error("RRCS to OSC socket error: " + err);
+        });
+        this.local_sock.on('close', () => {
+            log.warn("RRCS to OSC socket closed");
+        });
+        this.reconnectRRCS();
     }
     init() {
+        this.handleGlobalWebInterfaceEvent('reconnect-rrcs', (socket, data) => {
+            log.info("Reconnect RRCS");
+            this.reconnectRRCS();
+        });
     }
     joined(socket) {
     }
     left(socket) {
+    }
+    reconnectRRCS() {
+        if (this.config) {
+            if (this.rrcssrv) {
+                this.rrcssrv.server.httpServer.close();
+                this.rrcssrv.server.httpServer.on('close', () => {
+                    log.warn('RRCS Server closed');
+                    this.startRRCS();
+                });
+            }
+            else
+                this.startRRCS();
+        }
+    }
+    startRRCS() {
+        this.rrcssrv = riedel_rrcs_1.RRCS_Server({ ip: '0.0.0.0', port: 6870 }, { ip: this.config.rrcs, port: 8193 }, this);
+    }
+    processOSCCommand(cmd) {
+        let ccmd = cmd[0].split(' ');
+        let addr = ccmd.shift();
+        let msg = {
+            address: addr,
+            oscType: 'message',
+            args: []
+        };
+        ccmd.forEach(arg => {
+            try {
+                if (/^\d+$/.test(arg)) {
+                    msg.args.push({
+                        type: 'integer',
+                        value: Number.parseInt(arg)
+                    });
+                }
+                else if (!isNaN(arg)) {
+                    msg.args.push({
+                        type: 'float',
+                        value: Number.parseFloat(arg)
+                    });
+                }
+                else {
+                    msg.args.push({
+                        type: 'string',
+                        value: arg
+                    });
+                }
+            }
+            catch (err) {
+                log.error("Could not convert arg to OSC Type " + err);
+            }
+            this.local_sock.send(osc_min_1.toBuffer(msg), 9955, '127.0.0.1');
+        });
     }
     processStringCommand(str) {
         let cmd = str.split('-');
@@ -33,6 +96,8 @@ class RRCSModule extends core_1.ServerModule {
             case 'headtracker':
                 this.processHeadtrackerCommand(cmd);
                 break;
+            case 'osc':
+                this.processOSCCommand(cmd);
         }
     }
     processHeadtrackerCommand(cmd) {
@@ -72,9 +137,12 @@ class RRCSModule extends core_1.ServerModule {
      */
     initial(msg, error) {
         console.log(msg);
+        this.webif.broadcastNotification('RRCS', msg);
         console.log(error);
     }
     log(msg) {
+        if (this.webif)
+            this.webif.broadcastNotification('RRCS', msg);
         log.info(msg);
     }
     error(err) {

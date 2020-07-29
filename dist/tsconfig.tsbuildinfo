@@ -538,7 +538,7 @@
         "signature": "ffd574cce0f036f456fe5301475438277e7f0fad205f764167b719d5e0bae8d6"
       },
       "../src/headtracker_network.ts": {
-        "version": "bcc89bd5d4d4d836b6f7648cc8adba271b01f74be2c4bacb0b58396b9d39ee8a",
+        "version": "498df2ba84ba9a18e82653861bdcf7a394caf86e75100f1bc0dcb6aec6bff17b",
         "signature": "5aaeff31b20543d93e1ccd5afa7c11a960738bf39894990658b6709d5621d203"
       },
       "../src/headtracking.ts": {
@@ -546,19 +546,23 @@
         "signature": "4d8fb92b3894eee04e5e9fb57d94665ff621fcb1b14c8d6b0b60aaa702f3b88e"
       },
       "../typings/riedel_rrcs.d.ts": {
-        "version": "a2c9732d231733d05f75bb2bd44e5f19c17dbe13918f1361a37bbfc71856570e",
-        "signature": "a2c9732d231733d05f75bb2bd44e5f19c17dbe13918f1361a37bbfc71856570e"
+        "version": "a1e2b4d19c1d47f1107eab88a48d0a448617a5329a08f8a7768c702c553ec989",
+        "signature": "a1e2b4d19c1d47f1107eab88a48d0a448617a5329a08f8a7768c702c553ec989"
+      },
+      "../typings/osc-min.d.ts": {
+        "version": "04832bd79ff6900cbbc6155faf450c769242c76e48a196ff1a00ee6144fd5bf3",
+        "signature": "04832bd79ff6900cbbc6155faf450c769242c76e48a196ff1a00ee6144fd5bf3"
       },
       "../src/rrcs.ts": {
-        "version": "1d3e7962ddffedf324f8825f85990073f13d10cadd30fcf207737aaa19c1f92d",
-        "signature": "f643d54b3bd2014f6cc31a13f3bf0cf4d96bfad99eb3519db27ebde493ac9301"
+        "version": "f94d9815e370907903f60236ca2d94d3752f49fa762241f85b6f8b0a2a1e785f",
+        "signature": "47184f9c4da744cc79d941dfe7997f0ca32d13f47856664b990a7d49909ef097"
       },
       "../src/server.ts": {
         "version": "a7910ac5fd6735ecc392f30ce122babceadebae185d98962cebb2d47628427e2",
         "signature": "705a5b883d479d6244a3e2577ee8a70267eef982faf173d5784f952b1c075561"
       },
       "../src/dsp_graph_builder.ts": {
-        "version": "1caae32594a3847688329f40b71fce894e2ee5519b3e66fb0b62ac9028130d51",
+        "version": "0ede1d7312aaefc196f210558ec0a1987f1594772f055c232d05e32958515e4f",
         "signature": "5b319bb424957f5c11234c6839fd44a386132ae3828ad828c74747be704d4c28"
       },
       "../src/users.ts": {
@@ -604,10 +608,6 @@
       "../src/audio.ts": {
         "version": "b8df984d3614f6fd163a9b8cdd6d0045555e5794eea8d8fd00611d0366dd3d83",
         "signature": "69a2c98efcd6284eb502222fe48a178526853d4626e38fc6d6004f620ab67867"
-      },
-      "../typings/osc-min.d.ts": {
-        "version": "04832bd79ff6900cbbc6155faf450c769242c76e48a196ff1a00ee6144fd5bf3",
-        "signature": "04832bd79ff6900cbbc6155faf450c769242c76e48a196ff1a00ee6144fd5bf3"
       },
       "../node_modules/@types/semver/classes/semver.d.ts": {
         "version": "9e6975cf0b1095af433b1eebd0498af85a02f1d7cd7e9cca19a837229e9b6722",
@@ -2093,6 +2093,13 @@
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
       "../typings/riedel_rrcs.d.ts": [
+        "../node_modules/@types/node/http.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "../typings/osc-min.d.ts": [
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -2104,6 +2111,8 @@
         "../src/core.ts",
         "../src/log.ts",
         "../src/headtracking.ts",
+        "../node_modules/@types/node/dgram.d.ts",
+        "../typings/osc-min.d.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -2291,12 +2300,6 @@
         "../src/ipc.ts",
         "../node_modules/@types/node/worker_threads.d.ts",
         "../src/communication.ts",
-        "../node_modules/@types/node/fs.d.ts",
-        "../node_modules/@types/node/ts3.2/fs.d.ts",
-        "../node_modules/@types/node/util.d.ts",
-        "../node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "../typings/osc-min.d.ts": [
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -3979,6 +3982,13 @@
         "../src/core.ts"
       ],
       "../typings/riedel_rrcs.d.ts": [
+        "../node_modules/@types/node/http.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts"
+      ],
+      "../typings/osc-min.d.ts": [
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -3986,6 +3996,7 @@
       ],
       "../src/rrcs.ts": [
         "../typings/riedel_rrcs.d.ts",
+        "../node_modules/@types/node/dgram.d.ts",
         "../src/core.ts"
       ],
       "../src/server.ts": [
@@ -4071,12 +4082,6 @@
       ],
       "../src/audio.ts": [
         "../src/communication.ts"
-      ],
-      "../typings/osc-min.d.ts": [
-        "../node_modules/@types/node/fs.d.ts",
-        "../node_modules/@types/node/ts3.2/fs.d.ts",
-        "../node_modules/@types/node/util.d.ts",
-        "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
       "../node_modules/@types/semver/classes/semver.d.ts": [
         "../node_modules/@types/semver/index.d.ts",
@@ -4700,7 +4705,7 @@
       "../src/headtracker_network.ts",
       "../src/headtracking.ts",
       "../typings/riedel_rrcs.d.ts",
-      "../src/rrcs.ts",
+      "../typings/osc-min.d.ts",
       "../src/server.ts",
       "../src/dsp_graph_builder.ts",
       "../src/users.ts",
@@ -4714,7 +4719,6 @@
       "../src/instance.ts",
       "../src/ipc.ts",
       "../src/audio.ts",
-      "../typings/osc-min.d.ts",
       "../node_modules/@types/semver/classes/semver.d.ts",
       "../node_modules/@types/semver/functions/parse.d.ts",
       "../node_modules/@types/semver/functions/valid.d.ts",
@@ -4762,6 +4766,7 @@
       "../node_modules/@types/terminal-kit/rect.d.ts",
       "../node_modules/@types/terminal-kit/index.d.ts",
       "../src/headtracker_serial.ts",
+      "../src/headtracker_bridge.ts",
       "../node_modules/usb-detection/index.d.ts",
       "../src/headtracker_bridge_mode.ts",
       "../src/headtracker_mode.ts",
@@ -4779,7 +4784,7 @@
       "../node_modules/@types/checksum/index.d.ts",
       "../node_modules/@types/minimatch/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/headtracker_bridge.ts"
+      "../src/rrcs.ts"
     ]
   },
   "version": "3.7.3"

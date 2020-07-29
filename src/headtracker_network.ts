@@ -132,6 +132,7 @@ export class NetworkHeadtracker extends Headtracker {
                     log.info('Orientation reset on Headtracker '
                              + p.deviceID());
                     this.resetting_orientation = false;
+                    this.local.conf.clearStateFlag(HeadtrackerStateFlags.RESET_ORIENTATION);
                 }
             }
 

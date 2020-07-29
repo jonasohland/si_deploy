@@ -280,6 +280,10 @@ export class DSPGraphController extends ServerModule {
                 }
             })
         });
+
+        this.handleWebInterfaceEvent('rebuildgraph', (socket: SocketIO.Socket, node: DSPNode) => {
+            this.emitToModule(node.id(), DSPModuleNames.GRAPH_BUILDER, GraphBuilderInputEvents.FULL_REBUILD);
+        })
     }
 
     joined(socket: SocketIO.Socket, topic: string)
