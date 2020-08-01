@@ -260,7 +260,6 @@ class NetworkHeadtracker extends headtracker_1.Headtracker {
             this.local.conf.setStateFlag(headtracker_1.HeadtrackerStateFlags.INVERT_Z);
         else
             this.local.conf.clearStateFlag(headtracker_1.HeadtrackerStateFlags.INVERT_Z);
-        console.log(this.local.conf.device_state);
         this._updateDevice();
     }
     resetOrientation() {

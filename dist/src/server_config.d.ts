@@ -8,4 +8,6 @@ export declare function merge(cmd_opts: commander.Command): {
     server_port?: number;
     webserver_port?: number;
     rrcs?: string;
+    rrcs_osc_host?: string;
+    rrcs_osc_port?: number;
 };

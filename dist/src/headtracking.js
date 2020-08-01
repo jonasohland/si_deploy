@@ -43,7 +43,6 @@ class Headtracking extends core_1.ServerModule {
                 self.updateRemote(socket);
             });
             socket.on('htrk.sr.changed', (id, sr) => {
-                console.log('sr changed');
                 self.getHeadtracker(id).setSamplerate(sr);
             });
             socket.on('htrk.stream.changed', (id, on) => {
@@ -120,7 +119,6 @@ class Headtracking extends core_1.ServerModule {
     serviceFound(service) {
         log.info('Found new headtracking service on ' + service.addresses[0]);
         let id = Number.parseInt(service.host.substr(8, 2));
-        console.log(service);
         let htrk = new headtracker_network_1.NetworkHeadtracker(this.webif, id, service.addresses[0], service.port, this.local_interface);
         htrk.start();
         this.addHeadtracker(htrk, id, service.addresses[0]);

@@ -57,7 +57,6 @@ class BasicSpatializer extends dsp_graph_1.NativeNode {
         this.addOutputBus(dsp_graph_1.AmbiBus.createMainForOrder(3, 1));
     }
     remoteAttached() {
-        console.log('Remote attached!');
     }
     setAzimuthDeg(value) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -95,7 +94,6 @@ class AdvancedSpatializer extends dsp_graph_1.NativeNode {
     onRemotePrepared() {
     }
     remoteAttached() {
-        console.log('Remote attached!');
     }
     onRemoteAlive() {
     }
@@ -563,7 +561,6 @@ class MulitSpatializerModule extends SpatializationModule {
             this._spatializer_node.pan(params);
     }
     setAzimuth(a) {
-        console.log("Multispatializer " + a);
         this._params_cached.a = a;
         if (this._spatializer_node)
             this._spatializer_node.setAzimuth(a);

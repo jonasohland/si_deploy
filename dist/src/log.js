@@ -94,7 +94,6 @@ function setLogLVL(lvl) {
         console.error(`Log level out of range [${0},${lvls.length - 1}]`);
         process.exit(5);
     }
-    console.log('Starting logging service with log levl: ' + lvls[lvl]);
     log_lvl.v = lvls[lvl];
     transports.forEach(t => t.level = lvls[lvl]);
 }

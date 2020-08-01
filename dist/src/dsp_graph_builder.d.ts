@@ -14,6 +14,7 @@ export declare const GraphBuilderInputEvents: {
     PAN: string;
     AZM: string;
     ELV: string;
+    GAIN: string;
     ROOM_ENABLED: string;
     ROOM_REFLECTIONS: string;
     ROOM_SHAPE: string;
@@ -33,6 +34,7 @@ export declare class NodeDSPGraphBuilder extends NodeModule {
     left(socket: SocketIO.Socket, topic: string): void;
     init(): void;
     start(connection: Connection): void;
+    rebuildGraph(): void;
     _do_rebuild_graph_full(): void;
     _build_spatializer_modules(): void;
     _dispatch_azimuth_pan(userid: string, spid: string, azm: number): void;

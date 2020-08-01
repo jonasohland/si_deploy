@@ -42,10 +42,6 @@ class SIOutputAdapter extends headtracker_serial_1.UDPOutputAdapter {
     }
     process(q) {
         let { buffer, offset } = q.data();
-        if (q.float()) {
-            let quat = q.get();
-            // console.log(`${quat.w.toFixed(3)} - ${quat.x.toFixed(3)} - ${quat.y.toFixed(3)} - ${quat.z.toFixed(3)}`);
-        }
         try {
             if (q.float())
                 this.sendData(headtracker_1.HeadtrackerDataPacket.newPacketFromFloatLEData(buffer, offset, this.id, this.seq()));
@@ -91,7 +87,6 @@ class HeadtrackerBridgeDevice extends events_1.EventEmitter {
         }
         this.conf.device_static_subnet = util.LocalInterfaces[0].netmask;
         this.conf.device_static_ip = util.LocalInterfaces[0].address;
-        console.log(this.conf);
         let sname = `si_htrk_${(this.lhtrk.shtrk._id < 10) ? '0' + this.lhtrk.shtrk._id
             : this.lhtrk.shtrk._id}`;
         log.info('Headtracker ready. Adding new mdns advertisement: _htrk._udp.'

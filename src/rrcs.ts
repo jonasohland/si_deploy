@@ -34,7 +34,6 @@ export class RRCSModule extends ServerModule {
     constructor(config: any)
     {
         super('rrcs');
-        console.log(config);
         this.config = config;
 
         this.local_sock = createSocket('udp4', (msg, rinfo) => {
@@ -104,7 +103,7 @@ export class RRCSModule extends ServerModule {
                 log.error("Could not convert arg to OSC Type " + err);
             }
 
-            this.local_sock.send(toBuffer(msg), 9955, '127.0.0.1');
+            this.local_sock.send(toBuffer(msg), this.config.rrcs_osc_port, this.config.rrcs_osc_host);
         });
     }
 
@@ -165,9 +164,9 @@ export class RRCSModule extends ServerModule {
      */
     initial(msg: any, error: any)
     {
-        console.log(msg);
         this.webif.broadcastNotification('RRCS', msg);
-        console.log(error);
+        if (error)
+            console.log(error);
     }
     log(msg: any)
     {

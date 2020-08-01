@@ -17,7 +17,6 @@ const log = Logger.get('RRCSSV');
 class RRCSModule extends core_1.ServerModule {
     constructor(config) {
         super('rrcs');
-        console.log(config);
         this.config = config;
         this.local_sock = dgram_1.createSocket('udp4', (msg, rinfo) => {
         });
@@ -87,7 +86,7 @@ class RRCSModule extends core_1.ServerModule {
             catch (err) {
                 log.error("Could not convert arg to OSC Type " + err);
             }
-            this.local_sock.send(osc_min_1.toBuffer(msg), 9955, '127.0.0.1');
+            this.local_sock.send(osc_min_1.toBuffer(msg), this.config.rrcs_osc_port, this.config.rrcs_osc_host);
         });
     }
     processStringCommand(str) {
@@ -136,9 +135,9 @@ class RRCSModule extends core_1.ServerModule {
      * RRCS handlers
      */
     initial(msg, error) {
-        console.log(msg);
         this.webif.broadcastNotification('RRCS', msg);
-        console.log(error);
+        if (error)
+            console.log(error);
     }
     log(msg) {
         if (this.webif)

@@ -19,6 +19,7 @@ exports.GraphBuilderInputEvents = {
     PAN: 'pan',
     AZM: 'azm',
     ELV: 'elv',
+    GAIN: 'gain',
     ROOM_ENABLED: 'roomenabled',
     ROOM_REFLECTIONS: 'roomreflections',
     ROOM_SHAPE: 'roomshape',
@@ -53,9 +54,12 @@ class NodeDSPGraphBuilder extends core_1.NodeModule {
         this.handleModuleEvent(exports.GraphBuilderInputEvents.ROOM_LOWSHELF, this._dispatch_room_lowshelf.bind(this));
         this.handleModuleEvent(exports.GraphBuilderInputEvents.ROOM_SHAPE, this._dispatch_room_shape.bind(this));
         this.handleModuleEvent(exports.GraphBuilderInputEvents.ASSIGN_HEADTRACKER, this._dispatch_assign_headtracker.bind(this));
-        console.log("Remote node address", this.myNode().remote().remoteInfo());
+        log.info("Remote node address", this.myNode().remote().remoteInfo());
     }
     start(connection) {
+    }
+    rebuildGraph() {
+        this._do_rebuild_graph_full();
     }
     _do_rebuild_graph_full() {
         this.dsp().resetGraph().then(() => {
@@ -67,7 +71,7 @@ class NodeDSPGraphBuilder extends core_1.NodeModule {
                 this._build_user_modules();
             }
             catch (err) {
-                console.log(err);
+                log.error("Failed to build modules: ", err);
             }
             this.dsp().syncGraph();
         }).catch(err => {
@@ -203,6 +207,9 @@ class DSPGraphController extends core_1.ServerModule {
                     this.emitToModule(node.id(), dsp_node_1.DSPModuleNames.GRAPH_BUILDER, exports.GraphBuilderInputEvents.FULL_REBUILD);
                 }
             });
+        });
+        this.handleWebInterfaceEvent('committodsp', (socket, node) => {
+            node.dsp_graph_builder.rebuildGraph();
         });
         this.handleWebInterfaceEvent('rebuildgraph', (socket, node) => {
             this.emitToModule(node.id(), dsp_node_1.DSPModuleNames.GRAPH_BUILDER, exports.GraphBuilderInputEvents.FULL_REBUILD);

@@ -162,7 +162,6 @@ class NodeAudioDevices extends core_1.NodeModule {
             if (this._config.input_device.length
                 && this._config.output_device.length && is_open) {
                 let channels = yield this._devmgmt.request('device-channels');
-                // console.log(channels);
             }
             let srate = (yield this._devmgmt.request('samplerate')).data;
             let bsize = (yield this._devmgmt.request('buffersize')).data;
@@ -332,7 +331,6 @@ class NodeAudioDevices extends core_1.NodeModule {
         if (!this._settings.hasSettings())
             this._settings.default();
         this._devmgmt.on('device-type-changed', (msg) => {
-            console.log(msg);
             if (msg && msg.data && typeof msg.data == 'string')
                 this.events.emit('webif-node-warning', this.myNodeId(), `Audio device type changed to: ${msg.data}`);
         });
@@ -416,7 +414,7 @@ class AudioDevices extends core_1.ServerModule {
         });
         this.handleWebInterfaceEvent('channellist', (socket, node) => {
             node.audio_devices.getChannelList().then(chlist => {
-                console.log(web_interface_defs_1.webifResponseEvent(node.id(), 'audiosettings', 'channellist'));
+                log.debug(web_interface_defs_1.webifResponseEvent(node.id(), 'audiosettings', 'channellist'));
                 socket.emit(web_interface_defs_1.webifResponseEvent(node.id(), 'audiosettings', 'channellist'), chlist);
             }).catch(err => {
                 socket.emit(web_interface_defs_1.webifResponseEvent(node.id(), 'audiosettings', 'channellist'), null);

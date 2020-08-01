@@ -100,7 +100,6 @@ class OSCController {
                             y: axs.indexOf('y') != -1,
                             z: axs.indexOf('z') != -1
                         };
-                        console.log(inv);
                         this.ht.trackers.forEach(t => t.setInvertation(inv));
                     }
                 }

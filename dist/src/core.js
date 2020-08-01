@@ -571,7 +571,7 @@ class NodeDataStorage extends communication_1.NodeMessageInterceptor {
         });
     }
     updateObject(msg) {
-        console.log(JSON.stringify(msg, null, 2));
+        log.verbose(`Update object ${msg.module} -> ${msg.register} -> ${msg.data.object_id}`);
         if (this._modules[msg.module]) {
             let mod = this._modules[msg.module];
             let regidx = mod.registers.findIndex(reg => reg.name == msg.register);
