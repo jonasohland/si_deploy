@@ -57,11 +57,11 @@ export class GainNode extends NativeNode {
     }
 
     onRemotePrepared(): void {
-
-    }
-    onRemoteAlive(): void {
         this._remote_alive = true;
         this.remote.set('gain', this._gain).catch(err => log.error(`Could not set gain for gain-node ${err}`));
+    }
+    onRemoteAlive(): void {
+
     }
     remoteAttached(): void {
 
@@ -177,16 +177,16 @@ export class AdvancedBinauralDecoder extends NativeNode {
     _htrk_id: number = -1;
 
     onRemotePrepared(): void {
+    }
+
+    onRemoteAlive(): void
+    {
         if(this._htrk_id != -1) {
             this.setHeadtrackerId(this._htrk_id).catch(err => {
                 log.error("Could not set headtracker id");
             })
         }
         this.remote.set('mute', false);
-    }
-
-    onRemoteAlive(): void
-    {
     }
 
     constructor(name: string, order: number, headtracker_id: number)

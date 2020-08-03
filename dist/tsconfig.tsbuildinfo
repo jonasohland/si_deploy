@@ -530,7 +530,7 @@
         "signature": "5f6d601834242cddac299ba72536e6bef06ca385474710d4898e389448ba8faa"
       },
       "../src/dsp_modules.ts": {
-        "version": "0601279ce979bdfb0df9b90fe4178d780202582e957952d67d7ade6da71e8ec0",
+        "version": "f73cf718396abed6e1fb83f6d07e6f5c68c840d5ecb2c1bf0aa1311ef669bf8b",
         "signature": "7fc7bc40a7f9f223f1236a618a939faa38d03fb3918b32d7f791d53110923a4a"
       },
       "../src/headtracker.ts": {
@@ -888,7 +888,6 @@
           "typings/*"
         ]
       },
-      "watch": true,
       "configFilePath": "../tsconfig.json"
     },
     "referencedMap": {
