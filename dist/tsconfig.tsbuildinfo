@@ -530,7 +530,7 @@
         "signature": "5f6d601834242cddac299ba72536e6bef06ca385474710d4898e389448ba8faa"
       },
       "../src/dsp_modules.ts": {
-        "version": "7acaed9700028a4eb94e12bc00241ed2741eb6183c8eb6a9d98aab4b511f4cbf",
+        "version": "0601279ce979bdfb0df9b90fe4178d780202582e957952d67d7ade6da71e8ec0",
         "signature": "7fc7bc40a7f9f223f1236a618a939faa38d03fb3918b32d7f791d53110923a4a"
       },
       "../src/headtracker.ts": {
@@ -4701,7 +4701,6 @@
       "../src/users_defs.ts",
       "../src/rooms.ts",
       "../src/rooms_defs.ts",
-      "../src/dsp_modules.ts",
       "../src/headtracker.ts",
       "../src/headtracker_network.ts",
       "../src/headtracking.ts",
@@ -4710,6 +4709,7 @@
       "../src/rrcs.ts",
       "../src/server.ts",
       "../src/dsp_graph_builder.ts",
+      "../src/users.ts",
       "../src/dsp_node.ts",
       "../src/vst.ts",
       "../src/dsp_graph.ts",
@@ -4785,7 +4785,7 @@
       "../node_modules/@types/checksum/index.d.ts",
       "../node_modules/@types/minimatch/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/users.ts"
+      "../src/dsp_modules.ts"
     ]
   },
   "version": "3.7.3"

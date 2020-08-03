@@ -145,14 +145,14 @@ class AdvancedBinauralDecoder extends dsp_graph_1.NativeNode {
         this._htrk_id = headtracker_id;
     }
     onRemotePrepared() {
-    }
-    onRemoteAlive() {
         if (this._htrk_id != -1) {
             this.setHeadtrackerId(this._htrk_id).catch(err => {
                 log.error("Could not set headtracker id");
             });
         }
         this.remote.set('mute', false);
+    }
+    onRemoteAlive() {
     }
     remoteAttached() {
     }
