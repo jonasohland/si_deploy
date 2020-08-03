@@ -530,7 +530,7 @@
         "signature": "5f6d601834242cddac299ba72536e6bef06ca385474710d4898e389448ba8faa"
       },
       "../src/dsp_modules.ts": {
-        "version": "f73cf718396abed6e1fb83f6d07e6f5c68c840d5ecb2c1bf0aa1311ef669bf8b",
+        "version": "76fcce8c1fdf2d2c2d47f03e329f17756f6a02da57278d04fcc6bb51297030f2",
         "signature": "7fc7bc40a7f9f223f1236a618a939faa38d03fb3918b32d7f791d53110923a4a"
       },
       "../src/headtracker.ts": {

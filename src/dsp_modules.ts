@@ -839,6 +839,8 @@ export class MulitSpatializerModule extends SpatializationModule {
         this._cached_gain = gain;
         if(this._spatializer_node)
             this._spatializer_node.setGain(this._cached_gain);
+        else if(this._gain_node)
+            this._gain_node.setGain(this._cached_gain);
     }
 
     input(graph: Graph): Bus
