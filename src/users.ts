@@ -18,7 +18,8 @@ import {
     UserData,
     UserDeleteInputMessage,
     UserModifyInputMessage,
-    UserPanInputMessage
+    UserPanInputMessage,
+    UserInputGainChangeMessage
 } from './users_defs';
 import {ensurePortTypeEnum} from './util';
 
@@ -502,8 +503,25 @@ export class UsersManager extends ServerModule {
                 node.users.modifyUser(data);
             });
 
-        this.handleGlobalWebInterfaceEvent('setgain', (socket: SocketIO.Socket, data: { user: string, id: string, gain: number }) => {
-            console.log(data.user, data.id, data.gain);
-        })
+        this.handleGlobalWebInterfaceEvent('setgain', (socket: SocketIO.Socket, data: UserInputGainChangeMessage) => {
+            let node = this.findNodeForUser(data.user);
+            if(node)
+                this.emitToModule(node.id(), DSPModuleNames.GRAPH_BUILDER, GraphBuilderInputEvents.SET_GAIN, data.user, data.id, data.gain);
+            else
+                log.error("Could not find node for user " + data.user);
+        });
+
+        this.handleGlobalWebInterfaceEvent('changegain', (socket: SocketIO.Socket, data: UserInputGainChangeMessage) => {
+            let node = this.findNodeForUser(data.user);
+            if(node){
+                let input = node.users.findInputById(data.id);
+                let idata = input.get();
+                idata.gain = data.gain;
+                input.set(idata).then(() => input.save()).catch(err => { log.error(`Could not set new gain: ${err}`) });
+
+            }
+            else
+                log.error("Could not find node for user " + data.user);
+        });
     }
 }

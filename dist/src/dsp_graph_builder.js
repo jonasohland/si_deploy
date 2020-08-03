@@ -27,6 +27,7 @@ exports.GraphBuilderInputEvents = {
     ROOM_HIGHSHELF: 'roomhighshelf',
     ROOM_LOWSHELF: 'roomlowshelf',
     ASSIGN_HEADTRACKER: 'assignheadtracker',
+    SET_GAIN: 'setgain'
 };
 exports.GraphBuilderOutputEvents = {};
 class NodeDSPGraphBuilder extends core_1.NodeModule {
@@ -55,6 +56,7 @@ class NodeDSPGraphBuilder extends core_1.NodeModule {
         this.handleModuleEvent(exports.GraphBuilderInputEvents.ROOM_LOWSHELF, this._dispatch_room_lowshelf.bind(this));
         this.handleModuleEvent(exports.GraphBuilderInputEvents.ROOM_SHAPE, this._dispatch_room_shape.bind(this));
         this.handleModuleEvent(exports.GraphBuilderInputEvents.ASSIGN_HEADTRACKER, this._dispatch_assign_headtracker.bind(this));
+        this.handleModuleEvent(exports.GraphBuilderInputEvents.SET_GAIN, this._dispatch_set_gain.bind(this));
         log.info("Remote node address", this.myNode().remote().remoteInfo());
     }
     start(connection) {
@@ -114,16 +116,25 @@ class NodeDSPGraphBuilder extends core_1.NodeModule {
         let module = this._find_spatializer(userid, spid);
         if (module)
             module.setAzimuth(azm);
+        else {
+            log.error(`Could not find spatializer for input user ${userid} input ${spid}`);
+        }
     }
     _dispatch_elevation_pan(userid, spid, elv) {
         let module = this._find_spatializer(userid, spid);
         if (module)
             module.setElevation(elv);
+        else {
+            log.error(`Could not find spatializer for input user ${userid} input ${spid}`);
+        }
     }
     _dispatch_pan(userid, spid, params) {
         let module = this._find_spatializer(userid, spid);
         if (module)
             module.pan(params);
+        else {
+            log.error(`Could not find spatializer for input user ${userid} input ${spid}`);
+        }
     }
     _dispatch_room_enabled(roomid, room) {
         this._find_spatializers_for_room(roomid).forEach(sp => sp.setRoomEnabled(room));
@@ -151,11 +162,19 @@ class NodeDSPGraphBuilder extends core_1.NodeModule {
                 headtracker.setStreamDest(this.myNode().remote().remoteInfo(), 10099);
             }
             catch (err) {
+                log.error(`Could not set headtracker stream destination: ${err}`);
             }
         }
         if (this.user_modules[userid]) {
             this.user_modules[userid].setHeadtrackerId(headtrackerid);
         }
+    }
+    _dispatch_set_gain(userid, spid, gain) {
+        let sp = this._find_spatializer(userid, spid);
+        if (sp)
+            sp.setGain(gain);
+        else
+            log.error(`Could not find spatializer for input user ${userid} input ${spid}`);
     }
     _build_user_modules() {
         this.nodeUsers().listRawUsersData().forEach((usr) => {

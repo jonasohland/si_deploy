@@ -41,5 +41,10 @@ export interface UserAssignHeadtrackerMessage {
     userid: string;
     headtrackerid: number;
 }
+export interface UserInputGainChangeMessage {
+    gain: number;
+    id: string;
+    user: string;
+}
 export declare function basicSpatializedInput(inputid: string, userid: string, type: PortTypes): SpatializedInputData;
 export declare function basicUserData(name: string, channel: number): UserData;

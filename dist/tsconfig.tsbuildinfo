@@ -518,8 +518,8 @@
         "signature": "1ac4881861407828438131c8f14c357f3a5956d28beedca2ac7f1d669e3f4ca9"
       },
       "../src/users_defs.ts": {
-        "version": "0955ef714937e8194d37895bfc1a7f87242f253464e12dc3647c207da1f4864e",
-        "signature": "e4a8133fecae85dc96827027ca129d1fbaa22f25919c6454f8fd757daadcd2f7"
+        "version": "655540f0234396aa28282203625d82b1b5847ca475a295e4e25beb3b22fe6434",
+        "signature": "5fefad44413bd8ce88d827146b950f260481dc548cf68b9d9a522b1bb9dab254"
       },
       "../src/rooms.ts": {
         "version": "94065dc5d4bd273cb5d9a730821d93681c4d67a1ad5c15de0666566cad045fc2",
@@ -562,11 +562,11 @@
         "signature": "705a5b883d479d6244a3e2577ee8a70267eef982faf173d5784f952b1c075561"
       },
       "../src/dsp_graph_builder.ts": {
-        "version": "5a0d9d8ca276223f7f372baf6a90086ea8c6039fe010836e8c09d9b0ee0c3edc",
-        "signature": "693e010eeeace2469d2dc84d35c3603e9c4ce271f2ff83cae684cb74b8ae6180"
+        "version": "c0ad3f03efa7df5c6b596bbc5f6eb18eee1783f74d907e662ca12514a2fa0e45",
+        "signature": "e46aebd0f92e3c53ddb626e0733b9eb44bef34d0ef9ca6c07b3eb79ae965eb05"
       },
       "../src/users.ts": {
-        "version": "42dd4108e64ec63b273cb770661eb5887ed18333126bcbe474f3404aed542dc8",
+        "version": "891a49d17dbdf315dedc66e3e7b3cf0e679ce8e31f198a4ea5930ae74bcf92db",
         "signature": "aab1cfa471714d5c2f7f6512d02e6d480baca0bb78ec261a9ae795fee0d8326a"
       },
       "../src/dsp_node.ts": {
@@ -4701,6 +4701,7 @@
       "../src/users_defs.ts",
       "../src/rooms.ts",
       "../src/rooms_defs.ts",
+      "../src/dsp_modules.ts",
       "../src/headtracker.ts",
       "../src/headtracker_network.ts",
       "../src/headtracking.ts",
@@ -4709,7 +4710,6 @@
       "../src/rrcs.ts",
       "../src/server.ts",
       "../src/dsp_graph_builder.ts",
-      "../src/users.ts",
       "../src/dsp_node.ts",
       "../src/vst.ts",
       "../src/dsp_graph.ts",
@@ -4785,7 +4785,7 @@
       "../node_modules/@types/checksum/index.d.ts",
       "../node_modules/@types/minimatch/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/dsp_modules.ts"
+      "../src/users.ts"
     ]
   },
   "version": "3.7.3"

@@ -22,6 +22,7 @@ export declare const GraphBuilderInputEvents: {
     ROOM_HIGHSHELF: string;
     ROOM_LOWSHELF: string;
     ASSIGN_HEADTRACKER: string;
+    SET_GAIN: string;
 };
 export declare const GraphBuilderOutputEvents: {};
 export declare class NodeDSPGraphBuilder extends NodeModule {
@@ -48,6 +49,7 @@ export declare class NodeDSPGraphBuilder extends NodeModule {
     _dispatch_room_highshelf(roomid: string, room: RoomData): void;
     _dispatch_room_lowshelf(roomid: string, room: RoomData): void;
     _dispatch_assign_headtracker(userid: string, headtrackerid: number): void;
+    _dispatch_set_gain(userid: string, spid: string, gain: number): void;
     _build_user_modules(): void;
     _find_spatializer(userid: string, spid: string): RoomSpatializerModule | MulitSpatializerModule;
     _find_spatializers_for_room(room: string): RoomSpatializerModule[];

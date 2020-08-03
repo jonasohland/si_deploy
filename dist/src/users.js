@@ -348,7 +348,22 @@ class UsersManager extends core_1.ServerModule {
             node.users.modifyUser(data);
         });
         this.handleGlobalWebInterfaceEvent('setgain', (socket, data) => {
-            console.log(data.user, data.id, data.gain);
+            let node = this.findNodeForUser(data.user);
+            if (node)
+                this.emitToModule(node.id(), dsp_node_1.DSPModuleNames.GRAPH_BUILDER, dsp_graph_builder_1.GraphBuilderInputEvents.SET_GAIN, data.user, data.id, data.gain);
+            else
+                log.error("Could not find node for user " + data.user);
+        });
+        this.handleGlobalWebInterfaceEvent('changegain', (socket, data) => {
+            let node = this.findNodeForUser(data.user);
+            if (node) {
+                let input = node.users.findInputById(data.id);
+                let idata = input.get();
+                idata.gain = data.gain;
+                input.set(idata).then(() => input.save()).catch(err => { log.error(`Could not set new gain: ${err}`); });
+            }
+            else
+                log.error("Could not find node for user " + data.user);
         });
     }
 }
