@@ -35,12 +35,21 @@ function normalizeIEMStWidthDegs(value) {
 class GainNode extends dsp_graph_1.NativeNode {
     constructor(name, ty) {
         super(name, "gain_node");
+        this._remote_alive = false;
+        this._gain = 0;
         this.addInputBus(dsp_graph_1.Bus.createMain(1, ty));
         this.addOutputBus(dsp_graph_1.Bus.createMain(1, ty));
+    }
+    setGain(gain) {
+        this._gain = gain;
+        if (this._remote_alive)
+            this.remote.set('gain', this._gain);
     }
     onRemotePrepared() {
     }
     onRemoteAlive() {
+        this._remote_alive = true;
+        this.remote.set('gain', this._gain).catch(err => log.error(`Could not set gain for gain-node ${err}`));
     }
     remoteAttached() {
     }
@@ -265,6 +274,7 @@ class MultiSpatializer extends dsp_graph_1.NativeNode {
     constructor(name, type) {
         super(name, 'multi_spatializer');
         this._mute = false;
+        this._gain = 0.;
         this._chtype = type;
         this._chcount = dsp_defs_1.SourceUtils[type].channels;
         this.addInputBus(dsp_graph_1.Bus.createMain(1, type));
@@ -281,6 +291,11 @@ class MultiSpatializer extends dsp_graph_1.NativeNode {
         this._params.a = azimuth;
         if (this.remote)
             this._apply_sources().catch(err => { });
+    }
+    setGain(gain) {
+        this._gain = gain;
+        if (this.remote)
+            this._apply_gain().catch(err => log.error(`Could not apply gain: ${err}`));
     }
     pan(params) {
         this._params = params;
@@ -310,6 +325,7 @@ class MultiSpatializer extends dsp_graph_1.NativeNode {
     _apply_all_parameters() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.remote.set('mute', this._mute);
+            yield this.remote.set('gain', this._gain);
             return this._apply_sources();
         });
     }
@@ -318,12 +334,18 @@ class MultiSpatializer extends dsp_graph_1.NativeNode {
             return this.remote.set('sources', dsp_defs_1.SourceUtils[this._chtype].pan(this._params));
         });
     }
+    _apply_gain() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.remote.set('gain', this._gain);
+        });
+    }
 }
 exports.MultiSpatializer = MultiSpatializer;
 class RoomSpatializer extends dsp_graph_1.NativeNode {
     constructor(name) {
         super(name, 'advanced_spatializer');
         this._remote_alive = false;
+        this._gain = 0;
         this.addInputBus(dsp_graph_1.Bus.createMainAny(1));
         this.addOutputBus(dsp_graph_1.AmbiBus.createMainForOrder(3, 1));
     }
@@ -335,10 +357,16 @@ class RoomSpatializer extends dsp_graph_1.NativeNode {
         this._remote_alive = true;
         this.panSource(this._cached_source);
         this._set_roomdata().catch(err => log.error("Could not set roomdata " + err));
+        this.remote.set('gain', this._gain).catch(err => log.error("Could not set gain " + err));
     }
     panSource(source) {
         this._cached_source = source;
         this._setxyz(source.a, source.e);
+    }
+    setGain(gain) {
+        this._gain = gain;
+        if (this._remote_alive)
+            this.remote.set('gain', this._gain);
     }
     setRoomData(room) {
         this._roomdata = room;
@@ -450,6 +478,7 @@ class RoomSpatializerModule extends SpatializationModule {
         this._encoder_nids = [];
         this._encoders = [];
         this._input = input;
+        this._gain = input.get().gain;
         this._cached_params = dsp_defs_1.SourceUtils[input.findSourceType()].defaults();
         this._roomdata = roomdata;
     }
@@ -474,6 +503,13 @@ class RoomSpatializerModule extends SpatializationModule {
     setElevation(e) {
         this._cached_params.e = e;
         this.pan(this._cached_params);
+    }
+    setGain(gain) {
+        this._gain = gain;
+        if (this._gain_node)
+            this._gain_node.setGain(gain);
+        else
+            this._encoders.forEach(enc => enc.setGain(gain));
     }
     setRoomData(room) {
         this._encoders.forEach(encoder => encoder.setRoomData(room));
@@ -518,6 +554,7 @@ class RoomSpatializerModule extends SpatializationModule {
         let firstchannel = this._input.findSourceChannel();
         if (dsp_defs_1.isAmbi(sourcetype)) {
             this._gain_node = new GainNode("GainNode " + this._input.get().id, sourcetype);
+            this._gain_node.setGain(this._gain);
             this._encoder_nids.push(graph.addNode(this._gain_node));
             let connection = graph.graphRootBus().connectIdx(this._gain_node.getMainInputBus(), firstchannel);
             if (connection)
@@ -529,6 +566,7 @@ class RoomSpatializerModule extends SpatializationModule {
             for (let i = 0; i < sourcechcount; ++i) {
                 let node = new RoomSpatializer('' + i);
                 node.setRoomData(this._roomdata);
+                node.setGain(this._gain);
                 this._encoder_nids.push(graph.addNode(node));
                 this._encoders.push(node);
                 let connection = graph.graphRootBus().connectIdx(node.getMainInputBus(), firstchannel + i);
@@ -551,9 +589,11 @@ exports.RoomSpatializerModule = RoomSpatializerModule;
 class MulitSpatializerModule extends SpatializationModule {
     constructor(input) {
         super();
+        this._cached_gain = 0.;
         this._input = input;
         this._params_cached = dsp_defs_1.SourceUtils[input.findSourceType()].defaults();
         this._ambi = dsp_defs_1.isAmbi(input.findSourceType());
+        this._cached_gain = input.get().gain;
     }
     pan(params) {
         this._params_cached = params;
@@ -569,6 +609,11 @@ class MulitSpatializerModule extends SpatializationModule {
         this._params_cached.e = e;
         if (this._spatializer_node)
             this._spatializer_node.setElevation(e);
+    }
+    setGain(gain) {
+        this._cached_gain = gain;
+        if (this._spatializer_node)
+            this._spatializer_node.setGain(this._cached_gain);
     }
     input(graph) {
         return graph.getNode(this._node_id).getMainInputBus();
@@ -589,10 +634,12 @@ class MulitSpatializerModule extends SpatializationModule {
         if (this._ambi) {
             node = new GainNode("AmbiSource Gain " + this._input.get().id, this._input.findSourceType());
             this._gain_node = node;
+            node.setGain(this._cached_gain);
         }
         else {
             node = new MultiSpatializer(`MultiSpatializer [${this._input.findSourceType()}]`, this._input.findSourceType());
             this._spatializer_node = node;
+            node.setGain(this._cached_gain);
         }
         this._node_id = graph.addNode(node);
         if (this._spatializer_node)

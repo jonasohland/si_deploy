@@ -49,7 +49,7 @@ export declare class NodeDSPGraphBuilder extends NodeModule {
     _dispatch_room_lowshelf(roomid: string, room: RoomData): void;
     _dispatch_assign_headtracker(userid: string, headtrackerid: number): void;
     _build_user_modules(): void;
-    _find_spatializer(userid: string, spid: string): MulitSpatializerModule | RoomSpatializerModule;
+    _find_spatializer(userid: string, spid: string): RoomSpatializerModule | MulitSpatializerModule;
     _find_spatializers_for_room(room: string): RoomSpatializerModule[];
     getRooms(): NodeRooms;
     nodeUsers(): NodeUsersManager;

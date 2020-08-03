@@ -7,6 +7,7 @@ export interface SpatializedInputData {
     room: string;
     azm: number;
     elv: number;
+    gain: number;
     height?: number;
     width?: number;
 }

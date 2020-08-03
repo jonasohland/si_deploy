@@ -7,6 +7,7 @@ function basicSpatializedInput(inputid, userid, type) {
     return {
         inputid, userid,
         id: uuid_1.v4(),
+        gain: 0,
         room: null,
         azm: defaultSource.a,
         elv: defaultSource.e,

@@ -16,6 +16,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const communication_1 = require("./communication");
 const core_1 = require("./core");
 const dsp_defs_1 = require("./dsp_defs");
 const dsp_graph_builder_1 = require("./dsp_graph_builder");
@@ -78,7 +79,12 @@ class SpatializedInput extends core_1.ManagedNodeStateObject {
         }
     }
     params() {
-        return { a: this.data.azm, e: this.data.elv, height: this.data.height, width: this.data.width };
+        return {
+            a: this.data.azm,
+            e: this.data.elv,
+            height: this.data.height,
+            width: this.data.width
+        };
     }
     isInRoom() {
         return this.data.room && this.data.room.length;
@@ -239,7 +245,7 @@ class NodeUsersManager extends core_1.NodeModule {
     }
     findUserForId(id) {
         return this._users._objects.find((obj) => obj.get().id
-            == id);
+            === id);
     }
     start(remote) {
         this.save().catch(err => {
@@ -268,8 +274,35 @@ class UsersManager extends core_1.ServerModule {
         super('users');
     }
     joined(socket, topic) {
+        log.verbose(`Socket joined user-topic ${topic}`);
+        let topicarr = topic.split('.');
+        switch (topicarr[0]) {
+            default: this._join_userspecific(socket, topicarr[0], topicarr[1]);
+        }
     }
     left(socket, topic) {
+    }
+    _join_userspecific(socket, userid, topic) {
+        switch (topic) {
+            case 'userinputs':
+                this._join_userinputs(socket, userid);
+        }
+    }
+    _join_userinputs(socket, userid) {
+        let node = this.findNodeForUser(userid);
+        if (node == null)
+            return log.error(`Node with user ${userid} not found`);
+        let user = node.users.findUserForId(userid);
+        if (user == null)
+            return log.error(`User ${userid} not found`);
+        let inputs = node.users.getUsersInputs(userid);
+        socket.emit(`${userid}.userinputs`, node.inputs.getRawInputDescriptionList(), inputs.map(input => input.get()));
+    }
+    findNodeForUser(userid) {
+        return this.server.nodes()
+            .filter(node => node.type() == communication_1.NODE_TYPE.DSP_NODE)
+            .find((dspnode) => dspnode.users.findUserForId(userid)
+            != null);
     }
     init() {
         this.handleWebInterfaceEvent('add.user', (socket, node, data) => {
@@ -302,7 +335,7 @@ class UsersManager extends core_1.ServerModule {
             node.users.modifyUserInput(data.userid, data.input, data.recompile);
         });
         this.handleWebInterfaceEvent('user.input.azm', (socket, node, data) => {
-            log.debug("Move " + data.value);
+            log.debug('Move ' + data.value);
             this.emitToModule(node.id(), dsp_node_1.DSPModuleNames.GRAPH_BUILDER, dsp_graph_builder_1.GraphBuilderInputEvents.AZM, data.userid, data.spid, data.value);
         });
         this.handleWebInterfaceEvent('user.input.elv', (socket, node, data) => {
@@ -313,6 +346,9 @@ class UsersManager extends core_1.ServerModule {
         });
         this.handleWebInterfaceEvent('user.modify', (socket, node, data) => {
             node.users.modifyUser(data);
+        });
+        this.handleGlobalWebInterfaceEvent('setgain', (socket, data) => {
+            console.log(data.user, data.id, data.gain);
         });
     }
 }

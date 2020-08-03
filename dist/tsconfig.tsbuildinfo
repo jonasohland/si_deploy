@@ -518,8 +518,8 @@
         "signature": "1ac4881861407828438131c8f14c357f3a5956d28beedca2ac7f1d669e3f4ca9"
       },
       "../src/users_defs.ts": {
-        "version": "e4d32f6399fba2b835fa256b389290be002d0a4d82cfd46c731c04fc362f2439",
-        "signature": "b5fb9d193ec948e45e4b6cba5e05499bdc3a636f245542bb57739f117f30158d"
+        "version": "0955ef714937e8194d37895bfc1a7f87242f253464e12dc3647c207da1f4864e",
+        "signature": "e4a8133fecae85dc96827027ca129d1fbaa22f25919c6454f8fd757daadcd2f7"
       },
       "../src/rooms.ts": {
         "version": "94065dc5d4bd273cb5d9a730821d93681c4d67a1ad5c15de0666566cad045fc2",
@@ -530,8 +530,8 @@
         "signature": "5f6d601834242cddac299ba72536e6bef06ca385474710d4898e389448ba8faa"
       },
       "../src/dsp_modules.ts": {
-        "version": "1934120bafa2b75f53372eee3d09f1ea076c14e27e3186cc150266fed85cfaaa",
-        "signature": "ee1aaadc109e8f04b93cc08c0b1f20bb334ab8e9c7b7f38561421ce522937b26"
+        "version": "7acaed9700028a4eb94e12bc00241ed2741eb6183c8eb6a9d98aab4b511f4cbf",
+        "signature": "7fc7bc40a7f9f223f1236a618a939faa38d03fb3918b32d7f791d53110923a4a"
       },
       "../src/headtracker.ts": {
         "version": "70da462b8bdcfd5093a11c407ef9b618e39c6f8741be672f9bd98b6a7ec7491c",
@@ -563,11 +563,11 @@
       },
       "../src/dsp_graph_builder.ts": {
         "version": "5a0d9d8ca276223f7f372baf6a90086ea8c6039fe010836e8c09d9b0ee0c3edc",
-        "signature": "9ad595e04d2a50f7467ba6592a8d1cc30c914d119b7561a1c097c3407dedadcf"
+        "signature": "693e010eeeace2469d2dc84d35c3603e9c4ce271f2ff83cae684cb74b8ae6180"
       },
       "../src/users.ts": {
-        "version": "30470f0c2e8be8b182c5fd402483ae4bdfe41a4bd96b405096b975dba528f06e",
-        "signature": "4ec5cda331a5909e028f8f3ecdcdc5193ee1137013a26c3aed134d9189978f8a"
+        "version": "42dd4108e64ec63b273cb770661eb5887ed18333126bcbe474f3404aed542dc8",
+        "signature": "aab1cfa471714d5c2f7f6512d02e6d480baca0bb78ec261a9ae795fee0d8326a"
       },
       "../src/dsp_node.ts": {
         "version": "4c16396eaac837917bd367cafc43fd3bcd7a13d4e0671da1c041d10b9d20448a",
@@ -4025,11 +4025,13 @@
         "../src/core.ts"
       ],
       "../src/users.ts": [
+        "../node_modules/winston/index.d.ts",
         "../src/users_defs.ts",
         "../src/core.ts",
         "../src/inputs.ts",
         "../src/dsp_defs.ts",
-        "../src/communication.ts"
+        "../src/communication.ts",
+        "../src/dsp_node.ts"
       ],
       "../src/dsp_node.ts": [
         "../src/inputs.ts",
@@ -4699,7 +4701,6 @@
       "../src/users_defs.ts",
       "../src/rooms.ts",
       "../src/rooms_defs.ts",
-      "../src/dsp_modules.ts",
       "../src/headtracker.ts",
       "../src/headtracker_network.ts",
       "../src/headtracking.ts",
@@ -4715,6 +4716,7 @@
       "../src/dsp_defs.ts",
       "../src/util.ts",
       "../src/communication.ts",
+      "../src/audio_devices.ts",
       "../src/instance.ts",
       "../src/ipc.ts",
       "../src/audio.ts",
@@ -4783,7 +4785,7 @@
       "../node_modules/@types/checksum/index.d.ts",
       "../node_modules/@types/minimatch/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/audio_devices.ts"
+      "../src/dsp_modules.ts"
     ]
   },
   "version": "3.7.3"

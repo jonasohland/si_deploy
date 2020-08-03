@@ -9,6 +9,7 @@ export interface SpatializedInputData {
     room: string,
     azm: number,
     elv:  number,
+    gain: number,
     height?: number,
     width?: number,
 }
@@ -54,6 +55,7 @@ export function basicSpatializedInput(inputid: string, userid: string, type: Por
     return {
         inputid, userid,
         id: uniqueId(),
+        gain: 0,
         room: null,
         azm: defaultSource.a,
         elv: defaultSource.e,

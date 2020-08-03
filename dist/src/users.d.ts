@@ -2,6 +2,7 @@
 import { Connection } from './communication';
 import { ManagedNodeStateListRegister, ManagedNodeStateObject, NodeModule, ServerModule } from './core';
 import { PortTypes, SourceParameterSet } from './dsp_defs';
+import { DSPNode } from './dsp_node';
 import * as Inputs from './inputs';
 import { SpatializedInputData, UserData } from './users_defs';
 export declare class User extends ManagedNodeStateObject<UserData> {
@@ -64,6 +65,9 @@ export declare class UsersManager extends ServerModule {
     constructor();
     joined(socket: SocketIO.Socket, topic: string): void;
     left(socket: SocketIO.Socket, topic: string): void;
+    _join_userspecific(socket: SocketIO.Socket, userid: string, topic: string): void;
+    _join_userinputs(socket: SocketIO.Socket, userid: string): import("winston").Logger;
+    findNodeForUser(userid: string): DSPNode;
     init(): void;
 }
 export {};
