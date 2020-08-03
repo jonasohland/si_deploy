@@ -22,15 +22,6 @@ export declare class BasicSpatializer extends NativeNode {
     setAzimuth(rad: number): Promise<import("./communication").Message>;
     setStereoWidthDegs(value: number): Promise<import("./communication").Message>;
 }
-export declare class AdvancedSpatializer extends NativeNode {
-    onRemotePrepared(): void;
-    _cached_source: Source;
-    constructor(name: string);
-    remoteAttached(): void;
-    onRemoteAlive(): void;
-    panSource(source: Source): void;
-    _setxyz(a: number, e: number): Promise<import("./communication").Message>;
-}
 export declare class BasicBinauralDecoder extends NativeNode {
     onRemotePrepared(): void;
     onRemoteAlive(): void;
@@ -62,29 +53,6 @@ export declare class BasicSpatializerModule {
     graphChanged(graph: Graph): void;
     build(graph: Graph): void;
 }
-export declare class AdvancedSpatializerModule {
-    setAzm(azm: number): void;
-    setElv(elv: number): void;
-    setStWidth(stwidth: number): void;
-    setReflections(reflections: number): void;
-    setRoomCharacter(character: number): void;
-    encoder_l_nid: number;
-    encoder_r_nid: number;
-    id: number;
-    inputConnL: Connection;
-    inputConnR: Connection;
-    processorL: AdvancedSpatializer;
-    processorR: AdvancedSpatializer;
-    cachedElv: number;
-    cachedAzm: number;
-    cachedStWidth: number;
-    destroy(graph: Graph): void;
-    input(graph: Graph): Bus;
-    output(graph: Graph): Bus;
-    graphChanged(graph: Graph): void;
-    build(graph: Graph): void;
-    sendPosData(): void;
-}
 export declare abstract class SpatializationModule extends Module {
     abstract pan(params: SourceParameterSet): void;
     abstract setAzimuth(a: number): void;
@@ -92,6 +60,8 @@ export declare abstract class SpatializationModule extends Module {
     abstract setGain(gain: number): void;
     abstract userId(): string;
     abstract outputBuses(graph: Graph): Bus[];
+    abstract monoRefBuses(): Bus[];
+    abstract stereoRefBuses(): Bus[];
 }
 export declare class MultiSpatializer extends NativeNode {
     _chtype: PortTypes;
@@ -99,6 +69,10 @@ export declare class MultiSpatializer extends NativeNode {
     _params: SourceParameterSet;
     _mute: boolean;
     _gain: number;
+    _stereoref: Bus;
+    _monoref: Bus;
+    stereoRefBus(): Bus;
+    monoRefBus(): Bus;
     setElevation(elevation: number): void;
     setAzimuth(azimuth: number): void;
     setGain(gain: number): void;
@@ -118,7 +92,11 @@ export declare class RoomSpatializer extends NativeNode {
     _remote_alive: boolean;
     _roomdata: RoomData;
     _gain: number;
+    _monoref: Bus;
+    _stereoref: Bus;
     constructor(name: string);
+    stereoRefBus(): Bus;
+    monoRefBus(): Bus;
     remoteAttached(): void;
     onRemoteAlive(): void;
     onRemotePrepared(): void;
@@ -171,11 +149,13 @@ export declare class RoomSpatializerModule extends SpatializationModule {
     input(graph: Graph): Bus;
     output(graph: Graph): Bus;
     outputBuses(graph: Graph): Bus[];
+    monoRefBuses(): Bus[];
+    stereoRefBuses(): Bus[];
     graphChanged(graph: Graph): void;
     build(graph: Graph): void;
     destroy(graph: Graph): void;
 }
-export declare class MulitSpatializerModule extends SpatializationModule {
+export declare class MultiSpatializerModule extends SpatializationModule {
     _input: SpatializedInput;
     _node_id: number;
     _spatializer_node: MultiSpatializer;
@@ -190,6 +170,8 @@ export declare class MulitSpatializerModule extends SpatializationModule {
     input(graph: Graph): Bus;
     output(graph: Graph): Bus;
     outputBuses(graph: Graph): Bus[];
+    monoRefBuses(): Bus[];
+    stereoRefBuses(): Bus[];
     graphChanged(graph: Graph): void;
     userId(): string;
     build(graph: Graph): void;

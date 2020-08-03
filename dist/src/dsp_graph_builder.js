@@ -102,7 +102,7 @@ class NodeDSPGraphBuilder extends core_1.NodeModule {
                 }
                 else {
                     log.verbose(`Build basic input module for ${input.get().id}`);
-                    let mod = new dsp_modules_1.MulitSpatializerModule(input);
+                    let mod = new dsp_modules_1.MultiSpatializerModule(input);
                     this.basic_spatializers[userdata.id][input.get().id] = mod;
                     mod.pan(input.params());
                     this.graph().addModule(mod);

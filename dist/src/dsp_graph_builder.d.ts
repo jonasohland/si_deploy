@@ -1,12 +1,8 @@
 /// <reference types="socket.io" />
 import { NodeModule, ServerModule } from "./core";
 import { Connection } from "./communication";
-import { MulitSpatializerModule, SimpleUsersModule, RoomSpatializerModule } from "./dsp_modules";
-import { NodeUsersManager } from "./users";
-import { NodeAudioInputManager } from "./inputs";
-import { DSPController } from "./dsp_process";
+import { MultiSpatializerModule, SimpleUsersModule, RoomSpatializerModule } from "./dsp_modules";
 import { SourceParameterSet } from "./dsp_defs";
-import { NodeRooms } from "./rooms";
 import { RoomData } from "./rooms_defs";
 export declare const GraphBuilderInputEvents: {
     FULL_REBUILD: string;
@@ -27,7 +23,7 @@ export declare const GraphBuilderInputEvents: {
 export declare const GraphBuilderOutputEvents: {};
 export declare class NodeDSPGraphBuilder extends NodeModule {
     user_modules: Record<string, SimpleUsersModule>;
-    basic_spatializers: Record<string, Record<string, MulitSpatializerModule>>;
+    basic_spatializers: Record<string, Record<string, MultiSpatializerModule>>;
     room_spatializers: Record<string, Record<string, RoomSpatializerModule>>;
     is_building: boolean;
     constructor();
@@ -51,13 +47,13 @@ export declare class NodeDSPGraphBuilder extends NodeModule {
     _dispatch_assign_headtracker(userid: string, headtrackerid: number): void;
     _dispatch_set_gain(userid: string, spid: string, gain: number): void;
     _build_user_modules(): void;
-    _find_spatializer(userid: string, spid: string): MulitSpatializerModule | RoomSpatializerModule;
+    _find_spatializer(userid: string, spid: string): MultiSpatializerModule | RoomSpatializerModule;
     _find_spatializers_for_room(room: string): RoomSpatializerModule[];
-    getRooms(): NodeRooms;
-    nodeUsers(): NodeUsersManager;
-    nodeInputs(): NodeAudioInputManager;
+    getRooms(): import("./rooms").NodeRooms;
+    nodeUsers(): import("./users").NodeUsersManager;
+    nodeInputs(): import("./inputs").NodeAudioInputManager;
     headtrackers(): import("./headtracking").Headtracking;
-    dsp(): DSPController;
+    dsp(): import("./dsp_process").DSPController;
     graph(): import("./dsp_graph").Graph;
 }
 export declare class DSPGraphController extends ServerModule {
