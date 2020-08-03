@@ -65,6 +65,7 @@ export declare class UsersManager extends ServerModule {
     constructor();
     joined(socket: SocketIO.Socket, topic: string): void;
     left(socket: SocketIO.Socket, topic: string): void;
+    _publish_userinput_list(node: DSPNode, userid: string): void;
     _join_userspecific(socket: SocketIO.Socket, userid: string, topic: string): void;
     _join_userinputs(socket: SocketIO.Socket, userid: string): import("winston").Logger;
     findNodeForUser(userid: string): DSPNode;

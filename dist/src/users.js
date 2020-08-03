@@ -282,6 +282,10 @@ class UsersManager extends core_1.ServerModule {
     }
     left(socket, topic) {
     }
+    _publish_userinput_list(node, userid) {
+        let inputs = node.users.getUsersInputs(userid);
+        this.publish(`${userid}.userinputs`, `${userid}.userinputs`, node.inputs.getRawInputDescriptionList(), inputs);
+    }
     _join_userspecific(socket, userid, topic) {
         switch (topic) {
             case 'userinputs':
@@ -326,10 +330,12 @@ class UsersManager extends core_1.ServerModule {
                     this.webif.error(`Input ${input.name} not found`);
             });
             node.users.publishUserInputs(data.userid);
+            this._publish_userinput_list(node, data.userid);
             node.users.updateWebInterfaces();
         });
         this.handleWebInterfaceEvent('user.delete.input', (socket, node, data) => {
             node.users.removeInputFromUser(data.userid, data.input);
+            this._publish_userinput_list(node, data.userid);
         });
         this.handleWebInterfaceEvent('user.modify.input', (socket, node, data) => {
             node.users.modifyUserInput(data.userid, data.input, data.recompile);
