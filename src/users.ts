@@ -400,7 +400,7 @@ export class UsersManager extends ServerModule {
     _publish_userinput_list(node: DSPNode, userid: string) 
     {
         let inputs = node.users.getUsersInputs(userid);
-        this.publish(`${userid}.userinputs`, `${userid}.userinputs`, node.inputs.getRawInputDescriptionList(), inputs);
+        this.publish(`${userid}.userinputs`, `${userid}.userinputs`, node.inputs.getRawInputDescriptionList(), inputs.map(inp => inp.get()));
     }
 
     _join_userspecific(socket: SocketIO.Socket, userid: string, topic: string)

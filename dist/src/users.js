@@ -284,7 +284,7 @@ class UsersManager extends core_1.ServerModule {
     }
     _publish_userinput_list(node, userid) {
         let inputs = node.users.getUsersInputs(userid);
-        this.publish(`${userid}.userinputs`, `${userid}.userinputs`, node.inputs.getRawInputDescriptionList(), inputs);
+        this.publish(`${userid}.userinputs`, `${userid}.userinputs`, node.inputs.getRawInputDescriptionList(), inputs.map(inp => inp.get()));
     }
     _join_userspecific(socket, userid, topic) {
         switch (topic) {
