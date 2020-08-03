@@ -28,6 +28,7 @@ export declare class NodeDSPGraphBuilder extends NodeModule {
     user_modules: Record<string, SimpleUsersModule>;
     basic_spatializers: Record<string, Record<string, MulitSpatializerModule>>;
     room_spatializers: Record<string, Record<string, RoomSpatializerModule>>;
+    is_building: boolean;
     constructor();
     destroy(): void;
     joined(socket: SocketIO.Socket, topic: string): void;

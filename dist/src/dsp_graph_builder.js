@@ -35,6 +35,7 @@ class NodeDSPGraphBuilder extends core_1.NodeModule {
         this.user_modules = {};
         this.basic_spatializers = {};
         this.room_spatializers = {};
+        this.is_building = false;
     }
     destroy() {
     }
@@ -62,6 +63,9 @@ class NodeDSPGraphBuilder extends core_1.NodeModule {
         this._do_rebuild_graph_full();
     }
     _do_rebuild_graph_full() {
+        if (this.is_building)
+            log.error("Currently rebuilding graph.");
+        this.is_building = true;
         this.dsp().resetGraph().then(() => {
             this.user_modules = {};
             this.basic_spatializers = {};
@@ -73,7 +77,9 @@ class NodeDSPGraphBuilder extends core_1.NodeModule {
             catch (err) {
                 log.error("Failed to build modules: ", err);
             }
-            this.dsp().syncGraph();
+            this.dsp().syncGraph().then(() => {
+                this.is_building = false;
+            });
         }).catch(err => {
             log.error("Could not reset graph: " + err);
         });
@@ -208,8 +214,9 @@ class DSPGraphController extends core_1.ServerModule {
                 }
             });
         });
-        this.handleWebInterfaceEvent('committodsp', (socket, node) => {
-            node.dsp_graph_builder.rebuildGraph();
+        this.handleWebInterfaceEvent('committnodeodsp', (socket, node) => {
+            log.warn("REBUILD " + node.name());
+            this.emitToModule(node.id(), dsp_node_1.DSPModuleNames.GRAPH_BUILDER, exports.GraphBuilderInputEvents.FULL_REBUILD);
         });
         this.handleWebInterfaceEvent('rebuildgraph', (socket, node) => {
             this.emitToModule(node.id(), dsp_node_1.DSPModuleNames.GRAPH_BUILDER, exports.GraphBuilderInputEvents.FULL_REBUILD);

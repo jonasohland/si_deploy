@@ -137,21 +137,51 @@ class NodeAudioDevices extends core_1.NodeModule {
         this._odev_list = [];
         this._is_open = false;
         this._is_enabled = false;
+        this._emit_dspusage = false;
         this._config = new AudioDeviceConfiguration();
         this._settings = new NodeAudioDeviceSettings(this);
         this.add(this._settings, 'audio-device-settings');
     }
     joined(socket, topic) {
+        if (topic === 'dspuse') {
+            if (!this._emit_dspusage)
+                this._start_emitting_dspusage();
+        }
     }
     left(socket, topic) {
+        if (!this.hasSubs('dspuse')) {
+            log.verbose("No more dspuse listeners. Disable dsp usage logging");
+            this._emit_dspusage = false;
+            if (this._emit_dspusage_tmt) {
+                clearTimeout(this._emit_dspusage_tmt);
+            }
+        }
+    }
+    _start_emitting_dspusage() {
+        this._emit_dspusage = true;
+        this._emit_dspusage_tmt = setTimeout(this._emit_dspuse_cb.bind(this), 300);
+    }
+    _emit_dspuse_cb() {
+        this._devmgmt.requestTyped('dsp-load')
+            .float()
+            .then(load => {
+            if (this._emit_dspusage) {
+                this._emit_dspusage_tmt = setTimeout(this._emit_dspuse_cb.bind(this), 300);
+                this.publish('dspuse', this.myNodeId() + '-dspuse', load);
+            }
+        })
+            .catch(err => {
+            log.error('Could not get dsp usage from node: ' + err);
+            this._emit_dspusage = false;
+        });
     }
     refresh() {
         return __awaiter(this, void 0, void 0, function* () {
             let devices = yield this._devmgmt.request('device-list');
             this._idev_list = devices.data.inputs;
             this._odev_list = devices.data.outputs;
-            this._config.input_device = "";
-            this._config.output_device = "";
+            this._config.input_device = '';
+            this._config.output_device = '';
             let input_device = yield this._devmgmt.request('input-device');
             let output_device = yield this._devmgmt.request('output-device');
             let is_open = yield this.isOpen();
@@ -335,16 +365,20 @@ class NodeAudioDevices extends core_1.NodeModule {
                 this.events.emit('webif-node-warning', this.myNodeId(), `Audio device type changed to: ${msg.data}`);
         });
         this.events.on('dsp-started', () => {
-            this.reloadSettingsFromDB().then(() => {
-                log.info("Restored DSP settings from DB");
-            }).catch(err => {
-                log.error("Could not restore settings from DB: " + err);
+            this.reloadSettingsFromDB()
+                .then(() => {
+                log.info('Restored DSP settings from DB');
+            })
+                .catch(err => {
+                log.error('Could not restore settings from DB: ' + err);
             });
         });
-        this.reloadSettingsFromDB().then(() => {
-            log.info("Restored DSP settings from DB");
-        }).catch(err => {
-            log.error("Could not restore settings from DB: " + err);
+        this.reloadSettingsFromDB()
+            .then(() => {
+            log.info('Restored DSP settings from DB');
+        })
+            .catch(err => {
+            log.error('Could not restore settings from DB: ' + err);
         });
         this.save();
     }
@@ -413,13 +447,16 @@ class AudioDevices extends core_1.ServerModule {
         this.handleWebInterfaceEvent('dspuse', (socket, node) => {
         });
         this.handleWebInterfaceEvent('channellist', (socket, node) => {
-            node.audio_devices.getChannelList().then(chlist => {
+            node.audio_devices.getChannelList()
+                .then(chlist => {
                 log.debug(web_interface_defs_1.webifResponseEvent(node.id(), 'audiosettings', 'channellist'));
                 socket.emit(web_interface_defs_1.webifResponseEvent(node.id(), 'audiosettings', 'channellist'), chlist);
-            }).catch(err => {
+            })
+                .catch(err => {
                 socket.emit(web_interface_defs_1.webifResponseEvent(node.id(), 'audiosettings', 'channellist'), null);
                 // TODO: error handling for Error objects
-                this.webif.error("Could not retrieve channel list for node " + node.name() + ": " + err);
+                this.webif.error('Could not retrieve channel list for node '
+                    + node.name() + ': ' + err);
             });
         });
     }

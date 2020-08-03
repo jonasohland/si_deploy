@@ -562,8 +562,8 @@
         "signature": "705a5b883d479d6244a3e2577ee8a70267eef982faf173d5784f952b1c075561"
       },
       "../src/dsp_graph_builder.ts": {
-        "version": "4844b8e205e79228297f6626a9db8cfe72b7aa0c1cc62f2b5e91db1b95a39f9f",
-        "signature": "e6c5d1bd1bee86ebce74def0a771e7354f877710cb3cec9c563e70ba63d74a15"
+        "version": "5a0d9d8ca276223f7f372baf6a90086ea8c6039fe010836e8c09d9b0ee0c3edc",
+        "signature": "9ad595e04d2a50f7467ba6592a8d1cc30c914d119b7561a1c097c3407dedadcf"
       },
       "../src/users.ts": {
         "version": "30470f0c2e8be8b182c5fd402483ae4bdfe41a4bd96b405096b975dba528f06e",
@@ -594,8 +594,8 @@
         "signature": "3c8fca57fa2ad74030a2bba074f9c002332069f505b5d936949aa392626c8609"
       },
       "../src/audio_devices.ts": {
-        "version": "398c1bd24b63af927317d7f687d7f9a7b92cf1395a58b6a08eeb4613d839b3b8",
-        "signature": "6605ef79e38ab138ca251d4039b7029531ca85cd15652848ad7f48a431209f67"
+        "version": "04ccf07a70c6d2e9570a23b7d218e58e1b398a2b8daa77dbdb4efacf47228851",
+        "signature": "7757f9016c01f18269fc866b2c16c9356cc55a9fc6a0ea12b16f6f8dbe2b8529"
       },
       "../src/instance.ts": {
         "version": "9ea7ce57b7df035e895dac7656512f99a03734b17428c271730b9c2e3c534f01",
@@ -2254,13 +2254,13 @@
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
       "../src/audio_devices.ts": [
+        "../node_modules/@types/lodash/ts3.1/index.d.ts",
         "../src/communication.ts",
         "../src/core.ts",
+        "../src/dsp_graph_builder.ts",
         "../src/dsp_node.ts",
         "../src/log.ts",
-        "../node_modules/@types/lodash/ts3.1/index.d.ts",
         "../src/web_interface_defs.ts",
-        "../src/dsp_graph_builder.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -4715,7 +4715,6 @@
       "../src/dsp_defs.ts",
       "../src/util.ts",
       "../src/communication.ts",
-      "../src/audio_devices.ts",
       "../src/instance.ts",
       "../src/ipc.ts",
       "../src/audio.ts",
@@ -4775,6 +4774,7 @@
       "../src/modules.ts",
       "../node_modules/commander/typings/index.d.ts",
       "../node_modules/@types/ini/index.d.ts",
+      "../src/server_config.ts",
       "../src/node_mode.ts",
       "../src/server_mode.ts",
       "../src/si.ts",
@@ -4783,7 +4783,7 @@
       "../node_modules/@types/checksum/index.d.ts",
       "../node_modules/@types/minimatch/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/server_config.ts"
+      "../src/audio_devices.ts"
     ]
   },
   "version": "3.7.3"

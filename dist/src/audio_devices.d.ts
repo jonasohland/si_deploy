@@ -1,3 +1,4 @@
+/// <reference types="node" />
 /// <reference types="socket.io" />
 import { Connection, Requester } from './communication';
 import { ManagedNodeStateMapRegister, ManagedNodeStateObject, NodeModule, ServerModule } from './core';
@@ -80,9 +81,13 @@ export declare class NodeAudioDevices extends NodeModule {
     _odev_list: any[];
     _is_open: boolean;
     _is_enabled: boolean;
+    _emit_dspusage: boolean;
+    _emit_dspusage_tmt: NodeJS.Timeout;
     _config: AudioDeviceConfiguration;
     joined(socket: SocketIO.Socket, topic: string): void;
     left(socket: SocketIO.Socket, topic: string): void;
+    _start_emitting_dspusage(): void;
+    _emit_dspuse_cb(): void;
     refresh(): Promise<void>;
     getNodeDevicesInformation(): Promise<NodeAudioDevicesInformation>;
     getChannelList(): Promise<ChannelList>;
