@@ -450,16 +450,20 @@ export class UsersManager extends ServerModule {
             'user.add.inputs', (socket: SocketIO.Socket, node: DSPNode,
                                 data: UserAddInputsMessage) => {
                 data.inputs.forEach(input => {
-                    let nodein = node.inputs.findInputForId(input.id);
-                    if (nodein) {
-                        let user = node.users.findUserForId(data.userid);
-                        if (user)
-                            node.users.addInputToUser(user.get().id, nodein);
+                    try {
+                        let nodein = node.inputs.findInputForId(input.id);
+                        if (nodein) {
+                            let user = node.users.findUserForId(data.userid);
+                            if (user)
+                                node.users.addInputToUser(user.get().id, nodein);
+                            else
+                                this.webif.error(`User ${data.userid} not found`);
+                        }
                         else
-                            this.webif.error(`User ${data.userid} not found`);
+                            this.webif.error(`Input ${input.name} not found`);
+                    } catch (err) {
+                        log.error("Could not assign new input " + err);
                     }
-                    else
-                        this.webif.error(`Input ${input.name} not found`);
                 });
                 node.users.publishUserInputs(data.userid);
                 this._publish_userinput_list(node, data.userid);

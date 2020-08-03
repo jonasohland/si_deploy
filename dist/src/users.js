@@ -318,16 +318,21 @@ class UsersManager extends core_1.ServerModule {
         });
         this.handleWebInterfaceEvent('user.add.inputs', (socket, node, data) => {
             data.inputs.forEach(input => {
-                let nodein = node.inputs.findInputForId(input.id);
-                if (nodein) {
-                    let user = node.users.findUserForId(data.userid);
-                    if (user)
-                        node.users.addInputToUser(user.get().id, nodein);
+                try {
+                    let nodein = node.inputs.findInputForId(input.id);
+                    if (nodein) {
+                        let user = node.users.findUserForId(data.userid);
+                        if (user)
+                            node.users.addInputToUser(user.get().id, nodein);
+                        else
+                            this.webif.error(`User ${data.userid} not found`);
+                    }
                     else
-                        this.webif.error(`User ${data.userid} not found`);
+                        this.webif.error(`Input ${input.name} not found`);
                 }
-                else
-                    this.webif.error(`Input ${input.name} not found`);
+                catch (err) {
+                    log.error("Could not assign new input " + err);
+                }
             });
             node.users.publishUserInputs(data.userid);
             this._publish_userinput_list(node, data.userid);
