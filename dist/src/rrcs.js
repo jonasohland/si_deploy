@@ -482,13 +482,21 @@ class RRCSService extends RRCSServer {
         }
     }
     onXpsChanged(xps) {
+        let updated = [];
         for (let xpstate of xps) {
             let masterid_conf = rrcs_defs_1.xpvtid({ xp: xpstate.xp, conf: false });
             let masterid_single = rrcs_defs_1.xpvtid({ xp: xpstate.xp, conf: true });
-            if (this._synced[masterid_conf])
+            if (this._synced[masterid_conf]) {
                 this.syncCrosspointsForMaster(this._synced[masterid_conf], xpstate.state);
-            if (this._synced[masterid_single])
+                updated.push({ xpid: masterid_conf, state: xpstate.state });
+            }
+            if (this._synced[masterid_single]) {
                 this.syncCrosspointsForMaster(this._synced[masterid_single], xpstate.state);
+                updated.push({ xpid: masterid_single, state: xpstate.state });
+            }
+        }
+        if (updated.length) {
+            this.emit('xp-states-changed', updated);
         }
     }
     syncCrosspointsForMaster(sync, state) {

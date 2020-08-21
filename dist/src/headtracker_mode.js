@@ -30,11 +30,8 @@ const headtracking_1 = require("./headtracking");
 const Logger = __importStar(require("./log"));
 const { cyan } = chalk_1.default;
 const log = Logger.get('HEADTR');
-const showfiles_1 = require("./showfiles");
 const core_1 = require("./core");
 const communication_1 = require("./communication");
-const sfman = new showfiles_1.ShowfileManager();
-const htrk_devices = [];
 class OSCController {
     constructor(ht, options) {
         this.port = Number.parseInt(options.ctrlPort);

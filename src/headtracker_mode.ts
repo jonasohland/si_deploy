@@ -19,17 +19,11 @@ import * as Logger from './log';
 
 const { cyan } = chalk;
 const log      = Logger.get('HEADTR');
-import io from 'socket.io';
-import {ShowfileManager} from './showfiles';
 import {AddressInfo} from 'net';
 import {HeadtrackerInvertation} from './headtracker';
 import { RestService } from './rest';
 import { Server, Node } from './core';
 import { NodeIdentification, SIServerWSServer } from './communication';
-
-const sfman = new ShowfileManager();
-
-const htrk_devices: SerialHeadtracker[] = [];
 
 class OSCController {
 

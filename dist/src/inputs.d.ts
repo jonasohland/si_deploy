@@ -1,44 +1,7 @@
 /// <reference types="socket.io" />
-import { Channel } from './audio_devices';
 import { ManagedNodeStateListRegister, ManagedNodeStateObject, NodeModule, ServerModule } from './core';
-import { PortTypes } from './dsp_defs';
 import { DSPNode } from './dsp_node';
 import { NodeAudioInputDescription } from './inputs_defs';
-import { SIDSPNode } from './instance';
-import { ShowfileManager, ShowfileRecord, ShowfileTarget } from './showfiles';
-import WebInterface from './web_interface';
-interface NodeAndInputs {
-    max_id: 0;
-    si: SIDSPNode;
-    inputs: Input[];
-}
-export declare class Input extends ShowfileRecord {
-    constructor(id: number, name: string, format: PortTypes);
-    plain(): Promise<{
-        id: number;
-        name: PortTypes;
-        format: PortTypes;
-        channels: {
-            i: number;
-            name: string;
-        }[];
-    }>;
-    restore(data: any): void;
-    build(data: any): void;
-    id: number;
-    name: string;
-    format: PortTypes;
-    channels: Channel[];
-}
-export declare class InputManager extends ShowfileTarget {
-    targetName(): string;
-    onEmptyShowfileCreate(s: import('./showfiles').Showfile): void;
-    nodes: NodeAndInputs[];
-    webif: WebInterface;
-    constructor(webif: WebInterface, audioDevMan: any, sfm: ShowfileManager);
-    updateInterface(sock: SocketIO.Socket | SocketIO.Server): Promise<void>;
-    addInput(input: any): Promise<void>;
-}
 export declare class NodeAudioInput extends ManagedNodeStateObject<NodeAudioInputDescription> {
     _description: NodeAudioInputDescription;
     set(val: NodeAudioInputDescription): Promise<void>;
@@ -69,4 +32,3 @@ export declare class AudioInputsManager extends ServerModule {
     init(): void;
     constructor();
 }
-export {};
