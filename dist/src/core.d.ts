@@ -229,7 +229,7 @@ export declare class NodeDataStorage extends NodeMessageInterceptor {
     _save_timeout: NodeJS.Timeout;
     _saving: boolean;
     _save_again: boolean;
-    constructor(config: any, options: any);
+    constructor(config: any, options: any, type: NODE_TYPE);
     restoreStateFromFile(): Promise<any>;
     writeState(): Promise<unknown>;
     saveLater(): boolean;
@@ -289,14 +289,15 @@ export declare abstract class ServerModule extends Publisher {
 export declare class ServerInternalsModule extends ServerModule {
     joined(socket: SocketIO.Socket, topic: string): void;
     left(socket: SocketIO.Socket, topic: string): void;
-    nodesChanged(): void;
-    nodeIdList(): NodeIdentification[];
+    nodesChanged(type: NODE_TYPE): void;
+    nodeIdList(type: NODE_TYPE): NodeIdentification[];
+    allNodeIds(): void;
     init(): void;
     constructor();
 }
 export declare abstract class Server {
     _srv: SIServerWSServer;
-    _nodes: Record<string, Node>;
+    _nds: Record<string, Node>;
     _modules: Record<string, ServerModule>;
     _webif: WebInterface;
     _event_bus: EventEmitter2;
@@ -305,7 +306,8 @@ export declare abstract class Server {
     add(module: ServerModule): void;
     emitToNodeModule(node: string, module: string, event: string, ...data: any[]): void;
     emitToNode(node: string, event: string, ...data: any[]): void;
-    nodes(): Node[];
+    nodes(type: NODE_TYPE): Node[];
+    allNodes(): Node[];
     _on_add_remote(session: SIServerWSSession): void;
     _on_remove_remote(session: SIServerWSSession): void;
     _check_server_has_subscribers(module: string, topic: string): boolean;

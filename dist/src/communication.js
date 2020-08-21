@@ -45,14 +45,15 @@ exports._log_msg = _log_msg;
  * This Identifier is unique for for every machine.
  * @param name name of this node
  */
-function unique_node_id(name) {
+function unique_node_id(name, type) {
     let idstring = node_machine_id_1.machineIdSync();
-    return crypto_1.createHash('sha1').update(`${idstring}-${name}`).digest('base64');
+    return NODE_TYPE[type] + '-' + crypto_1.createHash('sha1').update(`${idstring}-${name}`).digest('base64');
 }
 var NODE_TYPE;
 (function (NODE_TYPE) {
     NODE_TYPE[NODE_TYPE["DSP_NODE"] = 0] = "DSP_NODE";
     NODE_TYPE[NODE_TYPE["HTRK_BRIDGE_NODE"] = 1] = "HTRK_BRIDGE_NODE";
+    NODE_TYPE[NODE_TYPE["RRCS_NODE"] = 2] = "RRCS_NODE";
 })(NODE_TYPE = exports.NODE_TYPE || (exports.NODE_TYPE = {}));
 var MessageMode;
 (function (MessageMode) {
@@ -341,7 +342,7 @@ exports.Requester = Requester;
  * Represents a connection to a server in the Node
  */
 class SINodeWSClient {
-    constructor(config, handler) {
+    constructor(config, handler, type) {
         this._state = SIClientState.OFFLINE;
         this._new_socks = [];
         this._ws_interceptors = {};
@@ -350,8 +351,8 @@ class SINodeWSClient {
         this._handler.on('data', this._on_ipc_msg.bind(this));
         this._id = {
             name: config.node_name,
-            id: unique_node_id(config.node_name),
-            type: NODE_TYPE.DSP_NODE
+            id: unique_node_id(config.node_name, type),
+            type: type
         };
         log.info(`Browsing for si-servers on ${util_1.defaultIF(config.interface)}`);
         this._browser = discovery_1.getServerBrowser(config.interface);

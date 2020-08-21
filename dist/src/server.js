@@ -21,7 +21,7 @@ const dsp_node_1 = require("./dsp_node");
 const users_1 = require("./users");
 const rooms_1 = require("./rooms");
 const dsp_graph_builder_1 = require("./dsp_graph_builder");
-const rrcs_1 = require("./rrcs");
+const rrcs_node_1 = require("./rrcs_node");
 const log = Logger.get('SERVER');
 class SpatialIntercomServer extends core_1.Server {
     constructor(config) {
@@ -33,7 +33,6 @@ class SpatialIntercomServer extends core_1.Server {
             let htrk = this.headtracking.getHeadtracker(id);
             htrk.setStreamDest("192.168.178.99", 4009);
         });
-        this.rrcs = new rrcs_1.RRCSModule(config);
         this.webif = webif;
         this.audio_devices = new audio_devices_1.AudioDevices();
         this.inputs = new inputs_1.AudioInputsManager();
@@ -41,7 +40,7 @@ class SpatialIntercomServer extends core_1.Server {
         this.rooms = new rooms_1.Rooms();
         this.headtracking = new headtracking_1.Headtracking(this.webif);
         this.graphcontroller = new dsp_graph_builder_1.DSPGraphController();
-        this.add(this.rrcs);
+        this.rrcs = new rrcs_node_1.RRCSServerModule();
         this.add(this.webif);
         this.add(this.audio_devices);
         this.add(this.inputs);
@@ -49,10 +48,15 @@ class SpatialIntercomServer extends core_1.Server {
         this.add(this.rooms);
         this.add(this.headtracking);
         this.add(this.graphcontroller);
+        this.add(this.rrcs);
     }
     createNode(id) {
-        if (id.type == communication_1.NODE_TYPE.DSP_NODE)
-            return new dsp_node_1.DSPNode(id);
+        switch (id.type) {
+            case communication_1.NODE_TYPE.DSP_NODE:
+                return new dsp_node_1.DSPNode(id);
+            case communication_1.NODE_TYPE.RRCS_NODE:
+                return new rrcs_node_1.RRCSNode(id);
+        }
     }
     destroyNode(node) {
     }

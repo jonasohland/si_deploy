@@ -25,13 +25,13 @@ Object.keys(ifaces).forEach(function (ifname) {
     });
 });
 function default_1(options) {
+    const type = communication_1.NODE_TYPE.DSP_NODE;
     server_config.loadServerConfigFile(options.config);
     const config = server_config.merge(options);
-    console.log(config);
     const ipc = new IPC.IPCServer();
-    const wsclient = new communication_1.SINodeWSClient(config, ipc);
+    const wsclient = new communication_1.SINodeWSClient(config, ipc, type);
     const dspp = new dsp_process_1.LocalNodeController(config, ipc);
-    const state = new core_1.NodeDataStorage(config, options);
+    const state = new core_1.NodeDataStorage(config, options, type);
     wsclient.addWSInterceptor(dspp);
     wsclient.addWSInterceptor(state);
 }

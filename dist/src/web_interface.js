@@ -13,13 +13,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const connect_history_api_fallback_1 = __importDefault(require("connect-history-api-fallback"));
 const express_1 = __importDefault(require("express"));
 const http = __importStar(require("http"));
+const lodash_1 = __importDefault(require("lodash"));
 const socket_io_1 = __importDefault(require("socket.io"));
-const Logger = __importStar(require("./log"));
-const util_1 = require("./util");
 const core_1 = require("./core");
 const discovery_1 = require("./discovery");
+const Logger = __importStar(require("./log"));
+const util_1 = require("./util");
 const web_interface_defs_1 = require("./web_interface_defs");
-const lodash_1 = __importDefault(require("lodash"));
+const rest_1 = require("./rest");
 const log = Logger.get('WEBINT');
 // join ${nodeid}.${service}.${topic}
 // leave ${nodeid}.${service}.${topic}
@@ -126,11 +127,12 @@ class WebInterface extends core_1.ServerModule {
         this._expressapp = express_1.default();
         this._http = http.createServer(this._expressapp);
         let static_middleware = express_1.default.static(this._webif_root);
-        this._expressapp
-            .use((req, res, next) => {
+        this._expressapp.use((req, res, next) => {
             log.debug(`Request: ` + req.path);
             next();
         });
+        this._rest = new rest_1.RestService();
+        this._rest.registerRoutes(this._expressapp);
         this._expressapp.use(static_middleware);
         this._expressapp.use(connect_history_api_fallback_1.default({ disableDotRule: true, verbose: true, logger: logany }));
         this._expressapp.use(static_middleware);
@@ -183,6 +185,7 @@ class WebInterface extends core_1.ServerModule {
             else
                 log.error(`Could not deliver notification from node ${nodeid}: Node not found. MSG: ${msg}`);
         });
+        this.server.add(this._rest);
     }
     checkServerHasSubscribers(module, topic) {
         for (let client of this._clients) {
@@ -210,7 +213,7 @@ class WebInterface extends core_1.ServerModule {
     reportDispatchError(error_string, command) {
     }
     error(err) {
-        this.broadcastError("Server Error", err);
+        this.broadcastError('Server Error', err);
     }
     attachHandler(thisarg, module, event, handler) {
         log.debug(`Attach handler -${module}.${event}`);
@@ -233,7 +236,7 @@ class WebInterface extends core_1.ServerModule {
             this.io.emit('showerror', title, err);
         }
         else {
-            log.error("Unrecognized error type: Error: " + err);
+            log.error('Unrecognized error type: Error: ' + err);
         }
     }
     broadcastEvent(title, ...data) {

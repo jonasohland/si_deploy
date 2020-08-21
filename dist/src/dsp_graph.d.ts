@@ -160,5 +160,7 @@ export declare class Graph {
         nodes: any[];
         connections: Connection[];
     };
+    graphvizlabel(thing: any): string;
+    visualize(): string;
     clear(): void;
 }

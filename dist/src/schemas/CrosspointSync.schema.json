@@ -1,0 +1,167 @@
+{
+  "$ref": "#/definitions/CrosspointSync",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "CrosspointSync": {
+      "additionalProperties": false,
+      "properties": {
+        "master": {
+          "$ref": "#/definitions/CrosspointVolumeSource"
+        },
+        "slaves": {
+          "items": {
+            "$ref": "#/definitions/CrosspointVolumeTarget"
+          },
+          "type": "array"
+        },
+        "state": {
+          "type": "boolean"
+        },
+        "vol": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "state",
+        "vol",
+        "master",
+        "slaves"
+      ],
+      "type": "object"
+    },
+    "CrosspointVolumeSource": {
+      "additionalProperties": false,
+      "properties": {
+        "conf": {
+          "type": "boolean"
+        },
+        "xp": {
+          "additionalProperties": false,
+          "properties": {
+            "Destination": {
+              "additionalProperties": false,
+              "properties": {
+                "IsInput": {
+                  "type": "boolean"
+                },
+                "Node": {
+                  "type": "number"
+                },
+                "Port": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "Node",
+                "Port",
+                "IsInput"
+              ],
+              "type": "object"
+            },
+            "Source": {
+              "additionalProperties": false,
+              "properties": {
+                "IsInput": {
+                  "type": "boolean"
+                },
+                "Node": {
+                  "type": "number"
+                },
+                "Port": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "Node",
+                "Port",
+                "IsInput"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "Source",
+            "Destination"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "xp",
+        "conf"
+      ],
+      "type": "object"
+    },
+    "CrosspointVolumeTarget": {
+      "additionalProperties": false,
+      "properties": {
+        "conf": {
+          "type": "boolean"
+        },
+        "set": {
+          "type": "boolean"
+        },
+        "single": {
+          "type": "boolean"
+        },
+        "xp": {
+          "additionalProperties": false,
+          "properties": {
+            "Destination": {
+              "additionalProperties": false,
+              "properties": {
+                "IsInput": {
+                  "type": "boolean"
+                },
+                "Node": {
+                  "type": "number"
+                },
+                "Port": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "Node",
+                "Port",
+                "IsInput"
+              ],
+              "type": "object"
+            },
+            "Source": {
+              "additionalProperties": false,
+              "properties": {
+                "IsInput": {
+                  "type": "boolean"
+                },
+                "Node": {
+                  "type": "number"
+                },
+                "Port": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "Node",
+                "Port",
+                "IsInput"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "Source",
+            "Destination"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "xp",
+        "conf",
+        "single",
+        "set"
+      ],
+      "type": "object"
+    }
+  }
+}

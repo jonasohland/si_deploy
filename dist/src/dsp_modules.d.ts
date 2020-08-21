@@ -57,6 +57,8 @@ export declare abstract class SpatializationModule extends Module {
     abstract pan(params: SourceParameterSet): void;
     abstract setAzimuth(a: number): void;
     abstract setElevation(e: number): void;
+    abstract setHeight(h: number): void;
+    abstract setWidth(w: number): void;
     abstract setGain(gain: number): void;
     abstract userId(): string;
     abstract outputBuses(graph: Graph): Bus[];
@@ -139,6 +141,8 @@ export declare class RoomSpatializerModule extends SpatializationModule {
     setAzimuth(a: number): void;
     setElevation(e: number): void;
     setGain(gain: number): void;
+    setHeight(h: number): void;
+    setWidth(w: number): void;
     setRoomData(room: RoomData): void;
     setRoomEnabled(room: RoomData): void;
     setRoomReflections(room: RoomData): void;
@@ -167,6 +171,8 @@ export declare class MultiSpatializerModule extends SpatializationModule {
     setAzimuth(a: number): void;
     setElevation(e: number): void;
     setGain(gain: number): void;
+    setHeight(h: number): void;
+    setWidth(w: number): void;
     input(graph: Graph): Bus;
     output(graph: Graph): Bus;
     outputBuses(graph: Graph): Bus[];

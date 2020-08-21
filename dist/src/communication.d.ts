@@ -6,7 +6,8 @@ import SocketIO from 'socket.io';
 export declare function _log_msg(msg: Message, input: boolean, forward?: boolean): void;
 export declare enum NODE_TYPE {
     DSP_NODE = 0,
-    HTRK_BRIDGE_NODE = 1
+    HTRK_BRIDGE_NODE = 1,
+    RRCS_NODE = 2
 }
 export interface NodeIdentification {
     id: string;
@@ -101,7 +102,7 @@ export declare class SINodeWSClient {
     private _ws_interceptors;
     private _msg_interceptors;
     private _handler;
-    constructor(config: any, handler: NodeMessageHandler);
+    constructor(config: any, handler: NodeMessageHandler, type: NODE_TYPE);
     _on_service_discovered(service: mdns.Service): void;
     _service_connect(service: mdns.Service): void;
     _service_reconnect(service: mdns.Service): void;

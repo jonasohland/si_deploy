@@ -19,6 +19,8 @@ exports.GraphBuilderInputEvents = {
     PAN: 'pan',
     AZM: 'azm',
     ELV: 'elv',
+    HEIGHT: 'height',
+    WIDTH: 'width',
     GAIN: 'gain',
     ROOM_ENABLED: 'roomenabled',
     ROOM_REFLECTIONS: 'roomreflections',
@@ -49,6 +51,8 @@ class NodeDSPGraphBuilder extends core_1.NodeModule {
         this.handleModuleEvent(exports.GraphBuilderInputEvents.PAN, this._dispatch_pan.bind(this));
         this.handleModuleEvent(exports.GraphBuilderInputEvents.AZM, this._dispatch_azimuth_pan.bind(this));
         this.handleModuleEvent(exports.GraphBuilderInputEvents.ELV, this._dispatch_elevation_pan.bind(this));
+        this.handleModuleEvent(exports.GraphBuilderInputEvents.HEIGHT, this._dispatch_height_pan.bind(this));
+        this.handleModuleEvent(exports.GraphBuilderInputEvents.WIDTH, this._dispatch_width_pan.bind(this));
         this.handleModuleEvent(exports.GraphBuilderInputEvents.ROOM_ENABLED, this._dispatch_room_enabled.bind(this));
         this.handleModuleEvent(exports.GraphBuilderInputEvents.ROOM_REFLECTIONS, this._dispatch_room_reflections.bind(this));
         this.handleModuleEvent(exports.GraphBuilderInputEvents.ROOM_ATTN, this._dispatch_room_attn.bind(this));
@@ -124,6 +128,22 @@ class NodeDSPGraphBuilder extends core_1.NodeModule {
         let module = this._find_spatializer(userid, spid);
         if (module)
             module.setElevation(elv);
+        else {
+            log.error(`Could not find spatializer for input user ${userid} input ${spid}`);
+        }
+    }
+    _dispatch_width_pan(userid, spid, width) {
+        let module = this._find_spatializer(userid, spid);
+        if (module)
+            module.setWidth(width);
+        else {
+            log.error(`Could not find spatializer for input user ${userid} input ${spid}`);
+        }
+    }
+    _dispatch_height_pan(userid, spid, height) {
+        let module = this._find_spatializer(userid, spid);
+        if (module)
+            module.setHeight(height);
         else {
             log.error(`Could not find spatializer for input user ${userid} input ${spid}`);
         }
@@ -226,7 +246,7 @@ class DSPGraphController extends core_1.ServerModule {
     }
     init() {
         this.handleGlobalWebInterfaceEvent('committodsp', (socket, data) => {
-            this.server.nodes().forEach(node => {
+            this.server.nodes(communication_1.NODE_TYPE.DSP_NODE).forEach(node => {
                 if (node.type() == communication_1.NODE_TYPE.DSP_NODE) {
                     log.info("Rebuild graph on node " + node.name());
                     this.emitToModule(node.id(), dsp_node_1.DSPModuleNames.GRAPH_BUILDER, exports.GraphBuilderInputEvents.FULL_REBUILD);

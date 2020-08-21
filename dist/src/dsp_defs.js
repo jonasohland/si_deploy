@@ -83,6 +83,14 @@ function _panfunction_surround_5_1(params) {
         { a: params.a + 110, e: params.e },
     ];
 }
+function _panfunction_404(params) {
+    return [
+        { a: params.a - (params.width / 2), e: params.e },
+        { a: params.a + (params.width / 2), e: params.e },
+        { a: params.a - (params.width / 2), e: params.e },
+        { a: params.a + (params.width / 2), e: params.e },
+    ];
+}
 exports.SourcePanFunctions = [
     _panfunction_any,
     _panfunction_mono,

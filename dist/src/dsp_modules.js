@@ -452,6 +452,14 @@ class RoomSpatializerModule extends SpatializationModule {
         else
             this._encoders.forEach(enc => enc.setGain(gain));
     }
+    setHeight(h) {
+        this._cached_params.height = h;
+        this.pan(this._cached_params);
+    }
+    setWidth(w) {
+        this._cached_params.width = w;
+        this.pan(this._cached_params);
+    }
     setRoomData(room) {
         this._encoders.forEach(encoder => encoder.setRoomData(room));
     }
@@ -569,6 +577,14 @@ class MultiSpatializerModule extends SpatializationModule {
             this._spatializer_node.setGain(this._cached_gain);
         else if (this._gain_node)
             this._gain_node.setGain(this._cached_gain);
+    }
+    setHeight(h) {
+        this._params_cached.height = h;
+        this.pan(this._params_cached);
+    }
+    setWidth(w) {
+        this._params_cached.width = w;
+        this.pan(this._params_cached);
     }
     input(graph) {
         return graph.getNode(this._node_id).getMainInputBus();

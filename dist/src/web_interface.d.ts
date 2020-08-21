@@ -1,5 +1,5 @@
 import SocketIO from 'socket.io';
-import { ServerModule, Node, Server } from './core';
+import { Node, Server, ServerModule } from './core';
 interface WEBIFEventHandler {
     thisarg: any;
     handler: (...args: any[]) => void;
@@ -12,6 +12,7 @@ export default class WebInterface extends ServerModule {
     private _server;
     private _clients;
     private _web_interface_advertiser;
+    private _rest;
     joined(socket: SocketIO.Socket): void;
     left(socket: SocketIO.Socket): void;
     init(): void;

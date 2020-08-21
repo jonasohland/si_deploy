@@ -1,3 +1,9 @@
+export interface DSPNodeStats {
+    num_dspobjects: number;
+    num_connections: number;
+    num_ports: number;
+    num_renderops: number;
+}
 export declare enum PortTypes {
     Any = 0,
     Mono = 1,

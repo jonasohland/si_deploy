@@ -15,7 +15,7 @@ const node_mode_1 = __importDefault(require("./node_mode"));
 const server_mode_1 = __importDefault(require("./server_mode"));
 const headtracker_mode_1 = __importDefault(require("./headtracker_mode"));
 const headtracker_bridge_mode_1 = __importDefault(require("./headtracker_bridge_mode"));
-const install_service_1 = __importDefault(require("./install_service"));
+const rrcs_node_mode_1 = __importDefault(require("./rrcs_node_mode"));
 const program = new commander.Command();
 program.version('0.0.1');
 program.command('server')
@@ -70,7 +70,15 @@ program.command('htrk-bridge [serialport]')
     .option('--syslog', 'Run in syslog mode. This will remove redundant date/time from log output.')
     .option('-s, --slow-start')
     .action(headtracker_bridge_mode_1.default);
-program.command('install-service')
-    .action(install_service_1.default);
+program.command('rrcs')
+    .option('-r, --rrcs <host>', 'hostname or ip address of the rrcs gateway')
+    .option('--rrcs-osc-host <host>', 'where to send osc messages translated from string sent to rrcs (default: 127.0.0.1)')
+    .option('--rrcs-osc-port <port>', '(default: 9955)')
+    .option('-i, --interface <interface>', 'use this network interface')
+    .option('-p, --port <port>')
+    .option('-n, --node-name <node name>')
+    .option('-R, --reset', 'reset this node before starting')
+    .option('-c, --config <config_file>', 'load this config file instead of the default one')
+    .action(rrcs_node_mode_1.default);
 program.parse(process.argv);
 //# sourceMappingURL=si.js.map

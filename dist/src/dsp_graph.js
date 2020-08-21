@@ -1,4 +1,7 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -8,6 +11,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const events_1 = require("events");
+const graphviz_1 = __importDefault(require("graphviz"));
 const dsp_defs_1 = require("./dsp_defs");
 const Logger = __importStar(require("./log"));
 const log = Logger.get('DSPGPH');
@@ -175,7 +179,7 @@ class Bus {
         let newbus = new Bus(name, ty);
         buses.forEach(bus => {
             if (bus.type != ty)
-                throw "Type mismatch while joining busses";
+                throw 'Type mismatch while joining busses';
             bus.ports.forEach(port => newbus.addPort(port));
         });
     }
@@ -307,7 +311,7 @@ class NativeNode extends Node {
         this.remoteAttached();
     }
     destroy() {
-        log.info("Destroy native node " + this.native_event_name);
+        log.info('Destroy native node ' + this.native_event_name);
         this.remote.removeAllListeners('alive');
         this.remote.removeAllListeners('preapred');
         this.remote.destroy();
@@ -421,7 +425,32 @@ class Graph {
             }),
             connections: this.connections
         };
+        this.visualize();
         return out;
+    }
+    graphvizlabel(thing) {
+        return `${thing}`;
+    }
+    visualize() {
+        let g = graphviz_1.default.digraph('dspgraph');
+        let inpid = this.getInputNode().id;
+        let outpid = this.getOutputNode().id;
+        this.nodes.forEach(nd => {
+            if (nd.id == inpid || nd.id == outpid)
+                g.addNode('' + nd.id, { label: nd.name, shape: "rect", width: 5 });
+            else
+                g.addNode('' + nd.id, { label: nd.name, shape: "rect" });
+        });
+        this.connections.forEach(connection => {
+            connection.sources.forEach((source, idx) => {
+                g.addEdge('' + source.n, '' + connection.destinations[0].n, {
+                    label: source.c,
+                    headlabel: this.graphvizlabel(connection.destinations[0].ni),
+                    taillabel: this.graphvizlabel(source.ni),
+                });
+            });
+        });
+        return g.to_dot();
     }
     clear() {
         [...this.modules].forEach(module => this.removeModule(module));

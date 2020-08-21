@@ -207,15 +207,28 @@ class DSPController extends core_1.NodeModule {
         log.info("Graph service running");
     }
     joined(socket, topic) {
+        if (topic === 'dspstats')
+            socket.emit(`${this.myNodeId()}.dspstats`, this._dspstats);
     }
     left(socket, topic) {
+    }
+    _publish_dspstats() {
+        this.publish('dspstats', `${this.myNodeId()}.dspstats`, this._dspstats);
     }
     syncGraph() {
         return __awaiter(this, void 0, void 0, function* () {
             let self = this;
             return new Promise((resolve, reject) => {
                 log.info('Syncing graph with DSP process');
-                self._remote_graph.request('set', this._graph._export_graph())
+                let graph = this._graph._export_graph();
+                this._dspstats = {
+                    num_dspobjects: graph.nodes.length,
+                    num_connections: graph.connections.map(con => con.channelCount()).reduce((prev, current) => prev + current, 0),
+                    num_ports: graph.connections.length,
+                    num_renderops: graph.nodes.length * 2 - 1
+                };
+                this._publish_dspstats();
+                self._remote_graph.request('set', graph)
                     .then(() => {
                     log.info('Done Syncing');
                     resolve();

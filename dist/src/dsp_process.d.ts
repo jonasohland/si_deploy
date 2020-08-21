@@ -4,6 +4,7 @@ import { IPCServer } from './ipc';
 import { NodeModule } from './core';
 import { Graph } from './dsp_graph';
 import { VSTScanner } from './vst';
+import { DSPNodeStats } from './dsp_defs';
 export declare class LocalNodeController extends NodeMessageInterceptor {
     private _autorestart;
     private _exec_known;
@@ -35,7 +36,9 @@ export declare class DSPController extends NodeModule {
     _graph: Graph;
     _vst: VSTScanner;
     _connection: Connection;
+    _dspstats: DSPNodeStats;
     constructor(vst: VSTScanner);
+    _publish_dspstats(): void;
     syncGraph(): Promise<void>;
     _try_dsp_start(): Promise<void>;
     waitStart(): Promise<void>;

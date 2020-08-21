@@ -10,6 +10,8 @@ export declare const GraphBuilderInputEvents: {
     PAN: string;
     AZM: string;
     ELV: string;
+    HEIGHT: string;
+    WIDTH: string;
     GAIN: string;
     ROOM_ENABLED: string;
     ROOM_REFLECTIONS: string;
@@ -37,6 +39,8 @@ export declare class NodeDSPGraphBuilder extends NodeModule {
     _build_spatializer_modules(): void;
     _dispatch_azimuth_pan(userid: string, spid: string, azm: number): void;
     _dispatch_elevation_pan(userid: string, spid: string, elv: number): void;
+    _dispatch_width_pan(userid: string, spid: string, width: number): void;
+    _dispatch_height_pan(userid: string, spid: string, height: number): void;
     _dispatch_pan(userid: string, spid: string, params: SourceParameterSet): void;
     _dispatch_room_enabled(roomid: string, room: RoomData): void;
     _dispatch_room_reflections(roomid: string, room: RoomData): void;

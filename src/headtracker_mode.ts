@@ -4,6 +4,7 @@ import * as osc from 'osc-min';
 import SerialPort from 'serialport';
 import {terminal} from 'terminal-kit';
 import WebInterface from './web_interface';
+import * as config from './server_config';
 
 import {
     IEMOutputAdapter,
@@ -22,6 +23,9 @@ import io from 'socket.io';
 import {ShowfileManager} from './showfiles';
 import {AddressInfo} from 'net';
 import {HeadtrackerInvertation} from './headtracker';
+import { RestService } from './rest';
+import { Server, Node } from './core';
+import { NodeIdentification, SIServerWSServer } from './communication';
 
 const sfman = new ShowfileManager();
 
@@ -223,8 +227,26 @@ function runLatencyTest(p: SerialPort, options: any) {
     });
 }
 
+class DummyServer extends Server {
+    createNode(id: NodeIdentification): Node {
+        return null;
+    }
+    destroyNode(node: Node): void {
+    }
+}
+
 function runNormalMode(p: SerialPort, options: any) {
-    let headtracking = new Headtracking(new WebInterface(options));
+
+    options.webserver_port = options.webserver_port || 80;
+    options.server_port = options.server_port || 43265;
+
+    let io = new SIServerWSServer(options);
+    let webif = new WebInterface(options);
+    let dummy = new DummyServer(io, webif);
+    let headtracking = new Headtracking(webif);
+    webif.attachServer(dummy);
+    dummy.add(webif);
+    dummy.add(headtracking);
 
     if (options.oscControl)
         new OSCController(headtracking, options);
@@ -333,6 +355,9 @@ function start(path: string, options: any) {
 
 
 export default async function(port: string, options: any) {
+
+    options.webserver_port = options.webserver_port || 80;
+
     if (options.listPorts)
         return listPorts().then(exit);
 

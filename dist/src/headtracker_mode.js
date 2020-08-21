@@ -31,6 +31,8 @@ const Logger = __importStar(require("./log"));
 const { cyan } = chalk_1.default;
 const log = Logger.get('HEADTR');
 const showfiles_1 = require("./showfiles");
+const core_1 = require("./core");
+const communication_1 = require("./communication");
 const sfman = new showfiles_1.ShowfileManager();
 const htrk_devices = [];
 class OSCController {
@@ -193,8 +195,23 @@ function runLatencyTest(p, options) {
         });
     });
 }
+class DummyServer extends core_1.Server {
+    createNode(id) {
+        return null;
+    }
+    destroyNode(node) {
+    }
+}
 function runNormalMode(p, options) {
-    let headtracking = new headtracking_1.Headtracking(new web_interface_1.default(options));
+    options.webserver_port = options.webserver_port || 80;
+    options.server_port = options.server_port || 43265;
+    let io = new communication_1.SIServerWSServer(options);
+    let webif = new web_interface_1.default(options);
+    let dummy = new DummyServer(io, webif);
+    let headtracking = new headtracking_1.Headtracking(webif);
+    webif.attachServer(dummy);
+    dummy.add(webif);
+    dummy.add(headtracking);
     if (options.oscControl)
         new OSCController(headtracking, options);
     let adapter;
@@ -278,6 +295,7 @@ function start(path, options) {
 }
 function default_1(port, options) {
     return __awaiter(this, void 0, void 0, function* () {
+        options.webserver_port = options.webserver_port || 80;
         if (options.listPorts)
             return listPorts().then(exit);
         if (!port) {

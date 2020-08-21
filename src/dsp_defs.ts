@@ -1,5 +1,12 @@
 import { Port } from "./dsp_graph";
 
+export interface DSPNodeStats {
+    num_dspobjects: number,
+    num_connections: number,
+    num_ports: number,
+    num_renderops: number,
+}
+
 export enum PortTypes {
     Any,
     Mono,
@@ -110,6 +117,14 @@ function _panfunction_surround_5_1(params: SourceParameterSet): Source[] {
     ];
 }
 
+function _panfunction_404(params: SourceParameterSet): Source[] {
+    return [
+        {a: params.a - (params.width / 2), e: params.e},
+        {a: params.a + (params.width / 2), e: params.e},
+        {a: params.a - (params.width / 2), e: params.e},
+        {a: params.a + (params.width / 2), e: params.e},
+    ]
+}
 
 export const SourcePanFunctions = [
     _panfunction_any,

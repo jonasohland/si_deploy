@@ -288,8 +288,7 @@ class UsersManager extends core_1.ServerModule {
     }
     _join_userspecific(socket, userid, topic) {
         switch (topic) {
-            case 'userinputs':
-                this._join_userinputs(socket, userid);
+            case 'userinputs': this._join_userinputs(socket, userid);
         }
     }
     _join_userinputs(socket, userid) {
@@ -303,7 +302,7 @@ class UsersManager extends core_1.ServerModule {
         socket.emit(`${userid}.userinputs`, node.inputs.getRawInputDescriptionList(), inputs.map(input => input.get()));
     }
     findNodeForUser(userid) {
-        return this.server.nodes()
+        return this.server.nodes(communication_1.NODE_TYPE.DSP_NODE)
             .filter(node => node.type() == communication_1.NODE_TYPE.DSP_NODE)
             .find((dspnode) => dspnode.users.findUserForId(userid)
             != null);
@@ -331,7 +330,7 @@ class UsersManager extends core_1.ServerModule {
                         this.webif.error(`Input ${input.name} not found`);
                 }
                 catch (err) {
-                    log.error("Could not assign new input " + err);
+                    log.error('Could not assign new input ' + err);
                 }
             });
             node.users.publishUserInputs(data.userid);
@@ -352,6 +351,12 @@ class UsersManager extends core_1.ServerModule {
         this.handleWebInterfaceEvent('user.input.elv', (socket, node, data) => {
             this.emitToModule(node.id(), dsp_node_1.DSPModuleNames.GRAPH_BUILDER, dsp_graph_builder_1.GraphBuilderInputEvents.ELV, data.userid, data.spid, data.value);
         });
+        this.handleWebInterfaceEvent('user.input.heigth', (socket, node, data) => {
+            this.emitToModule(node.id(), dsp_node_1.DSPModuleNames.GRAPH_BUILDER, dsp_graph_builder_1.GraphBuilderInputEvents.HEIGHT, data.userid, data.spid, data.value);
+        });
+        this.handleWebInterfaceEvent('user.input.width', (socket, node, data) => {
+            this.emitToModule(node.id(), dsp_node_1.DSPModuleNames.GRAPH_BUILDER, dsp_graph_builder_1.GraphBuilderInputEvents.WIDTH, data.userid, data.spid, data.value);
+        });
         this.handleWebInterfaceEvent('user.headtracker', (socket, node, data) => {
             this.emitToModule(node.id(), dsp_node_1.DSPModuleNames.GRAPH_BUILDER, dsp_graph_builder_1.GraphBuilderInputEvents.ASSIGN_HEADTRACKER, data.userid, data.headtrackerid);
         });
@@ -363,7 +368,7 @@ class UsersManager extends core_1.ServerModule {
             if (node)
                 this.emitToModule(node.id(), dsp_node_1.DSPModuleNames.GRAPH_BUILDER, dsp_graph_builder_1.GraphBuilderInputEvents.SET_GAIN, data.user, data.id, data.gain);
             else
-                log.error("Could not find node for user " + data.user);
+                log.error('Could not find node for user ' + data.user);
         });
         this.handleGlobalWebInterfaceEvent('changegain', (socket, data) => {
             let node = this.findNodeForUser(data.user);
@@ -371,10 +376,14 @@ class UsersManager extends core_1.ServerModule {
                 let input = node.users.findInputById(data.id);
                 let idata = input.get();
                 idata.gain = data.gain;
-                input.set(idata).then(() => input.save()).catch(err => { log.error(`Could not set new gain: ${err}`); });
+                input.set(idata)
+                    .then(() => input.save())
+                    .catch(err => {
+                    log.error(`Could not set new gain: ${err}`);
+                });
             }
             else
-                log.error("Could not find node for user " + data.user);
+                log.error('Could not find node for user ' + data.user);
         });
     }
 }

@@ -1,48 +1,111 @@
 /// <reference types="node" />
-/// <reference types="socket.io" />
-import { RRCSServerType } from 'riedel_rrcs';
-import { ServerModule } from './core';
-import { Socket } from 'dgram';
-export declare class RRCSModule extends ServerModule {
-    rrcssrv: RRCSServerType;
-    local_sock: Socket;
-    config: any;
-    init(): void;
-    joined(socket: SocketIO.Socket): void;
-    left(socket: SocketIO.Socket): void;
-    constructor(config: any);
-    reconnectRRCS(): void;
-    startRRCS(): void;
-    processOSCCommand(cmd: string[]): void;
-    processStringCommand(str: string): void;
-    processHeadtrackerCommand(cmd: string[]): void;
-    processHeadtrackerOffCommand(cmd: string[]): void;
-    processStringOffCommand(str: string): void;
-    /**
-     * RRCS handlers
-     */
-    initial(msg: any, error: any): void;
-    log(msg: any): void;
-    error(err: any): void;
-    getAlive(msg: any): boolean;
-    crosspointChange(params: any): void;
-    sendString(params: any): void;
-    sendStringOff(params: any): void;
-    gpInputChange(params: any): void;
-    logicSourceChange(params: any): void;
-    configurationChange(params: any): void;
-    upstreamFailed(params: any): void;
-    upstreamFaieldCleared(params: any): void;
-    downstreamFailed(params: any): void;
-    downstreamFailedCleared(params: any): void;
-    nodeControllerFailed(params: any): void;
-    nodeControllerReboot(params: any): void;
-    clientFailed(params: any): void;
-    clientFailedCleared(params: any): void;
-    portInactive(params: any): void;
-    portActive(params: any): void;
-    connectArtistRestored(params: any): void;
-    connectArtistFailed(params: any): void;
-    gatewayShutdown(params: any): void;
-    notFound(params: any): void;
+import { EventEmitter2 } from 'eventemitter2';
+import xmlrpc from 'xmlrpc';
+import { Crosspoint, CrosspointSync, CrosspointState, CrosspointVolumeTarget, CrosspointVolumeSource } from './rrcs_defs';
+interface ArtistPortInfo {
+    Input: boolean;
+    KeyCount: number;
+    Label: string;
+    Name: string;
+    Node: number;
+    ObjectID: number;
+    Output: boolean;
+    PageCount: number;
+    Port: number;
+    PortType: string;
+    HasSecondChannel?: boolean;
 }
+export interface ArtistState {
+    gateway: boolean;
+    artist: boolean;
+    artist_nodes: ArtistNodeInfo[];
+}
+interface ArtistNodeInfo {
+    id: number;
+    ports: ArtistPortInfo[];
+}
+declare class ArtistNodePort {
+    info: ArtistPortInfo;
+    _srv: RRCSServer;
+    constructor(srv: RRCSServer, info: ArtistPortInfo);
+    destroy(): void;
+}
+declare class ArtistNode {
+    _id: number;
+    _ports: ArtistNodePort[];
+    _srv: RRCSServer;
+    constructor(srv: RRCSServer, id: number);
+    getPort(portidx: number, input: boolean, output: boolean): ArtistNodePort;
+    getPortFromInfo(info: ArtistPortInfo): ArtistNodePort;
+    removePort(portidx: number, input: boolean, output: boolean): ArtistNodePort[];
+    addPort(info: ArtistPortInfo): void;
+    reset(): void;
+    destroy(): void;
+    nodeID(): number;
+}
+export declare abstract class RRCSServer extends EventEmitter2 {
+    _cl: xmlrpc.Client;
+    _srv: xmlrpc.Server;
+    _artist_online: boolean;
+    _gateway_online: boolean;
+    _local_port: number;
+    _local_ip: string;
+    _trs_cnt: number;
+    _connect_retry_timeout: NodeJS.Timeout;
+    _nodes: ArtistNode[];
+    abstract onArtistConfigurationChanged(): void;
+    abstract onXpValueChanged(crosspoint: Crosspoint, single?: number, conf?: number): void;
+    abstract onXpsChanged(xps: CrosspointState[]): void;
+    abstract xpsToListenTo(): Crosspoint[];
+    abstract onArtistOnline(): Promise<void>;
+    constructor(rrcs_host: string, rrcs_port: number);
+    rrcsAvailable(): void;
+    getArtistNode(id: number): ArtistNode;
+    getAllNodes(): ArtistNodeInfo[];
+    getArtistState(): ArtistState;
+    getGatewayState(): Promise<unknown>;
+    setStateWorking(): Promise<unknown>;
+    setStateStandby(): Promise<unknown>;
+    getAlive(): Promise<unknown>;
+    getArtistConnected(): Promise<boolean>;
+    setXPVolume(xp: Crosspoint, volume: number, single?: boolean, conf?: boolean): Promise<void>;
+    getXpStatus(xp: Crosspoint): Promise<boolean>;
+    getActiveXps(): Promise<Crosspoint[]>;
+    setXP(xp: Crosspoint): Promise<void>;
+    killXP(xp: Crosspoint): Promise<void>;
+    _perform_method_call(method: string, ...params: any[]): Promise<unknown>;
+    private _modify_notifications;
+    private _setup_notifications;
+    resetXPVolNotifyRegistry(): Promise<unknown>;
+    addToXPVolNotifyRegistry(xps: Crosspoint[]): Promise<unknown>;
+    removeFromXPVolNotifyRegistry(xps: Crosspoint[]): Promise<unknown>;
+    private _gateway_went_online;
+    private _gateway_went_offline;
+    private _artist_went_online;
+    private _artist_went_offline;
+    private _begin_connect;
+    private _ping_artist;
+    private _reset;
+    private _refresh_nodes;
+    private _load_cached;
+    private _get_trs_key;
+}
+export declare class RRCSService extends RRCSServer {
+    _synced: Record<string, CrosspointSync>;
+    xpsToListenTo(): Crosspoint[];
+    setXPSyncs(syncs: CrosspointSync[]): void;
+    newXPSync(master: CrosspointVolumeSource, slaves: CrosspointVolumeTarget[]): void;
+    addXPSync(master: CrosspointVolumeSource, slaves: CrosspointVolumeTarget[]): void;
+    getAllXPStates(): void;
+    updateStateForCrosspointSync(sync: CrosspointSync): Promise<void>;
+    updateCrosspoint(xpv: CrosspointVolumeTarget, vol: number): void;
+    onArtistOnline(): Promise<void>;
+    onArtistConfigurationChanged(): void;
+    onXpValueChanged(crosspoint: Crosspoint, single: number, conf: number): void;
+    onXpsChanged(xps: CrosspointState[]): void;
+    syncCrosspointsForMaster(sync: CrosspointSync, state: boolean): Promise<void>;
+    refreshAllXPs(): Promise<void>;
+    private _do_update_xp;
+    private _clear_all_xpstates;
+}
+export {};

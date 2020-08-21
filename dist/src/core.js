@@ -486,13 +486,14 @@ class NodeModule extends Publisher {
 }
 exports.NodeModule = NodeModule;
 class NodeDataStorage extends communication_1.NodeMessageInterceptor {
-    constructor(config, options) {
+    constructor(config, options, type) {
         super();
         this._modules = {};
         this._saving = false;
         this._save_again = false;
         this._local_file = files_1.configFileDir('nodestate/')
             + sanitize_filename_1.default(config.node_name || 'default_node')
+            + '.' + communication_1.NODE_TYPE[type]
             + '.json';
         if (!fs.existsSync(files_1.configFileDir('nodestate')))
             fs.mkdirSync(files_1.configFileDir('nodestate'));
@@ -862,11 +863,11 @@ class ServerModule extends Publisher {
         return this.server._check_server_has_subscribers(this._name, topic);
     }
     getNode(id) {
-        return this.server._nodes[id];
+        return this.server._nds[id];
     }
     handleWebInterfaceEvent(event, handler) {
         this.webif.attachHandler(this, this._name, event, (socket, nodeid, data) => {
-            let node = this.server._nodes[nodeid];
+            let node = this.server._nds[nodeid];
             if (!node) {
                 log.error(`Node not found for message -${this._name}.${event} - node: ${nodeid}`);
                 socket.emit('showerror', `Node not found for id ${nodeid}`);
@@ -891,19 +892,18 @@ class ServerModule extends Publisher {
 exports.ServerModule = ServerModule;
 class ServerInternalsModule extends ServerModule {
     joined(socket, topic) {
-        socket.emit('server.nodes', this.nodeIdList());
+        socket.emit('server.nodes.' + topic, this.nodeIdList(communication_1.NODE_TYPE[topic]));
     }
     left(socket, topic) {
     }
-    nodesChanged() {
-        this.publish('nodes', 'server.nodes', this.nodeIdList());
+    nodesChanged(type) {
+        this.publish(communication_1.NODE_TYPE[type], 'server.nodes.' + communication_1.NODE_TYPE[type], this.nodeIdList(type));
     }
-    nodeIdList() {
-        let ids = Object.keys(this.server._nodes);
-        let out = [];
-        for (let id of ids)
-            out.push(this.server._nodes[id]._id);
-        return out;
+    nodeIdList(type) {
+        return this.server.nodes(type).map(n => n._id);
+    }
+    allNodeIds() {
+        this.server.allNodes().map(n => n.id());
     }
     init() {
     }
@@ -914,7 +914,7 @@ class ServerInternalsModule extends ServerModule {
 exports.ServerInternalsModule = ServerInternalsModule;
 class Server {
     constructor(wssrv, webif) {
-        this._nodes = {};
+        this._nds = {};
         this._modules = {};
         this._event_bus = new eventemitter2_1.EventEmitter2({ wildcard: true, delimiter: '.' });
         this._srv = wssrv;
@@ -937,29 +937,38 @@ class Server {
     emitToNode(node, event, ...data) {
         this._event_bus.emit(`${node}.${event}`, ...data);
     }
-    nodes() {
-        let nodeids = Object.keys(this._nodes);
+    nodes(type) {
+        let nodeids = Object.keys(this._nds);
+        let out = [];
+        for (let id of nodeids) {
+            if (this._nds[id].type() == type)
+                out.push(this._nds[id]);
+        }
+        return out;
+    }
+    allNodes() {
+        let nodeids = Object.keys(this._nds);
         let out = [];
         for (let id of nodeids)
-            out.push(this._nodes[id]);
+            out.push(this._nds[id]);
         return out;
     }
     _on_add_remote(session) {
         log.info(`Create new node instance for [${communication_1.NODE_TYPE[session.id().type]}] ${session.id().name}`);
         let node = this.createNode(session.id());
         node._init(session, this._event_bus, this).then(() => {
-            this._nodes[node.id()] = node;
-            this._internals.nodesChanged();
+            this._nds[node.id()] = node;
+            this._internals.nodesChanged(session.id().type);
         });
     }
     _on_remove_remote(session) {
-        let node = this._nodes[session.id().id];
+        let node = this._nds[session.id().id];
         if (node) {
             log.info(`Destroy node instance for [${communication_1.NODE_TYPE[session.id().type]}] ${session.id().name}`);
             node._destroy();
             this.destroyNode(node);
-            delete this._nodes[session.id().id];
-            this._internals.nodesChanged();
+            delete this._nds[session.id().id];
+            this._internals.nodesChanged(session.id().type);
         }
     }
     _check_server_has_subscribers(module, topic) {
@@ -981,9 +990,9 @@ class Server {
             log.warn(`Server module '${module}' not found. Could not deliver join notification`);
     }
     _notify_join_node_room(socket, nodeid, module, topic) {
-        if (this._nodes[nodeid]) {
-            if (this._nodes[nodeid]._modules[module])
-                this._nodes[nodeid]._modules[module].joined(socket, topic);
+        if (this._nds[nodeid]) {
+            if (this._nds[nodeid]._modules[module])
+                this._nds[nodeid]._modules[module].joined(socket, topic);
             else
                 log.warn(`Node module '${module}' not found. Could not deliver join notification`);
         }
@@ -997,9 +1006,9 @@ class Server {
             log.warn(`Server module '${module}' not found. Could not deliver leave notification`);
     }
     _notify_leave_node_room(socket, nodeid, module, topic) {
-        if (this._nodes[nodeid]) {
-            if (this._nodes[nodeid]._modules[module])
-                this._nodes[nodeid]._modules[module].left(socket, topic);
+        if (this._nds[nodeid]) {
+            if (this._nds[nodeid]._modules[module])
+                this._nds[nodeid]._modules[module].left(socket, topic);
             else
                 log.warn(`Node module '${module}' not found. Could not deliver leave notification`);
         }
