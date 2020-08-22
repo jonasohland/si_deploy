@@ -846,8 +846,8 @@
         "signature": "59579e538b2a4792f8d29bca9e643913a705fa15cde80f828819d670bee1fb03"
       },
       "../src/index.ts": {
-        "version": "cd05d5e3c632a97e66795baf091a80f694cf1065751e4369450c67075e5badf5",
-        "signature": "242b44fbe6905215e9e359369f10b43260a31d0ddedf1dcad651a54cb1e4dfb3"
+        "version": "f03d29d321839b4b69e2e6de0bec613c454e4f194cf099ec2e4cd94ca1503df9",
+        "signature": "6feef3a4a38f7748e0822464a6c5f0ce5037d0b45e7b9835e77996580c8c131b"
       },
       "../src/install_service.ts": {
         "version": "271bd5a312bafaf8ca946c0851f7cc9fc687de37f955cf8024f3092f93829f0e",
@@ -920,7 +920,6 @@
           "typings/*"
         ]
       },
-      "watch": true,
       "configFilePath": "../tsconfig.json"
     },
     "referencedMap": {
@@ -4824,6 +4823,7 @@
       "../src/headtracking.ts",
       "../node_modules/ajv/lib/ajv.d.ts",
       "../node_modules/@types/xmlrpc/index.d.ts",
+      "../src/rrcs_defs.ts",
       "../src/rrcs.ts",
       "../src/validation.ts",
       "../src/rrcs_node.ts",
@@ -4898,7 +4898,6 @@
       "../node_modules/@types/ini/index.d.ts",
       "../src/server_config.ts",
       "../src/headtracker_mode.ts",
-      "../src/index.ts",
       "../src/install_service.ts",
       "../src/modules.ts",
       "../src/node_mode.ts",
@@ -4912,7 +4911,7 @@
       "../node_modules/@types/json-schema/index.d.ts",
       "../node_modules/@types/minimatch/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/rrcs_defs.ts"
+      "../src/index.ts"
     ]
   },
   "version": "3.7.3"
