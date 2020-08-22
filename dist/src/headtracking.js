@@ -36,6 +36,7 @@ class Headtracking extends core_1.ServerModule {
         });
         this.browser.on('serviceUp', this.serviceFound.bind(this));
         this.browser.on('serviceDown', this.serviceRemoved.bind(this));
+        this.browser.on('error', err => log.error(`MDNS-SD brower [Headtracking] error ${err}`));
         this.browser.start();
         let self = this;
         this.webif.io.on('connection', socket => {

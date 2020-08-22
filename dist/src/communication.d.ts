@@ -1,6 +1,6 @@
 /// <reference types="node" />
 /// <reference types="socket.io-client" />
-import * as mdns from 'dnssd';
+import * as mdns from 'mdns';
 import { EventEmitter } from 'events';
 import SocketIO from 'socket.io';
 export declare function _log_msg(msg: Message, input: boolean, forward?: boolean): void;
