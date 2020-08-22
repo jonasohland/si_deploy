@@ -209,6 +209,17 @@ class RRCSServer extends eventemitter2_1.EventEmitter2 {
             return out;
         });
     }
+    getXpsInRange(xp) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let resp = yield this._perform_method_call('GetActiveXpsRange', this._get_trs_key(), ...crosspointToParams(xp, 2));
+            let out = [];
+            for (let key of Object.keys(resp)) {
+                if (key.startsWith('XP#'))
+                    out.push(crosspointFromParams(resp[key]));
+            }
+            return out;
+        });
+    }
     setXP(xp) {
         return __awaiter(this, void 0, void 0, function* () {
             log.debug(`Set XP ${rrcs_defs_1.__xpid(xp)}`);
@@ -412,6 +423,10 @@ class RRCSService extends RRCSServer {
             log.error('Could not set XP syncs ' + err);
         });
     }
+    xpSyncAddSlaves(msg) {
+    }
+    xpSyncRemoveSlaves(msg) {
+    }
     newXPSync(master, slaves) {
         let id = rrcs_defs_1.xpvtid(master);
         this._synced[id] = { vol: 230, state: false, master, slaves };
@@ -453,7 +468,9 @@ class RRCSService extends RRCSServer {
         return __awaiter(this, void 0, void 0, function* () {
             let state = yield this.getXpStatus(sync.master.xp);
             sync.state = state;
-            this.emit('xp-states-changed', [{ state, xpid: rrcs_defs_1.xpvtid(sync.master) }]);
+            this.emit('xp-states-changed', [
+                { state, xpid: rrcs_defs_1.xpvtid(sync.master) }
+            ]);
         });
     }
     updateCrosspoint(xpv, vol) {
@@ -486,6 +503,8 @@ class RRCSService extends RRCSServer {
         for (let xpstate of xps) {
             let masterid_conf = rrcs_defs_1.xpvtid({ xp: xpstate.xp, conf: false });
             let masterid_single = rrcs_defs_1.xpvtid({ xp: xpstate.xp, conf: true });
+            let masterid_srcwildcard = rrcs_defs_1.xpvtid({ xp: rrcs_defs_1.asSourceWildcard(xpstate.xp), conf: false });
+            let masterid_dstwildcard = rrcs_defs_1.xpvtid({ xp: rrcs_defs_1.asDestinationWildcard(xpstate.xp), conf: false });
             if (this._synced[masterid_conf]) {
                 this.syncCrosspointsForMaster(this._synced[masterid_conf], xpstate.state);
                 updated.push({ xpid: masterid_conf, state: xpstate.state });
@@ -501,18 +520,30 @@ class RRCSService extends RRCSServer {
     }
     syncCrosspointsForMaster(sync, state) {
         return __awaiter(this, void 0, void 0, function* () {
+            sync.state = state;
             for (let slave of sync.slaves) {
                 if (slave.set) {
                     try {
                         if (state)
-                            yield this.setXP(slave.xp);
+                            yield this._try_set_xp(slave.xp);
                         else
-                            yield this.killXP(slave.xp);
+                            yield this._try_kill_xp(slave.xp);
                     }
                     catch (err) {
                         log.error('Could not set XP ' + err);
                     }
                 }
+            }
+        });
+    }
+    syncCrosspointsForWildcardMaster(sync, newstate) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let wildcard_actives = [];
+            if (rrcs_defs_1.destinationPortIsWildcard(sync.master.xp))
+                wildcard_actives.push(...(yield this.getXpsInRange({ Source: sync.master.xp.Source, Destination: sync.master.xp.Source })));
+            if (rrcs_defs_1.sourcePortIsWildcard(sync.master.xp))
+                wildcard_actives.push(...(yield this.getXpsInRange({ Source: sync.master.xp.Destination, Destination: sync.master.xp.Destination })));
+            if (wildcard_actives.length) {
             }
         });
     }
@@ -530,7 +561,10 @@ class RRCSService extends RRCSServer {
             });
             let syncstates = [];
             for (let key of Object.keys(this._synced))
-                syncstates.push({ xpid: rrcs_defs_1.xpvtid(this._synced[key].master), state: this._synced[key].state });
+                syncstates.push({
+                    xpid: rrcs_defs_1.xpvtid(this._synced[key].master),
+                    state: this._synced[key].state
+                });
             this.emit('xp-states-changed', syncstates);
         });
     }
@@ -549,69 +583,53 @@ class RRCSService extends RRCSServer {
         for (let key of Object.keys(this._synced))
             this._synced[key].state = false;
     }
+    _try_set_xp(xp) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let isset = yield this.getXpStatus(xp);
+            if (isset)
+                log.debug(`XP ${rrcs_defs_1.__xpid(xp)} already set`);
+            else
+                yield this.setXP(xp);
+        });
+    }
+    _try_kill_xp(xp) {
+        return __awaiter(this, void 0, void 0, function* () {
+            log.debug(`Try killing XP ${rrcs_defs_1.__xpid(xp)}`);
+            let still_set_by = [];
+            for (let masterid of Object.keys(this._synced)) {
+                const sync = this._synced[masterid];
+                let slfound = false;
+                if (!sync.state)
+                    continue;
+                for (let slave of sync.slaves) {
+                    if (!slave.set)
+                        continue;
+                    if (rrcs_defs_1.xpEqual(xp, slave.xp)) {
+                        still_set_by.push(masterid);
+                        slfound = true;
+                        break;
+                    }
+                }
+                if (slfound)
+                    break;
+            }
+            if (still_set_by.length) {
+                log.debug(`Wont kill XP because it is still set by ${still_set_by.length} masters`);
+                still_set_by.forEach(mid => log.debug(`    still set by: ${mid}`));
+            }
+            else {
+                try {
+                    yield this.killXP(xp);
+                }
+                catch (err) {
+                    log.error(`Failed to kill XP ${rrcs_defs_1.__xpid(xp)}: ${err}`);
+                }
+            }
+        });
+    }
 }
 exports.RRCSService = RRCSService;
 /*
-export class RRCSModule extends ServerModule {
-
-    rrcssrv: RRCSServerType;
-    local_sock: Socket;
-    config: any;
-
-    init()
-    {
-        this.handleGlobalWebInterfaceEvent('reconnect-rrcs', (socket, data) => {
-            log.info('Reconnect RRCS');
-            this.reconnectRRCS();
-        });
-    }
-
-    joined(socket: SocketIO.Socket)
-    {
-    }
-
-    left(socket: SocketIO.Socket)
-    {
-    }
-
-    constructor(config: any)
-    {
-        super('rrcs');
-        this.config = config;
-
-        this.local_sock = createSocket('udp4', (msg, rinfo) => {
-
-                                               });
-
-        this.local_sock.on('error', (err) => {
-            log.error('RRCS to OSC socket error: ' + err);
-        });
-
-        this.local_sock.on('close', () => {
-            log.warn('RRCS to OSC socket closed');
-        });
-        // this.reconnectRRCS();
-    }
-
-    reconnectRRCS()
-    {
-        if (this.config) {
-            if (this.rrcssrv) {
-                this.rrcssrv.server.httpServer.close();
-                this.rrcssrv.server.httpServer.on('close', () => {
-                    log.warn('RRCS Server closed');
-                    this.startRRCS();
-                });
-            }
-            else
-                this.startRRCS();
-        }
-    }
-
-    startRRCS()
-    {
-    }
-
     processOSCCommand(cmd: string[])
     {
         let ccmd = cmd[0].split(' ');
@@ -693,31 +711,6 @@ export class RRCSModule extends ServerModule {
         }
     }
 
-
-    initial(msg: any, error: any)
-    {
-        this.webif.broadcastNotification('RRCS', msg);
-        if (error)
-            console.log(error);
-    }
-    log(msg: any)
-    {
-        if (this.webif)
-            this.webif.broadcastNotification('RRCS', msg);
-        log.info(msg);
-    }
-    error(err: any)
-    {
-        log.error(err);
-    }
-    getAlive(msg: any)
-    {
-        return true;
-    }
-    crosspointChange(params: any)
-    {
-        console.log(params);
-    }
     sendString(params: any)
     {
         try {
@@ -737,89 +730,5 @@ export class RRCSModule extends ServerModule {
                       + err);
         }
     }
-    gpInputChange(params: any)
-    {
-    }
-    logicSourceChange(params: any)
-    {
-    }
-    configurationChange(params: any)
-    {
-    }
-    upstreamFailed(params: any)
-    {
-    }
-    upstreamFaieldCleared(params: any)
-    {
-    }
-    downstreamFailed(params: any)
-    {
-    }
-    downstreamFailedCleared(params: any)
-    {
-    }
-    nodeControllerFailed(params: any)
-    {
-    }
-    nodeControllerReboot(params: any)
-    {
-    }
-    clientFailed(params: any)
-    {
-    }
-    clientFailedCleared(params: any)
-    {
-    }
-    portInactive(params: any)
-    {
-    }
-    portActive(params: any)
-    {
-    }
-    connectArtistRestored(params: any)
-    {
-    }
-    connectArtistFailed(params: any)
-    {
-    }
-    gatewayShutdown(params: any)
-    {
-    }
-    notFound(params: any)
-    {
-    }
-}
-*/
-/*
-this._srv.on('XpVolumeChange', (err, params, cb) => {
-    console.log(params);
-
-    this._cl.methodCall('SetXPVolume', [this._get_trs_key(), 1, 6, 24, 1, 6, 25,
-true, false, params[1][0].SingleVolume], (err, params) => { console.log(err);
-        console.log(params);
-    })
-
-    cb(null, [params[0]]);
-});
-
-this._srv.on('ConfigurationChange', (err, params, cb) => {
-    cb(null, [params[0]]);
-})
-
-this._cl.methodCall('RegisterForEventsEx', [this._get_trs_key(),
-"192.168.178.91", this._local_port, { "XpVolumeChange": true,
-"ConfigurationChange": true }], (err, val) => { console.log(err);
-    console.log(val);
-
-    this._cl.methodCall('XpVolumeChangeRegistryReset', [this._get_trs_key(),
-"192.168.178.91", this._local_port, []], (err, val) => { console.log(err);
-        console.log(val);
-        this._cl.methodCall('XpVolumeChangeRegistryAdd', [this._get_trs_key(),
-"192.168.178.91", this._local_port, [{ Destination: { Node: 2, Port: 48,
-IsInput: false }, Source: { Node: 2, Port: 50, IsInput: true } }]], (err, val)
-=> { console.log(err); console.log(val);
-        });
-    });
-})
 */ 
 //# sourceMappingURL=rrcs.js.map

@@ -9,12 +9,11 @@ const ajv = ajv_1.default();
 var Validators;
 (function (Validators) {
     Validators[Validators["CrosspointSync"] = 0] = "CrosspointSync";
+    Validators[Validators["AddCrosspointVolumeTargetMessage"] = 1] = "AddCrosspointVolumeTargetMessage";
+    Validators[Validators["XPSyncModifySlavesMessage"] = 2] = "XPSyncModifySlavesMessage";
 })(Validators = exports.Validators || (exports.Validators = {}));
-const Schemas = {
-    [Validators.CrosspointSync]: __dirname + '/schemas/CrosspointSync.schema.json'
-};
 function getValidator(validator) {
-    return ajv.compile(JSON.parse(fs_1.default.readFileSync(Schemas[validator]).toString()));
+    return ajv.compile(JSON.parse(fs_1.default.readFileSync(`${__dirname}/schemas/${Validators[validator]}.schema.json`).toString()));
 }
 exports.getValidator = getValidator;
 //# sourceMappingURL=validation.js.map

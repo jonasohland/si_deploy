@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import { EventEmitter2 } from 'eventemitter2';
 import xmlrpc from 'xmlrpc';
-import { Crosspoint, CrosspointSync, CrosspointState, CrosspointVolumeTarget, CrosspointVolumeSource } from './rrcs_defs';
+import { Crosspoint, CrosspointState, CrosspointSync, CrosspointVolumeSource, CrosspointVolumeTarget, XPSyncModifySlavesMessage } from './rrcs_defs';
 interface ArtistPortInfo {
     Input: boolean;
     KeyCount: number;
@@ -71,6 +71,7 @@ export declare abstract class RRCSServer extends EventEmitter2 {
     setXPVolume(xp: Crosspoint, volume: number, single?: boolean, conf?: boolean): Promise<void>;
     getXpStatus(xp: Crosspoint): Promise<boolean>;
     getActiveXps(): Promise<Crosspoint[]>;
+    getXpsInRange(xp: Crosspoint): Promise<Crosspoint[]>;
     setXP(xp: Crosspoint): Promise<void>;
     killXP(xp: Crosspoint): Promise<void>;
     _perform_method_call(method: string, ...params: any[]): Promise<unknown>;
@@ -94,6 +95,8 @@ export declare class RRCSService extends RRCSServer {
     _synced: Record<string, CrosspointSync>;
     xpsToListenTo(): Crosspoint[];
     setXPSyncs(syncs: CrosspointSync[]): void;
+    xpSyncAddSlaves(msg: XPSyncModifySlavesMessage): void;
+    xpSyncRemoveSlaves(msg: XPSyncModifySlavesMessage): void;
     newXPSync(master: CrosspointVolumeSource, slaves: CrosspointVolumeTarget[]): void;
     addXPSync(master: CrosspointVolumeSource, slaves: CrosspointVolumeTarget[]): void;
     getAllXPStates(): void;
@@ -104,8 +107,11 @@ export declare class RRCSService extends RRCSServer {
     onXpValueChanged(crosspoint: Crosspoint, single: number, conf: number): void;
     onXpsChanged(xps: CrosspointState[]): void;
     syncCrosspointsForMaster(sync: CrosspointSync, state: boolean): Promise<void>;
+    syncCrosspointsForWildcardMaster(sync: CrosspointSync, newstate: boolean): Promise<void>;
     refreshAllXPs(): Promise<void>;
     private _do_update_xp;
     private _clear_all_xpstates;
+    private _try_set_xp;
+    private _try_kill_xp;
 }
 export {};

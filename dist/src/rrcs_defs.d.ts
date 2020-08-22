@@ -25,13 +25,29 @@ export interface CrosspointVolumeTarget {
     single: boolean;
     set: boolean;
 }
+export interface AddCrosspointVolumeTargetMessage {
+    masterid: string;
+    slave: CrosspointVolumeTarget;
+}
+export interface XPSyncModifySlavesMessage {
+    master: string;
+    slaves: CrosspointVolumeTarget[];
+}
 export interface CrosspointSync {
     state: boolean;
     vol: number;
     master: CrosspointVolumeSource;
     slaves: CrosspointVolumeTarget[];
 }
+export declare function portEqual(lhs: Port, rhs: Port): boolean;
 export declare function xpEqual(lhs: Crosspoint, rhs: Crosspoint): boolean;
 export declare function xpVtEqual(lhs: CrosspointVolumeTarget, rhs: CrosspointVolumeTarget): boolean;
 export declare function __xpid(xp: Crosspoint): string;
 export declare function xpvtid(xp_vt: CrosspointVolumeSource): string;
+export declare function makeWildcardPort(): Port;
+export declare function isWildcardPort(port: Port): boolean;
+export declare function isWildcardXP(xp: Crosspoint): boolean;
+export declare function destinationPortIsWildcard(xp: Crosspoint): boolean;
+export declare function sourcePortIsWildcard(xp: Crosspoint): boolean;
+export declare function asSourceWildcard(xp: Crosspoint): Crosspoint;
+export declare function asDestinationWildcard(xp: Crosspoint): Crosspoint;

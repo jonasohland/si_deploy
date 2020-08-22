@@ -534,7 +534,7 @@
         "signature": "5aaeff31b20543d93e1ccd5afa7c11a960738bf39894990658b6709d5621d203"
       },
       "../src/headtracking.ts": {
-        "version": "ca07bce6943423984e1f62e608ab0d19415d7baaf4e5f5daabf626bf3515a278",
+        "version": "43e4a9859008fc1059c1362fa2a3d2945ad30e050cc091d08c6123a9e1ad8b67",
         "signature": "c8ce637be3a2d879323623f1c9959d7d52b20605ef184b5648ebb5020e48bc8a"
       },
       "../node_modules/ajv/lib/ajv.d.ts": {
@@ -546,20 +546,20 @@
         "signature": "0f471f60179daaee4768a5cc4426708e4299a3c741e4f95cda952efac922ef07"
       },
       "../src/rrcs_defs.ts": {
-        "version": "9df5de3c9ac61bd4227c9c2f1059c5c674d3252222c09c35735277d6770c6c58",
-        "signature": "b0df462729a992f472101838f006ebdb9cf81dc70f7b00a3391b71d65d96fb57"
+        "version": "f30f81727d41f7df5ff5fe2fee8dc5fa72da86d3e4e9241edfc69d96674b8d64",
+        "signature": "43889c432d081f064500999fbd0f48920f5a08199a7afc0ef9b26755fcda6a77"
       },
       "../src/rrcs.ts": {
-        "version": "a68d536ef063f4e2812319b562935f57cc976d8af3906686b033ab2b6ea7dfc1",
-        "signature": "ed33375bb6c38ae7d8ebf68a48f3ef4603afa898f29719508f4e5fd220d917a2"
+        "version": "4eba63041b36232739ff19a10162d3a8401bddb1425aa68b58a15980319f3045",
+        "signature": "4ba7f97b4674db32e1df146a79a65a0e583fad83f84044cf608495fa16fddd0b"
       },
       "../src/validation.ts": {
-        "version": "53fbdc30ee7a5fac8dad3abffefcd759eb3a13d6033f47a183fb9facebdfca56",
-        "signature": "d53dc8ae4759665eb632ceba4323fff7e7e906d8790385837a2c65ebbcaf6b72"
+        "version": "3d27fd61ab47b11413ab74bb8f27fadf793cb0cd12bf8eb06adfe592387add72",
+        "signature": "b55c76bd37515ef73ae13a0d7effbfce253d8534fe9a4d81afe2216cdd71972f"
       },
       "../src/rrcs_node.ts": {
-        "version": "297809e8fbd266bf014027277f0d244d79fabf42b38da3dfec752e35b8776aba",
-        "signature": "71ca77f33155de04223177d685ce567d2ad8491d21f5ca2ef74a8b6f23d641d7"
+        "version": "854d0600c8639332d74d57c56bc770d1cd57c24ef63b27d94db8d69b86be7a4a",
+        "signature": "97ead5f397b7fcfb0b07ef4bcee6d09de68bc18d198dea7c7ca10b30c428ea2c"
       },
       "../src/server.ts": {
         "version": "8875b3ea536381dd084501d6fa57203ef3e296bc3525f5dfd722ce68675948dc",
@@ -862,7 +862,7 @@
         "signature": "ad015745dadccdbcfad819c08bb54af1e4ce899f015b108ee0c6d3b45f55f988"
       },
       "../src/rrcs_node_mode.ts": {
-        "version": "1d8fd591482dd88150f90b353ba64c64c421ad1471a8adedd57f0b115d916a6b",
+        "version": "301d45c4a50bb3c983107ce1d98b60078f62e03e53bd48445bf2a3f779c6a0a5",
         "signature": "ad015745dadccdbcfad819c08bb54af1e4ce899f015b108ee0c6d3b45f55f988"
       },
       "../src/server_mode.ts": {
@@ -2104,6 +2104,7 @@
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
       "../src/rrcs_defs.ts": [
+        "../node_modules/@types/lodash/ts3.1/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -4823,7 +4824,6 @@
       "../src/headtracking.ts",
       "../node_modules/ajv/lib/ajv.d.ts",
       "../node_modules/@types/xmlrpc/index.d.ts",
-      "../src/rrcs_defs.ts",
       "../src/rrcs.ts",
       "../src/validation.ts",
       "../src/rrcs_node.ts",
@@ -4891,6 +4891,7 @@
       "../node_modules/@types/terminal-kit/rect.d.ts",
       "../node_modules/@types/terminal-kit/index.d.ts",
       "../src/headtracker_serial.ts",
+      "../src/headtracker_bridge.ts",
       "../node_modules/usb-detection/index.d.ts",
       "../src/headtracker_bridge_mode.ts",
       "../node_modules/commander/typings/index.d.ts",
@@ -4911,7 +4912,7 @@
       "../node_modules/@types/json-schema/index.d.ts",
       "../node_modules/@types/minimatch/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/headtracker_bridge.ts"
+      "../src/rrcs_defs.ts"
     ]
   },
   "version": "3.7.3"

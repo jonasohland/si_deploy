@@ -23,14 +23,26 @@ const util_1 = require("./util");
 const Validation = __importStar(require("./validation"));
 const log = Logger.get('RRCSMD');
 class Sync extends core_1.ManagedNodeStateObject {
-    constructor(sync) {
+    constructor(sync, remote) {
         super();
+        this.remote = remote;
         this.data = sync;
     }
     addSlaves(slvs) {
         slvs.forEach(slv => {
-            if (this.data.slaves.find(s => rrcs_defs_1.xpEqual(s.xp, slv.xp)) == null)
+            if (this.data.slaves.find(s => rrcs_defs_1.xpEqual(s.xp, slv.xp)) == null) {
+                log.debug(`Add slave xp ${rrcs_defs_1.__xpid(slv.xp)}`);
                 this.data.slaves.push(slv);
+            }
+        });
+    }
+    removeSlaves(slvs) {
+        slvs.forEach(slv => {
+            let idx = this.data.slaves.findIndex(s => rrcs_defs_1.xpEqual(s.xp, slv.xp));
+            if (idx != -1) {
+                log.debug(`Remove slave xp ${rrcs_defs_1.__xpid(slv.xp)}`);
+                this.data.slaves.splice(idx, 1);
+            }
         });
     }
     setState(state) {
@@ -46,13 +58,19 @@ class Sync extends core_1.ManagedNodeStateObject {
     }
 }
 class SyncList extends core_1.ManagedNodeStateMapRegister {
+    setRemote(remote) {
+        this.remote = remote;
+        this._object_iter().forEach((obj) => {
+            obj.remote = remote;
+        });
+    }
     remove(name, obj) {
         return __awaiter(this, void 0, void 0, function* () {
         });
     }
     insert(name, obj) {
         return __awaiter(this, void 0, void 0, function* () {
-            return new Sync(obj);
+            return new Sync(obj, this.remote);
         });
     }
     allSyncs() {
@@ -80,7 +98,7 @@ class RRCSNodeModule extends core_1.NodeModule {
             existing.save().catch(err => 'Could not update node ' + err);
         }
         else {
-            this.syncs.add(rrcs_defs_1.xpvtid(sync.master), new Sync(sync));
+            this.syncs.add(rrcs_defs_1.xpvtid(sync.master), new Sync(sync, this.rrcs));
             this.syncs.save().catch(err => 'Could not update node ' + err);
         }
         this._webif_update_sync_list();
@@ -93,8 +111,25 @@ class RRCSNodeModule extends core_1.NodeModule {
             this._server._webif.broadcastError('RRCS', 'Failed to add new XPSync ' + err);
         });
     }
+    addSlaveToSync(msg) {
+        let mastersync = this.syncs.getSyncForMaster(msg.masterid);
+        if (mastersync) {
+            mastersync.addSlaves([msg.slave]);
+            mastersync.save().catch(err => log.error(`Could not write data to node ${err}`));
+            this._webif_update_sync_list();
+        }
+    }
+    removeSlaveFromSync(msg) {
+        let mastersync = this.syncs.getSyncForMaster(msg.masterid);
+        if (mastersync) {
+            mastersync.removeSlaves([msg.slave]);
+            mastersync.save().catch(err => log.error(`Could not write data to node ${err}`));
+            this._webif_update_sync_list();
+        }
+    }
     start(remote) {
         this.rrcs = remote.getRequester('rrcs');
+        this.syncs.setRemote(this.rrcs);
         this.save().catch(err => {
             log.error('Could write data to node ' + err);
         });
@@ -172,15 +207,28 @@ class RRCSNodeModule extends core_1.NodeModule {
 class RRCSServerModule extends core_1.ServerModule {
     constructor() {
         super('rrcs');
-        this.xpsync_validator
+        this.validate_xpsync
             = Validation.getValidator(Validation.Validators.CrosspointSync);
+        this.validate_add_xpvt_msg = Validation.getValidator(Validation.Validators.AddCrosspointVolumeTargetMessage);
     }
     init() {
         this.handleWebInterfaceEvent('add-xp-sync', (socket, node, data) => {
-            if (this.xpsync_validator(data))
+            if (this.validate_xpsync(data))
                 node.rrcs.addXpSync(data);
             else
                 this.server._webif.broadcastError('RRCS', 'Could not add new XPSync: missing data');
+        });
+        this.handleWebInterfaceEvent('xp-add-slave', (socket, node, data) => {
+            if (this.validate_add_xpvt_msg(data))
+                node.rrcs.addSlaveToSync(data);
+            else
+                this.server._webif.broadcastError('RRCS', 'Could not add new XPSync slave: missing data');
+        });
+        this.handleWebInterfaceEvent('xp-remove-slave', (socket, node, data) => {
+            if (this.validate_add_xpvt_msg(data))
+                node.rrcs.removeSlaveFromSync(data);
+            else
+                this.server._webif.broadcastError('RRCS', 'Could not remove XPSync slave: missing data');
         });
     }
     joined(socket, topic) {

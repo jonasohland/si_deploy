@@ -1,7 +1,23 @@
 {
-  "$ref": "#/definitions/CrosspointSync",
+  "$ref": "#/definitions/AddCrosspointVolumeTargetMessage",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
+    "AddCrosspointVolumeTargetMessage": {
+      "additionalProperties": false,
+      "properties": {
+        "masterid": {
+          "type": "string"
+        },
+        "slave": {
+          "$ref": "#/definitions/CrosspointVolumeTarget"
+        }
+      },
+      "required": [
+        "masterid",
+        "slave"
+      ],
+      "type": "object"
+    },
     "Crosspoint": {
       "additionalProperties": false,
       "properties": {
@@ -15,49 +31,6 @@
       "required": [
         "Source",
         "Destination"
-      ],
-      "type": "object"
-    },
-    "CrosspointSync": {
-      "additionalProperties": false,
-      "properties": {
-        "master": {
-          "$ref": "#/definitions/CrosspointVolumeSource"
-        },
-        "slaves": {
-          "items": {
-            "$ref": "#/definitions/CrosspointVolumeTarget"
-          },
-          "type": "array"
-        },
-        "state": {
-          "type": "boolean"
-        },
-        "vol": {
-          "type": "number"
-        }
-      },
-      "required": [
-        "state",
-        "vol",
-        "master",
-        "slaves"
-      ],
-      "type": "object"
-    },
-    "CrosspointVolumeSource": {
-      "additionalProperties": false,
-      "properties": {
-        "conf": {
-          "type": "boolean"
-        },
-        "xp": {
-          "$ref": "#/definitions/Crosspoint"
-        }
-      },
-      "required": [
-        "xp",
-        "conf"
       ],
       "type": "object"
     },
