@@ -534,8 +534,8 @@
         "signature": "5aaeff31b20543d93e1ccd5afa7c11a960738bf39894990658b6709d5621d203"
       },
       "../src/headtracking.ts": {
-        "version": "8467d77bf2eaf1dc4d4001c710bb321aaf6b3357121c27a5809eceb9c7f6aaf3",
-        "signature": "4d8fb92b3894eee04e5e9fb57d94665ff621fcb1b14c8d6b0b60aaa702f3b88e"
+        "version": "ca07bce6943423984e1f62e608ab0d19415d7baaf4e5f5daabf626bf3515a278",
+        "signature": "c8ce637be3a2d879323623f1c9959d7d52b20605ef184b5648ebb5020e48bc8a"
       },
       "../node_modules/ajv/lib/ajv.d.ts": {
         "version": "e1459cac7fec9e92eba10b478c2be25ca0d12a2055dd8c3f872a35301ab60ab5",
@@ -818,8 +818,8 @@
         "signature": "3dda1613a468ce767d2556bc205236220c2a31df3bbc90daa2fad486cf9c0adc"
       },
       "../src/headtracker_bridge.ts": {
-        "version": "a0b93431577363e4ca43fcddce7ade7d88376158da165a5c5db1b8dd7cbbadb4",
-        "signature": "668d2e6487200fbf0ac83f3e7705017fc5fb8631d1ea5a136b32a2b002c41105"
+        "version": "d4fad7b57ec5662870a1427c32cc29be4a6476149cc6807c5dda0ff34fab9b92",
+        "signature": "6e7341189bd00a9ece5faf877a48d07df8e0db9b642c4fa8c80716bc1f90d840"
       },
       "../node_modules/usb-detection/index.d.ts": {
         "version": "164e38870dc49985cf343948b61574198b2a3c401ec26358c5a80c1e329ef9ec",
@@ -2074,7 +2074,7 @@
       ],
       "../src/headtracking.ts": [
         "../node_modules/@types/node/dgram.d.ts",
-        "../node_modules/@types/dnssd/index.d.ts",
+        "../node_modules/@types/mdns/index.d.ts",
         "../node_modules/@types/node/events.d.ts",
         "../src/log.ts",
         "../src/headtracker_network.ts",
@@ -2801,7 +2801,7 @@
       ],
       "../src/headtracker_bridge.ts": [
         "../node_modules/@types/node/dgram.d.ts",
-        "../node_modules/@types/dnssd/index.d.ts",
+        "../node_modules/@types/mdns/index.d.ts",
         "../node_modules/@types/node/events.d.ts",
         "../node_modules/@types/express/index.d.ts",
         "../node_modules/@types/node/net.d.ts",
@@ -4053,7 +4053,7 @@
         "../src/web_interface.ts"
       ],
       "../src/headtracking.ts": [
-        "../node_modules/@types/dnssd/index.d.ts",
+        "../node_modules/@types/mdns/index.d.ts",
         "../src/headtracker.ts",
         "../src/web_interface.ts",
         "../src/core.ts"
@@ -4613,7 +4613,7 @@
       ],
       "../src/headtracker_bridge.ts": [
         "../node_modules/winston/index.d.ts",
-        "../node_modules/@types/dnssd/index.d.ts",
+        "../node_modules/@types/mdns/index.d.ts",
         "../node_modules/@types/node/dgram.d.ts",
         "../src/headtracker.ts",
         "../node_modules/@types/node/net.d.ts",
@@ -4832,6 +4832,7 @@
       "../src/users.ts",
       "../src/dsp_node.ts",
       "../src/rest.ts",
+      "../src/web_interface.ts",
       "../src/core.ts",
       "../src/vst.ts",
       "../src/dsp_graph.ts",
@@ -4890,7 +4891,6 @@
       "../node_modules/@types/terminal-kit/rect.d.ts",
       "../node_modules/@types/terminal-kit/index.d.ts",
       "../src/headtracker_serial.ts",
-      "../src/headtracker_bridge.ts",
       "../node_modules/usb-detection/index.d.ts",
       "../src/headtracker_bridge_mode.ts",
       "../node_modules/commander/typings/index.d.ts",
@@ -4911,7 +4911,7 @@
       "../node_modules/@types/json-schema/index.d.ts",
       "../node_modules/@types/minimatch/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/web_interface.ts"
+      "../src/headtracker_bridge.ts"
     ]
   },
   "version": "3.7.3"

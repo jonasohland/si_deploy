@@ -20,7 +20,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const dgram_1 = __importDefault(require("dgram"));
-const dnssd = __importStar(require("dnssd"));
+const mdns_1 = __importDefault(require("mdns"));
 const events_1 = require("events");
 const express_1 = __importDefault(require("express"));
 const serialport_1 = __importDefault(require("serialport"));
@@ -91,7 +91,7 @@ class HeadtrackerBridgeDevice extends events_1.EventEmitter {
             : this.lhtrk.shtrk._id}`;
         log.info('Headtracker ready. Adding new mdns advertisement: _htrk._udp.'
             + sname);
-        this._adv = new dnssd.Advertisement(dnssd.udp('_htrk'), this._sock.address().port, { host: sname, name: sname });
+        this._adv = new mdns_1.default.Advertisement(mdns_1.default.udp('_htrk'), this._sock.address().port, { host: sname, name: sname });
         this._adv.start();
     }
     onMessage(msg, addrinfo) {
@@ -183,9 +183,7 @@ class HeadtrackerBridgeDevice extends events_1.EventEmitter {
     destroy() {
         this._sock.close();
         if (this._adv)
-            this._adv.stop(false, () => {
-                log.info('Advertisement for ' + this.path + ' removed');
-            });
+            this._adv.stop();
         this.lhtrk.destroy().catch((err) => {
             log.warn('Could not close port: ' + err);
         });

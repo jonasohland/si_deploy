@@ -1,5 +1,5 @@
 /// <reference types="socket.io" />
-import dnssd from 'dnssd';
+import dnssd from 'mdns';
 import { Headtracker, HeadtrackerConfigPacket } from './headtracker';
 import WebInterface from './web_interface';
 import { ServerModule } from './core';

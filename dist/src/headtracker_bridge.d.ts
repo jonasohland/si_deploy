@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import dgram, { RemoteInfo } from 'dgram';
-import * as dnssd from 'dnssd';
+import mdns from 'mdns';
 import { EventEmitter } from 'events';
 import express from 'express';
 import { AddressInfo } from 'net';
@@ -10,7 +10,7 @@ export declare class HeadtrackerBridgeDevice extends EventEmitter {
     private lhtrk;
     private output;
     path: string;
-    _adv: dnssd.Advertisement;
+    _adv: mdns.Advertisement;
     _sock: dgram.Socket;
     conf: HeadtrackerConfigPacket;
     remote: AddressInfo;

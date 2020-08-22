@@ -10,7 +10,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const dnssd_1 = __importDefault(require("dnssd"));
+const mdns_1 = __importDefault(require("mdns"));
 const Logger = __importStar(require("./log"));
 const headtracker_network_1 = require("./headtracker_network");
 const headtracker_1 = require("./headtracker");
@@ -31,12 +31,12 @@ class Headtracking extends core_1.ServerModule {
         this.trackers = [];
         this.local_interface = netif;
         this.webif = interf;
-        this.browser = new dnssd_1.default.Browser(dnssd_1.default.udp('_htrk'), {
-            interface: netif,
+        this.browser = new mdns_1.default.Browser(mdns_1.default.udp('_htrk'), {
+            networkInterface: netif,
         });
         this.browser.on('serviceUp', this.serviceFound.bind(this));
         this.browser.on('serviceDown', this.serviceRemoved.bind(this));
-        this.browser.on('error', err => log.error(`MDNS-SD brower [Headtracking] error ${err}`));
+        this.browser.on('error', (err) => log.error(`MDNS-SD brower [Headtracking] error ${err}`));
         this.browser.start();
         let self = this;
         this.webif.io.on('connection', socket => {
