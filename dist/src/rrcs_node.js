@@ -117,6 +117,12 @@ class RRCSNodeModule extends core_1.NodeModule {
             mastersync.addSlaves([msg.slave]);
             mastersync.save().catch(err => log.error(`Could not write data to node ${err}`));
             this._webif_update_sync_list();
+            this.rrcs.set('xp-sync-add-slaves', {
+                master: msg.masterid,
+                slaves: [msg.slave]
+            }).catch(err => {
+                log.error(`Could not write changes to rrcs ${err}`);
+            });
         }
     }
     removeSlaveFromSync(msg) {
@@ -125,6 +131,12 @@ class RRCSNodeModule extends core_1.NodeModule {
             mastersync.removeSlaves([msg.slave]);
             mastersync.save().catch(err => log.error(`Could not write data to node ${err}`));
             this._webif_update_sync_list();
+            this.rrcs.set('xp-sync-remove-slaves', {
+                master: msg.masterid,
+                slaves: [msg.slave]
+            }).catch(err => {
+                log.error(`Could not write changes to rrcs ${err}`);
+            });
         }
     }
     start(remote) {

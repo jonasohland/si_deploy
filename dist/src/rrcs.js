@@ -223,13 +223,13 @@ class RRCSServer extends eventemitter2_1.EventEmitter2 {
     setXP(xp) {
         return __awaiter(this, void 0, void 0, function* () {
             log.debug(`Set XP ${rrcs_defs_1.__xpid(xp)}`);
-            this._perform_method_call('SetXp', this._get_trs_key(), ...crosspointToParams(xp, 2));
+            return this._perform_method_call('SetXp', this._get_trs_key(), ...crosspointToParams(xp, 2));
         });
     }
     killXP(xp) {
         return __awaiter(this, void 0, void 0, function* () {
             log.debug(`Kill XP ${rrcs_defs_1.__xpid(xp)}`);
-            this._perform_method_call('KillXp', this._get_trs_key(), ...crosspointToParams(xp, 2));
+            return this._perform_method_call('KillXp', this._get_trs_key(), ...crosspointToParams(xp, 2));
         });
     }
     _perform_method_call(method, ...params) {
@@ -428,8 +428,49 @@ class RRCSService extends RRCSServer {
         });
     }
     xpSyncAddSlaves(msg) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let master = this._synced[msg.master];
+            if (master) {
+                for (let slave of msg.slaves) {
+                    let slidx = master.slaves.findIndex(s => rrcs_defs_1.xpEqual(s.xp, slave.xp));
+                    if (slidx == -1) {
+                        master.slaves.push(slave);
+                        if (slave.set && master.state) {
+                            try {
+                                yield this._try_set_xp(slave.xp);
+                            }
+                            catch (err) {
+                                log.error(`Could not set newly added XP ${rrcs_defs_1.__xpid(slave.xp)}: ${err}`);
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
     xpSyncRemoveSlaves(msg) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let master = this._synced[msg.master];
+            if (master) {
+                for (let slave of msg.slaves) {
+                    let slidx = master.slaves.findIndex(s => rrcs_defs_1.xpEqual(s.xp, slave.xp));
+                    if (slidx != -1) {
+                        let removedarr = master.slaves.splice(slidx, 1);
+                        if (removedarr.length) {
+                            log.debug(`Removed slave XP ${rrcs_defs_1.__xpid(removedarr[0].xp)} from ${msg.master}`);
+                            if (master.state && removedarr[0].set) {
+                                try {
+                                    yield this._try_kill_xp(removedarr[0].xp);
+                                }
+                                catch (err) {
+                                    log.error(`Could not kill recently removed XP ${rrcs_defs_1.__xpid(slave.xp)}: ${err}`);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
     newXPSync(master, slaves) {
         let id = rrcs_defs_1.xpvtid(master);
@@ -447,11 +488,15 @@ class RRCSService extends RRCSServer {
         let masterid = rrcs_defs_1.xpvtid(master);
         if (this._synced[masterid]) {
             slaves.forEach(sl => {
+                // This slave is not already synced to master
                 if (this._synced[masterid].slaves.findIndex(lslave => rrcs_defs_1.xpVtEqual(lslave, sl))
                     == -1) {
                     log.info(`Add new sync target ${rrcs_defs_1.__xpid(sl.xp)} to ${masterid}`);
                     this._synced[masterid].slaves.push(sl);
                     this.updateCrosspoint(sl, this._synced[masterid].vol);
+                    if (sl.set && this._synced[masterid].state) {
+                        this._try_set_xp(sl.xp).catch((err) => log.error(`Could not set newly added XP ${rrcs_defs_1.__xpid(sl.xp)}: ${err}`));
+                    }
                 }
             });
         }
@@ -477,6 +522,10 @@ class RRCSService extends RRCSServer {
             ]);
         });
     }
+    updateStateForWildcardSync(sync) {
+        return __awaiter(this, void 0, void 0, function* () {
+        });
+    }
     updateCrosspoint(xpv, vol) {
         this.setXPVolume(xpv.xp, vol, xpv.single, xpv.conf);
     }
@@ -487,8 +536,11 @@ class RRCSService extends RRCSServer {
         });
     }
     onArtistConfigurationChanged() {
-        this.getActiveXps();
-        this.emit('config-changed');
+        this.refreshAllXPs().then(() => {
+            this.emit('config-changed');
+        }).catch(err => {
+            log.error(`Failed to refresh all XPs after artist config change: ${err}`);
+        });
     }
     onXpValueChanged(crosspoint, single, conf) {
         let mid_single = rrcs_defs_1.xpvtid({ conf: false, xp: crosspoint });
@@ -511,10 +563,12 @@ class RRCSService extends RRCSServer {
                     continue;
                 this.trySyncCrosspointForMaster(rrcs_defs_1.xpvtid({ xp: xpstate.xp, conf: false }), xpstate, updated);
                 this.trySyncCrosspointForMaster(rrcs_defs_1.xpvtid({ xp: xpstate.xp, conf: true }), xpstate, updated);
-                yield this.trySyncCrosspointForWildcardMaster(rrcs_defs_1.xpvtid({
-                    xp: rrcs_defs_1.withDestinationAsDestinationWildcard(xpstate.xp),
-                    conf: false
-                }), xpstate, updated);
+                /* await this.trySyncCrosspointForWildcardMaster(
+                    xpvtid({
+                        xp : withDestinationAsDestinationWildcard(xpstate.xp),
+                        conf : false
+                    }),
+                    xpstate, updated); */
                 yield this.trySyncCrosspointForWildcardMaster(rrcs_defs_1.xpvtid({
                     xp: rrcs_defs_1.withDestinationeAsSourceWildcard(xpstate.xp),
                     conf: false
@@ -523,10 +577,12 @@ class RRCSService extends RRCSServer {
                     xp: rrcs_defs_1.withSourceAsDestinationWildcard(xpstate.xp),
                     conf: false
                 }), xpstate, updated);
-                yield this.trySyncCrosspointForWildcardMaster(rrcs_defs_1.xpvtid({
-                    xp: rrcs_defs_1.withSourceAsSourceWildcard(xpstate.xp),
-                    conf: false
-                }), xpstate, updated);
+                /* await this.trySyncCrosspointForWildcardMaster(
+                    xpvtid({
+                        xp : withSourceAsSourceWildcard(xpstate.xp),
+                        conf : false
+                    }),
+                    xpstate, updated); */
             }
             if (updated.length) {
                 this.emit('xp-states-changed', updated);
@@ -621,16 +677,47 @@ class RRCSService extends RRCSServer {
     }
     refreshAllXPs() {
         return __awaiter(this, void 0, void 0, function* () {
-            let xps = yield this.getActiveXps();
+            // clear all master crosspoint states
             this._clear_all_xpstates();
+            // kill all crosspoints we might have set
+            for (let masterid of Object.keys(this._synced)) {
+                let master = this._synced[masterid];
+                for (let slave of master.slaves) {
+                    if (slave.set) {
+                        try {
+                            yield this._try_kill_xp(slave.xp);
+                        }
+                        catch (err) {
+                            log.error(`Failed to kill XP ${rrcs_defs_1.__xpid(slave.xp)}`);
+                        }
+                    }
+                }
+            }
+            // get all active crosspoints from artist
+            let xps = (yield this.getActiveXps()).filter(xp => !rrcs_defs_1.isLoopbackXP(xp));
+            // set all master-xp states (also wildcards)
             xps.forEach(xp => {
-                let singleid = rrcs_defs_1.xpvtid({ xp, conf: false });
-                let confid = rrcs_defs_1.xpvtid({ xp, conf: true });
-                if (this._synced[singleid])
-                    this._synced[singleid].state = true;
-                if (this._synced[confid])
-                    this._synced[confid].state = true;
+                // clang-format off
+                this._set_sync_state_on(rrcs_defs_1.xpvtid({ xp, conf: false }));
+                this._set_sync_state_on(rrcs_defs_1.xpvtid({ xp, conf: true }));
+                this._set_sync_state_on(rrcs_defs_1.xpvtid({ xp: rrcs_defs_1.withSourceAsDestinationWildcard(xp), conf: false }));
+                this._set_sync_state_on(rrcs_defs_1.xpvtid({ xp: rrcs_defs_1.withDestinationeAsSourceWildcard(xp), conf: false }));
+                // clang-format on
             });
+            // set all xps that should be set
+            for (let masterid of Object.keys(this._synced)) {
+                let master = this._synced[masterid];
+                for (let slave of master.slaves) {
+                    if (master.state && slave.set) {
+                        try {
+                            yield this._try_set_xp(slave.xp);
+                        }
+                        catch (err) {
+                            log.error(`Failed to set XP ${rrcs_defs_1.__xpid(slave.xp)}`);
+                        }
+                    }
+                }
+            }
             let syncstates = [];
             for (let key of Object.keys(this._synced))
                 syncstates.push({
@@ -654,6 +741,10 @@ class RRCSService extends RRCSServer {
     _clear_all_xpstates() {
         for (let key of Object.keys(this._synced))
             this._synced[key].state = false;
+    }
+    _set_sync_state_on(masterid) {
+        if (this._synced[masterid])
+            this._synced[masterid].state = true;
     }
     _try_set_xp(xp) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -731,8 +822,8 @@ exports.RRCSService = RRCSService;
                       log.error('Could not convert arg to OSC Type ' + err);
                   }
 
-                  this.local_sock.send(toBuffer(msg), this.config.rrcs_osc_port,
-                                       this.config.rrcs_osc_host);
+                  this.local_sock.send(toBuffer(msg),
+   this.config.rrcs_osc_port, this.config.rrcs_osc_host);
               });
     }
 
@@ -751,16 +842,15 @@ exports.RRCSService = RRCSService;
         let id = Number.parseInt(cmd[1]);
         switch (cmd.shift()) {
             case 'reset':
-                this.events.emit(HeadtrackerInputEvents.RESET_HEADTRACKER, id);
-                break;
-            case 'init':
-                this.events.emit(HeadtrackerInputEvents.CALIBRATE_STEP1, id);
-                break;
-            case 'on':
+                this.events.emit(HeadtrackerInputEvents.RESET_HEADTRACKER,
+   id); break; case 'init':
+                this.events.emit(HeadtrackerInputEvents.CALIBRATE_STEP1,
+   id); break; case 'on':
                 this.events.emit(HeadtrackerInputEvents.HEADTRACKER_ON, id);
                 break;
             case 'off':
-                this.events.emit(HeadtrackerInputEvents.HEADTRACKER_OFF, id);
+                this.events.emit(HeadtrackerInputEvents.HEADTRACKER_OFF,
+   id);
         }
     }
 
@@ -769,8 +859,8 @@ exports.RRCSService = RRCSService;
         let id = Number.parseInt(cmd[1]);
         switch (cmd.shift()) {
             case 'init':
-                this.events.emit(HeadtrackerInputEvents.CALIBRATE_STEP2, id);
-                break;
+                this.events.emit(HeadtrackerInputEvents.CALIBRATE_STEP2,
+   id); break;
         }
     }
 
@@ -779,7 +869,8 @@ exports.RRCSService = RRCSService;
         let cmd = str.split('-');
 
         switch (cmd.shift()) {
-            case 'headtracker': this.processHeadtrackerOffCommand(cmd); break;
+            case 'headtracker': this.processHeadtrackerOffCommand(cmd);
+   break;
         }
     }
 
@@ -789,7 +880,8 @@ exports.RRCSService = RRCSService;
             this.processStringCommand(params[1]);
         }
         catch (err) {
-            log.error(`Could not process string command from artist: ` + err);
+            log.error(`Could not process string command from artist: ` +
+   err);
         }
     }
     sendStringOff(params: any)

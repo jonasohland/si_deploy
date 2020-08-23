@@ -72,8 +72,8 @@ export declare abstract class RRCSServer extends EventEmitter2 {
     getXpStatus(xp: Crosspoint): Promise<boolean>;
     getActiveXps(): Promise<Crosspoint[]>;
     getXpsInRange(xp: Crosspoint): Promise<Crosspoint[]>;
-    setXP(xp: Crosspoint): Promise<void>;
-    killXP(xp: Crosspoint): Promise<void>;
+    setXP(xp: Crosspoint): Promise<unknown>;
+    killXP(xp: Crosspoint): Promise<unknown>;
     _perform_method_call(method: string, ...params: any[]): Promise<unknown>;
     private _modify_notifications;
     private _setup_notifications;
@@ -95,12 +95,13 @@ export declare class RRCSService extends RRCSServer {
     _synced: Record<string, CrosspointSync>;
     xpsToListenTo(): Crosspoint[];
     setXPSyncs(syncs: CrosspointSync[]): void;
-    xpSyncAddSlaves(msg: XPSyncModifySlavesMessage): void;
-    xpSyncRemoveSlaves(msg: XPSyncModifySlavesMessage): void;
+    xpSyncAddSlaves(msg: XPSyncModifySlavesMessage): Promise<void>;
+    xpSyncRemoveSlaves(msg: XPSyncModifySlavesMessage): Promise<void>;
     newXPSync(master: CrosspointVolumeSource, slaves: CrosspointVolumeTarget[]): void;
     addXPSync(master: CrosspointVolumeSource, slaves: CrosspointVolumeTarget[]): void;
     getAllXPStates(): void;
     updateStateForCrosspointSync(sync: CrosspointSync): Promise<void>;
+    updateStateForWildcardSync(sync: CrosspointSync): Promise<void>;
     updateCrosspoint(xpv: CrosspointVolumeTarget, vol: number): void;
     onArtistOnline(): Promise<void>;
     onArtistConfigurationChanged(): void;
@@ -113,6 +114,7 @@ export declare class RRCSService extends RRCSServer {
     refreshAllXPs(): Promise<void>;
     private _do_update_xp;
     private _clear_all_xpstates;
+    private _set_sync_state_on;
     private _try_set_xp;
     private _try_kill_xp;
 }
