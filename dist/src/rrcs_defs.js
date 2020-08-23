@@ -4,6 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const lodash_1 = __importDefault(require("lodash"));
+function isLoopbackXP(xp) {
+    return xp.Source.Port === xp.Destination.Port
+        && xp.Source.Node === xp.Destination.Node
+        && xp.Source.IsInput != xp.Destination.IsInput;
+}
+exports.isLoopbackXP = isLoopbackXP;
 function portEqual(lhs, rhs) {
     return lhs.Node === rhs.Node && lhs.Port === rhs.Port
         && lhs.IsInput === rhs.IsInput;
@@ -49,18 +55,32 @@ function sourcePortIsWildcard(xp) {
     return isWildcardPort(xp.Source);
 }
 exports.sourcePortIsWildcard = sourcePortIsWildcard;
-function asSourceWildcard(xp) {
+function withSourceAsSourceWildcard(xp) {
     return {
         Source: makeWildcardPort(),
-        Destination: lodash_1.default.cloneDeep(xp.Destination)
+        Destination: lodash_1.default.cloneDeep(xp.Source)
     };
 }
-exports.asSourceWildcard = asSourceWildcard;
-function asDestinationWildcard(xp) {
+exports.withSourceAsSourceWildcard = withSourceAsSourceWildcard;
+function withSourceAsDestinationWildcard(xp) {
     return {
         Source: lodash_1.default.cloneDeep(xp.Source),
         Destination: makeWildcardPort()
     };
 }
-exports.asDestinationWildcard = asDestinationWildcard;
+exports.withSourceAsDestinationWildcard = withSourceAsDestinationWildcard;
+function withDestinationeAsSourceWildcard(xp) {
+    return {
+        Source: makeWildcardPort(),
+        Destination: lodash_1.default.cloneDeep(xp.Destination)
+    };
+}
+exports.withDestinationeAsSourceWildcard = withDestinationeAsSourceWildcard;
+function withDestinationAsDestinationWildcard(xp) {
+    return {
+        Source: lodash_1.default.cloneDeep(xp.Destination),
+        Destination: makeWildcardPort()
+    };
+}
+exports.withDestinationAsDestinationWildcard = withDestinationAsDestinationWildcard;
 //# sourceMappingURL=rrcs_defs.js.map

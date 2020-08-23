@@ -546,12 +546,12 @@
         "signature": "0f471f60179daaee4768a5cc4426708e4299a3c741e4f95cda952efac922ef07"
       },
       "../src/rrcs_defs.ts": {
-        "version": "f30f81727d41f7df5ff5fe2fee8dc5fa72da86d3e4e9241edfc69d96674b8d64",
-        "signature": "43889c432d081f064500999fbd0f48920f5a08199a7afc0ef9b26755fcda6a77"
+        "version": "a870efa94aa545c8372cb2014fd5e9f613a0bcce27f57cfe32101c22f451babb",
+        "signature": "c6b81024b183fa1192ad7d7bfc65d0cd3333e90f174c465b9fc03460bdc31e3b"
       },
       "../src/rrcs.ts": {
-        "version": "4eba63041b36232739ff19a10162d3a8401bddb1425aa68b58a15980319f3045",
-        "signature": "4ba7f97b4674db32e1df146a79a65a0e583fad83f84044cf608495fa16fddd0b"
+        "version": "02e6fe44c8be8c7c004bf90da24c9b6afb84874e6c0d2fdc14e6f7da078974f9",
+        "signature": "274dc5647c3dc32db5e13c1d47de9a578d8c90c7207a0e9a76659f2d3234eaf2"
       },
       "../src/validation.ts": {
         "version": "3d27fd61ab47b11413ab74bb8f27fadf793cb0cd12bf8eb06adfe592387add72",
@@ -920,6 +920,7 @@
           "typings/*"
         ]
       },
+      "watch": true,
       "configFilePath": "../tsconfig.json"
     },
     "referencedMap": {
@@ -2103,8 +2104,8 @@
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
       "../src/rrcs_defs.ts": [
-        "../node_modules/@types/lodash/ts3.1/index.d.ts",
         "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/lodash/ts3.1/index.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
@@ -4824,7 +4825,6 @@
       "../node_modules/ajv/lib/ajv.d.ts",
       "../node_modules/@types/xmlrpc/index.d.ts",
       "../src/rrcs_defs.ts",
-      "../src/rrcs.ts",
       "../src/validation.ts",
       "../src/rrcs_node.ts",
       "../src/server.ts",
@@ -4898,6 +4898,7 @@
       "../node_modules/@types/ini/index.d.ts",
       "../src/server_config.ts",
       "../src/headtracker_mode.ts",
+      "../src/index.ts",
       "../src/install_service.ts",
       "../src/modules.ts",
       "../src/node_mode.ts",
@@ -4911,7 +4912,7 @@
       "../node_modules/@types/json-schema/index.d.ts",
       "../node_modules/@types/minimatch/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/index.ts"
+      "../src/rrcs.ts"
     ]
   },
   "version": "3.7.3"

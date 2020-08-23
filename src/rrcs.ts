@@ -12,14 +12,19 @@ import {
     CrosspointVolumeSource,
     CrosspointVolumeSourceState,
     CrosspointVolumeTarget,
+    destinationPortIsWildcard,
+    isLoopbackXP,
+    isWildcardXP,
+    portEqual,
+    sourcePortIsWildcard,
+    withDestinationAsDestinationWildcard,
+    withDestinationeAsSourceWildcard,
+    withSourceAsDestinationWildcard,
+    withSourceAsSourceWildcard,
     xpEqual,
     XPSyncModifySlavesMessage,
     xpVtEqual,
-    xpvtid,
-    asSourceWildcard,
-    asDestinationWildcard,
-    destinationPortIsWildcard,
-    sourcePortIsWildcard
+    xpvtid
 } from './rrcs_defs';
 
 const log    = Logger.get('RRCSSV');
@@ -125,7 +130,7 @@ class ArtistNode {
 function crosspointToParams(xp: Crosspoint, net: number)
 {
     return [
-        net, xp.Source.Node, xp.Source.Port, net, xp.Destination.Node,
+        net - 1, xp.Source.Node, xp.Source.Port, net - 1, xp.Destination.Node,
         xp.Destination.Port
     ];
 }
@@ -389,12 +394,17 @@ export abstract class RRCSServer extends EventEmitter2 {
 
     async addToXPVolNotifyRegistry(xps: Crosspoint[])
     {
-        return this._modify_notifications('XpVolumeChangeRegistryAdd', xps);
+        xps = xps.filter(xp => !isWildcardXP(xp));
+        if (xps.length)
+            return this._modify_notifications('XpVolumeChangeRegistryAdd', xps);
     }
 
     async removeFromXPVolNotifyRegistry(xps: Crosspoint[])
     {
-        return this._modify_notifications('XpVolumeChangeRegistryRemove', xps);
+        xps = xps.filter(xp => !isWildcardXP(xp));
+        if (xps.length)
+            return this._modify_notifications(
+                'XpVolumeChangeRegistryRemove', xps);
     }
 
     private _gateway_went_online()
@@ -665,29 +675,90 @@ export class RRCSService extends RRCSServer {
         }
     }
 
-    onXpsChanged(xps: CrosspointState[])
+    async onXpsChanged(xps: CrosspointState[])
     {
         let updated = <CrosspointVolumeSourceState[]>[];
         for (let xpstate of xps) {
-            let masterid_conf   = xpvtid({ xp : xpstate.xp, conf : false });
-            let masterid_single = xpvtid({ xp : xpstate.xp, conf : true });
-            let masterid_srcwildcard = xpvtid({ xp: asSourceWildcard(xpstate.xp), conf: false });
-            let masterid_dstwildcard = xpvtid({ xp: asDestinationWildcard(xpstate.xp), conf: false });
 
-            if (this._synced[masterid_conf]) { 
-                this.syncCrosspointsForMaster(
-                    this._synced[masterid_conf], xpstate.state);
-                updated.push({ xpid : masterid_conf, state : xpstate.state });
-            }
+            // ignore the Sidetone/Loopback XP
+            if (isLoopbackXP(xpstate.xp))
+                continue;
 
-            if (this._synced[masterid_single]) {
-                this.syncCrosspointsForMaster(
-                    this._synced[masterid_single], xpstate.state);
-                updated.push({ xpid : masterid_single, state : xpstate.state });
-            }
+            this.trySyncCrosspointForMaster(
+                xpvtid({ xp : xpstate.xp, conf : false }), xpstate, updated);
+            this.trySyncCrosspointForMaster(
+                xpvtid({ xp : xpstate.xp, conf : true }), xpstate, updated);
+
+            await this.trySyncCrosspointForWildcardMaster(
+                xpvtid({
+                    xp : withDestinationAsDestinationWildcard(xpstate.xp),
+                    conf : false
+                }),
+                xpstate, updated);
+
+            await this.trySyncCrosspointForWildcardMaster(
+                xpvtid({
+                    xp : withDestinationeAsSourceWildcard(xpstate.xp),
+                    conf : false
+                }),
+                xpstate, updated);
+
+            await this.trySyncCrosspointForWildcardMaster(
+                xpvtid({
+                    xp : withSourceAsDestinationWildcard(xpstate.xp),
+                    conf : false
+                }),
+                xpstate, updated);
+
+            await this.trySyncCrosspointForWildcardMaster(
+                xpvtid({
+                    xp : withSourceAsSourceWildcard(xpstate.xp),
+                    conf : false
+                }),
+                xpstate, updated);
         }
         if (updated.length) {
             this.emit('xp-states-changed', updated);
+        }
+    }
+
+    trySyncCrosspointForMaster(masterid: string, xpstate: CrosspointState,
+                               updated: CrosspointVolumeSourceState[])
+    {
+        if (this._synced[masterid]) {
+            this.syncCrosspointsForMaster(
+                this._synced[masterid], xpstate.state);
+            updated.push({ xpid : masterid, state : xpstate.state });
+        }
+    }
+
+    async trySyncCrosspointForWildcardMaster(masterid: string,
+                                             xpstate: CrosspointState,
+                                             updated:
+                                                 CrosspointVolumeSourceState[])
+    {
+        try {
+            if (this._synced[masterid]) {
+                if (await this.syncCrosspointsForWildcardMaster(
+                        this._synced[masterid], xpstate.state)) {
+                    updated.push({
+                        xpid : masterid,
+                        state : this._synced[masterid].state
+                    });
+
+                    for (let slave of this._synced[masterid].slaves) {
+                        if (slave.set) {
+                            if (this._synced[masterid].state)
+                                await this._try_set_xp(slave.xp);
+                            else
+                                await this._try_kill_xp(slave.xp);
+                        }
+                    }
+                }
+            }
+        }
+        catch (err) {
+            log.error(`Failed to update wildcard master ${masterid}: ${err}`);
         }
     }
 
@@ -709,18 +780,51 @@ export class RRCSService extends RRCSServer {
         }
     }
 
-    async syncCrosspointsForWildcardMaster(sync: CrosspointSync, newstate: boolean)
+    async syncCrosspointsForWildcardMaster(sync: CrosspointSync,
+                                           newstate: boolean)
     {
-        let wildcard_actives = <Crosspoint[]> [];
+        let wildcard_actives = <Crosspoint[]>[];
 
-        if (destinationPortIsWildcard(sync.master.xp))
-            wildcard_actives.push(...(await this.getXpsInRange({ Source: sync.master.xp.Source, Destination: sync.master.xp.Source })));
+        if (destinationPortIsWildcard(sync.master.xp)) {
 
-        if (sourcePortIsWildcard(sync.master.xp))
-            wildcard_actives.push(...(await this.getXpsInRange({ Source: sync.master.xp.Destination, Destination: sync.master.xp.Destination })));
+            let xps = await this.getXpsInRange({
+                Source : sync.master.xp.Source,
+                Destination : sync.master.xp.Source
+            });
+            wildcard_actives.push(
+                ...xps.filter(xp => portEqual(xp.Source, sync.master.xp.Source)
+                                    && !isLoopbackXP(xp)));
+        }
+
+        if (sourcePortIsWildcard(sync.master.xp)) {
+            let xps = await this.getXpsInRange({
+                Source : sync.master.xp.Destination,
+                Destination : sync.master.xp.Destination
+            });
+
+            wildcard_actives.push(...xps.filter(
+                xp => portEqual(xp.Destination, sync.master.xp.Destination)
+                      && !isLoopbackXP(xp)));
+        }
 
         if (wildcard_actives.length) {
-
+            log.debug(`Wildcard master ${xpvtid(sync.master)} still has ${
+                wildcard_actives.length} XPs`);
+            if (!sync.state) {
+                sync.state = true;
+                return true;
+            }
+            return false;
+        }
+        else {
+            log.debug(
+                `Wildcard master ${xpvtid(sync.master)} has no more active XPs`)
+            if (sync.state)
+            {
+                sync.state = false;
+                return true;
+            }
+            return false;
         }
     }
 

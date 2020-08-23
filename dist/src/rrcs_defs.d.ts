@@ -39,6 +39,7 @@ export interface CrosspointSync {
     master: CrosspointVolumeSource;
     slaves: CrosspointVolumeTarget[];
 }
+export declare function isLoopbackXP(xp: Crosspoint): boolean;
 export declare function portEqual(lhs: Port, rhs: Port): boolean;
 export declare function xpEqual(lhs: Crosspoint, rhs: Crosspoint): boolean;
 export declare function xpVtEqual(lhs: CrosspointVolumeTarget, rhs: CrosspointVolumeTarget): boolean;
@@ -49,5 +50,7 @@ export declare function isWildcardPort(port: Port): boolean;
 export declare function isWildcardXP(xp: Crosspoint): boolean;
 export declare function destinationPortIsWildcard(xp: Crosspoint): boolean;
 export declare function sourcePortIsWildcard(xp: Crosspoint): boolean;
-export declare function asSourceWildcard(xp: Crosspoint): Crosspoint;
-export declare function asDestinationWildcard(xp: Crosspoint): Crosspoint;
+export declare function withSourceAsSourceWildcard(xp: Crosspoint): Crosspoint;
+export declare function withSourceAsDestinationWildcard(xp: Crosspoint): Crosspoint;
+export declare function withDestinationeAsSourceWildcard(xp: Crosspoint): Crosspoint;
+export declare function withDestinationAsDestinationWildcard(xp: Crosspoint): Crosspoint;

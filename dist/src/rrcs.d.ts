@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import { EventEmitter2 } from 'eventemitter2';
 import xmlrpc from 'xmlrpc';
-import { Crosspoint, CrosspointState, CrosspointSync, CrosspointVolumeSource, CrosspointVolumeTarget, XPSyncModifySlavesMessage } from './rrcs_defs';
+import { Crosspoint, CrosspointState, CrosspointSync, CrosspointVolumeSource, CrosspointVolumeSourceState, CrosspointVolumeTarget, XPSyncModifySlavesMessage } from './rrcs_defs';
 interface ArtistPortInfo {
     Input: boolean;
     KeyCount: number;
@@ -105,9 +105,11 @@ export declare class RRCSService extends RRCSServer {
     onArtistOnline(): Promise<void>;
     onArtistConfigurationChanged(): void;
     onXpValueChanged(crosspoint: Crosspoint, single: number, conf: number): void;
-    onXpsChanged(xps: CrosspointState[]): void;
+    onXpsChanged(xps: CrosspointState[]): Promise<void>;
+    trySyncCrosspointForMaster(masterid: string, xpstate: CrosspointState, updated: CrosspointVolumeSourceState[]): void;
+    trySyncCrosspointForWildcardMaster(masterid: string, xpstate: CrosspointState, updated: CrosspointVolumeSourceState[]): Promise<void>;
     syncCrosspointsForMaster(sync: CrosspointSync, state: boolean): Promise<void>;
-    syncCrosspointsForWildcardMaster(sync: CrosspointSync, newstate: boolean): Promise<void>;
+    syncCrosspointsForWildcardMaster(sync: CrosspointSync, newstate: boolean): Promise<boolean>;
     refreshAllXPs(): Promise<void>;
     private _do_update_xp;
     private _clear_all_xpstates;
