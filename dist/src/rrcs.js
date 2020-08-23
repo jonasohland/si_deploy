@@ -531,8 +531,11 @@ class RRCSService extends RRCSServer {
     }
     onArtistOnline() {
         return __awaiter(this, void 0, void 0, function* () {
-            let activexps = yield this.getActiveXps();
-            // activexps.forEach(xp => { this })
+            this.refreshAllXPs().then(() => {
+                this.emit('config-changed');
+            }).catch(err => {
+                log.error(`Failed to refresh all XPs after artist config change: ${err}`);
+            });
         });
     }
     onArtistConfigurationChanged() {

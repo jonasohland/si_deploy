@@ -550,7 +550,7 @@
         "signature": "c6b81024b183fa1192ad7d7bfc65d0cd3333e90f174c465b9fc03460bdc31e3b"
       },
       "../src/rrcs.ts": {
-        "version": "66adc060a1a57bc0745ec6a20532ecc7e07e5b4ea7632f380cf326cc6fe70f34",
+        "version": "499027cd2a4e307d4f1488a8e54096ac8d4ddbb5df339527ccd8f278e802a363",
         "signature": "1da9582519f991364997bdff15175d8dfc840d50c18ba0e644e3ebbf32f4a470"
       },
       "../src/validation.ts": {
@@ -920,7 +920,6 @@
           "typings/*"
         ]
       },
-      "watch": true,
       "configFilePath": "../tsconfig.json"
     },
     "referencedMap": {
