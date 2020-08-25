@@ -16,6 +16,16 @@ function basicSpatializedInput(inputid, userid, type) {
     };
 }
 exports.basicSpatializedInput = basicSpatializedInput;
+function basicXTCData() {
+    return {
+        enabled: false,
+        accuracy: 1000,
+        dist_spk: 42,
+        dist_ears: 21.5,
+        dist_listerner: 60
+    };
+}
+exports.basicXTCData = basicXTCData;
 function basicUserData(name, channel) {
     return {
         name,
@@ -24,6 +34,7 @@ function basicUserData(name, channel) {
         headtracker: -1,
         inputs: [],
         room: null,
+        xtc: basicXTCData()
     };
 }
 exports.basicUserData = basicUserData;

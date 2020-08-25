@@ -1,0 +1,73 @@
+{
+  "$ref": "#/definitions/UserData",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "UserData": {
+      "additionalProperties": false,
+      "properties": {
+        "channel": {
+          "type": "number"
+        },
+        "headtracker": {
+          "type": "number"
+        },
+        "id": {
+          "type": "string"
+        },
+        "inputs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "name": {
+          "type": "string"
+        },
+        "room": {
+          "type": "string"
+        },
+        "xtc": {
+          "$ref": "#/definitions/XTCSettings"
+        }
+      },
+      "required": [
+        "name",
+        "id",
+        "channel",
+        "headtracker",
+        "room",
+        "xtc",
+        "inputs"
+      ],
+      "type": "object"
+    },
+    "XTCSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "accuracy": {
+          "type": "number"
+        },
+        "dist_ears": {
+          "type": "number"
+        },
+        "dist_listerner": {
+          "type": "number"
+        },
+        "dist_spk": {
+          "type": "number"
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "accuracy",
+        "enabled",
+        "dist_spk",
+        "dist_ears",
+        "dist_listerner"
+      ],
+      "type": "object"
+    }
+  }
+}

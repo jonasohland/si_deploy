@@ -51,7 +51,7 @@ export declare class NodeDSPGraphBuilder extends NodeModule {
     _dispatch_assign_headtracker(userid: string, headtrackerid: number): void;
     _dispatch_set_gain(userid: string, spid: string, gain: number): void;
     _build_user_modules(): void;
-    _find_spatializer(userid: string, spid: string): MultiSpatializerModule | RoomSpatializerModule;
+    _find_spatializer(userid: string, spid: string): RoomSpatializerModule | MultiSpatializerModule;
     _find_spatializers_for_room(room: string): RoomSpatializerModule[];
     getRooms(): import("./rooms").NodeRooms;
     nodeUsers(): import("./users").NodeUsersManager;

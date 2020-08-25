@@ -1,6 +1,7 @@
 import { v4 as uniqueId } from 'uuid';
 import { NodeAudioInputDescription } from "./inputs_defs";
 import { PortTypes, SourceUtils } from './dsp_defs';
+import { NumberFormatDefinition } from 'ajv';
 
 export interface SpatializedInputData {
     id: string,
@@ -14,12 +15,22 @@ export interface SpatializedInputData {
     width?: number,
 }
 
+
+export interface XTCSettings {
+    accuracy: number;
+    enabled: boolean;
+    dist_spk: number;
+    dist_ears: number;
+    dist_listerner: number;
+}
+
 export interface UserData {
     name: string;
     id: string;
     channel: number;
     headtracker: number;
     room: string;
+    xtc: XTCSettings;
     inputs: string[];
 }
 
@@ -56,6 +67,7 @@ export interface UserInputGainChangeMessage {
     user: string
 }
 
+
 export function basicSpatializedInput(inputid: string, userid: string, type: PortTypes): SpatializedInputData {
     let defaultSource = SourceUtils[type].defaults();
     return {
@@ -70,6 +82,17 @@ export function basicSpatializedInput(inputid: string, userid: string, type: Por
     }
 }
 
+export function basicXTCData()
+{
+    return {
+        enabled: false,
+        accuracy: 1000,
+        dist_spk: 42,
+        dist_ears: 21.5,
+        dist_listerner: 60
+    }
+}
+
 export function basicUserData(name: string, channel: number): UserData {
     return {
         name,
@@ -78,5 +101,6 @@ export function basicUserData(name: string, channel: number): UserData {
         headtracker: -1,
         inputs: [],
         room: null,
+        xtc: basicXTCData()
     }
 }

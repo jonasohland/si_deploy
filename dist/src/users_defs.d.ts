@@ -11,12 +11,20 @@ export interface SpatializedInputData {
     height?: number;
     width?: number;
 }
+export interface XTCSettings {
+    accuracy: number;
+    enabled: boolean;
+    dist_spk: number;
+    dist_ears: number;
+    dist_listerner: number;
+}
 export interface UserData {
     name: string;
     id: string;
     channel: number;
     headtracker: number;
     room: string;
+    xtc: XTCSettings;
     inputs: string[];
 }
 export interface UserAddInputsMessage {
@@ -47,4 +55,11 @@ export interface UserInputGainChangeMessage {
     user: string;
 }
 export declare function basicSpatializedInput(inputid: string, userid: string, type: PortTypes): SpatializedInputData;
+export declare function basicXTCData(): {
+    enabled: boolean;
+    accuracy: number;
+    dist_spk: number;
+    dist_ears: number;
+    dist_listerner: number;
+};
 export declare function basicUserData(name: string, channel: number): UserData;
