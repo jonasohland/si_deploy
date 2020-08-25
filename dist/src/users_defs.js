@@ -22,7 +22,7 @@ function basicXTCData() {
         accuracy: 1000,
         dist_spk: 42,
         dist_ears: 21.5,
-        dist_listerner: 60
+        dist_listener: 60
     };
 }
 exports.basicXTCData = basicXTCData;

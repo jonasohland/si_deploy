@@ -16,7 +16,7 @@ export interface XTCSettings {
     enabled: boolean;
     dist_spk: number;
     dist_ears: number;
-    dist_listerner: number;
+    dist_listener: number;
 }
 export interface UserData {
     name: string;
@@ -60,6 +60,6 @@ export declare function basicXTCData(): {
     accuracy: number;
     dist_spk: number;
     dist_ears: number;
-    dist_listerner: number;
+    dist_listener: number;
 };
 export declare function basicUserData(name: string, channel: number): UserData;

@@ -21,7 +21,7 @@ export interface XTCSettings {
     enabled: boolean;
     dist_spk: number;
     dist_ears: number;
-    dist_listerner: number;
+    dist_listener: number;
 }
 
 export interface UserData {
@@ -89,7 +89,7 @@ export function basicXTCData()
         accuracy: 1000,
         dist_spk: 42,
         dist_ears: 21.5,
-        dist_listerner: 60
+        dist_listener: 60
     }
 }
 

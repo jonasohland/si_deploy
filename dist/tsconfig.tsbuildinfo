@@ -514,8 +514,8 @@
         "signature": "e1459cac7fec9e92eba10b478c2be25ca0d12a2055dd8c3f872a35301ab60ab5"
       },
       "../src/users_defs.ts": {
-        "version": "357c7eaf0b9ac2cb9ac690bec365f1b0e425b75e7504de371fcc6a217e5383a1",
-        "signature": "0119445ef1032481478b6b2f5c5fdf6a757671e549b8f494e0127a60daa568de"
+        "version": "3f043e3e48f992251bef63617166e0fdde06e4bbe6ff9ca1b3d7b4a7f2eca681",
+        "signature": "754ae635f6c0aeff30f3a12ce4d2f4e9a3a5b21e2f13c9d3048a62b72db35d5f"
       },
       "../src/rooms.ts": {
         "version": "94065dc5d4bd273cb5d9a730821d93681c4d67a1ad5c15de0666566cad045fc2",
