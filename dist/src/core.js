@@ -183,12 +183,24 @@ class ManagedNodeStateMapRegister extends ManagedNodeStateRegister {
             return ob;
         });
     }
+    contains(name) {
+        return this._objects[name] != null;
+    }
+    removeObject(name) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._wrap_remove(name, null);
+        });
+    }
     _wrap_remove(name, obj) {
         return __awaiter(this, void 0, void 0, function* () {
-            // log.debug(`Removing object [${obj.constructor.name}] ${name} from
-            // ${this._name}`);
-            delete this._objects[name];
-            return this.remove(name, obj);
+            if (this.contains(name)) {
+                log.debug(`Removing object [${this._objects[name].constructor}] ${name} from
+                ${this._name}`);
+                delete this._objects[name];
+                return this.remove(name, obj);
+            }
+            else
+                throw new Error(`Could not remove ${name}: Object not found`);
         });
     }
     insertExt(name, data) {

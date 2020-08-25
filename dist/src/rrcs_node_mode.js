@@ -46,9 +46,14 @@ class RRCSMessageInterceptor extends communication_1.NodeMessageInterceptor {
                     this.rrcs.addXPSync(msg.data.master, msg.data.slaves);
                     return "ok";
                 }
+                case 'remove-xp-sync': {
+                    yield this.rrcs.removeXPSync(msg.data);
+                    return 'ok';
+                }
                 case 'xp-syncs': {
                     let syncs = msg.data;
                     this.rrcs.setXPSyncs(syncs);
+                    return 'ok';
                 }
                 case 'xp-sync-add-slaves': {
                     return this.rrcs.xpSyncAddSlaves(msg.data);

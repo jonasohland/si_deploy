@@ -51,6 +51,9 @@
         "conf": {
           "type": "boolean"
         },
+        "range": {
+          "$ref": "#/definitions/Crosspoint"
+        },
         "xp": {
           "$ref": "#/definitions/Crosspoint"
         }

@@ -128,6 +128,8 @@ export declare abstract class ManagedNodeStateMapRegister extends ManagedNodeSta
     abstract remove(name: string, obj: ManagedNodeStateObject<any>): Promise<void>;
     abstract insert(name: string, obj: any): Promise<ManagedNodeStateObject<any>>;
     _wrap_insert(name: string, obj: ManagedNodeStateObjectData): Promise<ManagedNodeStateObject<any>>;
+    contains(name: string): boolean;
+    removeObject(name: string): Promise<void>;
     _wrap_remove(name: string, obj: ManagedNodeStateObject<any>): Promise<void>;
     insertExt(name: string, data: ManagedNodeStateObjectData): Promise<void>;
     _restore_map(s: ManagedNodeStateRegisterData, strategy: StateUpdateStrategy): Promise<void>;

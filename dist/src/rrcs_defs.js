@@ -4,6 +4,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const lodash_1 = __importDefault(require("lodash"));
+var CrosspointSyncType;
+(function (CrosspointSyncType) {
+    CrosspointSyncType[CrosspointSyncType["SINGLE"] = 0] = "SINGLE";
+    CrosspointSyncType[CrosspointSyncType["WILDCARD_SRC"] = 1] = "WILDCARD_SRC";
+    CrosspointSyncType[CrosspointSyncType["WILDCARD_DST"] = 2] = "WILDCARD_DST";
+    CrosspointSyncType[CrosspointSyncType["WILDCARD_RANGE_SRC"] = 3] = "WILDCARD_RANGE_SRC";
+    CrosspointSyncType[CrosspointSyncType["WILDCARD_RANGE_DST"] = 4] = "WILDCARD_RANGE_DST";
+})(CrosspointSyncType = exports.CrosspointSyncType || (exports.CrosspointSyncType = {}));
 function isLoopbackXP(xp) {
     return xp.Source.Port === xp.Destination.Port
         && xp.Source.Node === xp.Destination.Node

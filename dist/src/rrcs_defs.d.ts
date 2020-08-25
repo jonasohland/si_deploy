@@ -12,6 +12,7 @@ export interface CrosspointState {
     state: boolean;
 }
 export interface CrosspointVolumeSource {
+    range?: Crosspoint;
     xp: Crosspoint;
     conf: boolean;
 }
@@ -32,6 +33,13 @@ export interface AddCrosspointVolumeTargetMessage {
 export interface XPSyncModifySlavesMessage {
     master: string;
     slaves: CrosspointVolumeTarget[];
+}
+export declare enum CrosspointSyncType {
+    SINGLE = 0,
+    WILDCARD_SRC = 1,
+    WILDCARD_DST = 2,
+    WILDCARD_RANGE_SRC = 3,
+    WILDCARD_RANGE_DST = 4
 }
 export interface CrosspointSync {
     state: boolean;

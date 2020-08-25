@@ -505,6 +505,21 @@ class RRCSService extends RRCSServer {
             this.newXPSync(master, slaves);
         }
     }
+    removeXPSync(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let sync = this._synced[id];
+            if (sync) {
+                delete this._synced[id];
+                if (sync.state) {
+                    for (let slave of sync.slaves) {
+                        if (slave.set)
+                            yield this._try_kill_xp(slave.xp);
+                    }
+                }
+                yield this.removeFromXPVolNotifyRegistry([sync.master.xp]);
+            }
+        });
+    }
     getAllXPStates() {
         let out = [];
         for (let key of Object.keys(this._synced))

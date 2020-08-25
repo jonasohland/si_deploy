@@ -99,6 +99,7 @@ export declare class RRCSService extends RRCSServer {
     xpSyncRemoveSlaves(msg: XPSyncModifySlavesMessage): Promise<void>;
     newXPSync(master: CrosspointVolumeSource, slaves: CrosspointVolumeTarget[]): void;
     addXPSync(master: CrosspointVolumeSource, slaves: CrosspointVolumeTarget[]): void;
+    removeXPSync(id: string): Promise<void>;
     getAllXPStates(): void;
     updateStateForCrosspointSync(sync: CrosspointSync): Promise<void>;
     updateStateForWildcardSync(sync: CrosspointSync): Promise<void>;

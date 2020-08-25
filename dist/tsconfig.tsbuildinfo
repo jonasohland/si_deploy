@@ -546,20 +546,20 @@
         "signature": "0f471f60179daaee4768a5cc4426708e4299a3c741e4f95cda952efac922ef07"
       },
       "../src/rrcs_defs.ts": {
-        "version": "a870efa94aa545c8372cb2014fd5e9f613a0bcce27f57cfe32101c22f451babb",
-        "signature": "c6b81024b183fa1192ad7d7bfc65d0cd3333e90f174c465b9fc03460bdc31e3b"
+        "version": "cdf15113230c37093c3446417523757d31bad8a3b9c2b4351a5f3253635d1720",
+        "signature": "f60f5b258483dd5a86c67d3b7582eab4bb8da3d8bf86c481165265b457321a1b"
       },
       "../src/rrcs.ts": {
-        "version": "499027cd2a4e307d4f1488a8e54096ac8d4ddbb5df339527ccd8f278e802a363",
-        "signature": "1da9582519f991364997bdff15175d8dfc840d50c18ba0e644e3ebbf32f4a470"
+        "version": "4bafa23dbdf0abe67a4c48cfefb14c0a29a85abcf2ed9249f3310921c82cd576",
+        "signature": "5e3dca39d254848cc70982fccf19443733fff0571214a87855a62697446c63e7"
       },
       "../src/validation.ts": {
         "version": "3d27fd61ab47b11413ab74bb8f27fadf793cb0cd12bf8eb06adfe592387add72",
         "signature": "b55c76bd37515ef73ae13a0d7effbfce253d8534fe9a4d81afe2216cdd71972f"
       },
       "../src/rrcs_node.ts": {
-        "version": "1ce97a5727495e85a4a3a12b28bba34580a6a97d5eb4b2e0764471407d706fce",
-        "signature": "97ead5f397b7fcfb0b07ef4bcee6d09de68bc18d198dea7c7ca10b30c428ea2c"
+        "version": "8fd4eabacfe8bfa4a3d4b95d1c67b60b1f69caa21acf28f2c6861bbf3b2f916d",
+        "signature": "dcda8f4637f228abc8bf6c40ab1903723943517cd2e72ed0bace83df635b3a93"
       },
       "../src/server.ts": {
         "version": "8875b3ea536381dd084501d6fa57203ef3e296bc3525f5dfd722ce68675948dc",
@@ -586,8 +586,8 @@
         "signature": "5307714e2fe73a8c6dda2853c541e0e4d052dafbff45a6f88ddbd110e85d61c2"
       },
       "../src/core.ts": {
-        "version": "1cc689780a1b6122080d381b42698fdfa4af9c1ddbc7cc35f455ab5fb17df357",
-        "signature": "145c11d7a26a9bd8dc44d4a577c2873295097bd36cc780088de881fb7851a138"
+        "version": "e3c7da13b385b466bfaf24d7a2cd4dde65e309b9b367a67c9c9bae3f33d083d6",
+        "signature": "c7532a80380d7d46cf17e7e3bdfece0247cef666c1f1db49f8c5423064f990f8"
       },
       "../src/vst.ts": {
         "version": "6e434ca49e2dd14650a0693f36fc28a5bb17614c0ac5bf4f07098b72939a6920",
@@ -862,7 +862,7 @@
         "signature": "ad015745dadccdbcfad819c08bb54af1e4ce899f015b108ee0c6d3b45f55f988"
       },
       "../src/rrcs_node_mode.ts": {
-        "version": "fce99dd38a610719cdbc2cea10da03bf8f3525f8be0a154a83ffe675f5772f73",
+        "version": "a264e4cb7c63942cf0cfd5ab5bc90e7561dabad8a8894310dd1555c52c932dbd",
         "signature": "ad015745dadccdbcfad819c08bb54af1e4ce899f015b108ee0c6d3b45f55f988"
       },
       "../src/server_mode.ts": {
@@ -4823,11 +4823,7 @@
       "../src/headtracking.ts",
       "../node_modules/ajv/lib/ajv.d.ts",
       "../node_modules/@types/xmlrpc/index.d.ts",
-      "../src/rrcs_defs.ts",
       "../src/validation.ts",
-      "../src/rrcs_node.ts",
-      "../src/server.ts",
-      "../src/dsp_graph_builder.ts",
       "../src/users.ts",
       "../src/dsp_node.ts",
       "../src/rest.ts",
@@ -4897,21 +4893,25 @@
       "../node_modules/@types/ini/index.d.ts",
       "../src/server_config.ts",
       "../src/headtracker_mode.ts",
-      "../src/index.ts",
       "../src/install_service.ts",
       "../src/modules.ts",
       "../src/node_mode.ts",
-      "../src/rrcs_node_mode.ts",
-      "../src/server_mode.ts",
       "../src/showfiles.ts",
-      "../src/si.ts",
       "../src/sources.ts",
       "../node_modules/@types/bonjour/index.d.ts",
       "../node_modules/@types/checksum/index.d.ts",
       "../node_modules/@types/json-schema/index.d.ts",
       "../node_modules/@types/minimatch/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/rrcs.ts"
+      "../src/rrcs_defs.ts",
+      "../src/rrcs_node_mode.ts",
+      "../src/index.ts",
+      "../src/rrcs_node.ts",
+      "../src/rrcs.ts",
+      "../src/server.ts",
+      "../src/dsp_graph_builder.ts",
+      "../src/server_mode.ts",
+      "../src/si.ts"
     ]
   },
   "version": "3.7.3"

@@ -21,6 +21,7 @@ declare class SyncList extends ManagedNodeStateMapRegister {
     insert(name: string, obj: any): Promise<Sync>;
     allSyncs(): CrosspointSync[];
     getSyncForMaster(sync: CrosspointSync | string): ManagedNodeStateObject<any>;
+    removeMaster(id: string): Promise<void>;
 }
 declare class RRCSNodeModule extends NodeModule {
     rrcs: Requester;
@@ -30,6 +31,7 @@ declare class RRCSNodeModule extends NodeModule {
     constructor();
     init(): void;
     addXpSync(sync: CrosspointSync): void;
+    removeXPSync(id: string): void;
     addSlaveToSync(msg: AddCrosspointVolumeTargetMessage): void;
     removeSlaveFromSync(msg: AddCrosspointVolumeTargetMessage): void;
     start(remote: Connection): void;

@@ -674,6 +674,21 @@ export class RRCSService extends RRCSServer {
         }
     }
 
+    async removeXPSync(id: string)
+    {
+        let sync = this._synced[id];
+        if (sync) {
+            delete this._synced[id];
+            if (sync.state) {
+                for (let slave of sync.slaves) {
+                    if (slave.set)
+                        await this._try_kill_xp(slave.xp);
+                }
+            }
+            await this.removeFromXPVolNotifyRegistry([sync.master.xp]);
+        }
+    }
+
     getAllXPStates()
     {
         let out = <CrosspointVolumeSourceState[]>[];
