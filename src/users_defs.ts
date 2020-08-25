@@ -18,7 +18,8 @@ export interface SpatializedInputData {
 
 export interface XTCSettings {
     accuracy: number;
-    enabled: boolean;
+    enabled_st: boolean;
+    enabled_bin: boolean;
     dist_spk: number;
     dist_ears: number;
     dist_listener: number;
@@ -85,7 +86,8 @@ export function basicSpatializedInput(inputid: string, userid: string, type: Por
 export function basicXTCData()
 {
     return {
-        enabled: false,
+        enabled_bin: false,
+        enabled_st: false,
         accuracy: 1000,
         dist_spk: 42,
         dist_ears: 21.5,

@@ -18,7 +18,8 @@ function basicSpatializedInput(inputid, userid, type) {
 exports.basicSpatializedInput = basicSpatializedInput;
 function basicXTCData() {
     return {
-        enabled: false,
+        enabled_bin: false,
+        enabled_st: false,
         accuracy: 1000,
         dist_spk: 42,
         dist_ears: 21.5,

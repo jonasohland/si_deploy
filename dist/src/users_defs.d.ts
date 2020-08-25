@@ -13,7 +13,8 @@ export interface SpatializedInputData {
 }
 export interface XTCSettings {
     accuracy: number;
-    enabled: boolean;
+    enabled_st: boolean;
+    enabled_bin: boolean;
     dist_spk: number;
     dist_ears: number;
     dist_listener: number;
@@ -56,7 +57,8 @@ export interface UserInputGainChangeMessage {
 }
 export declare function basicSpatializedInput(inputid: string, userid: string, type: PortTypes): SpatializedInputData;
 export declare function basicXTCData(): {
-    enabled: boolean;
+    enabled_bin: boolean;
+    enabled_st: boolean;
     accuracy: number;
     dist_spk: number;
     dist_ears: number;

@@ -56,13 +56,17 @@
         "dist_spk": {
           "type": "number"
         },
-        "enabled": {
+        "enabled_bin": {
+          "type": "boolean"
+        },
+        "enabled_st": {
           "type": "boolean"
         }
       },
       "required": [
         "accuracy",
-        "enabled",
+        "enabled_st",
+        "enabled_bin",
         "dist_spk",
         "dist_ears",
         "dist_listener"
