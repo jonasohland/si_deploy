@@ -1,7 +1,8 @@
-import { PortTypes, SourceParameterSet, Source } from './dsp_defs';
+import { PortTypes, Source, SourceParameterSet } from './dsp_defs';
 import { Bus, Connection, Graph, Module, NativeNode } from './dsp_graph';
-import { SpatializedInput, User } from './users';
 import { RoomData } from './rooms_defs';
+import { SpatializedInput, User } from './users';
+import { XTCSettings } from './users_defs';
 export declare class GainNode extends NativeNode {
     _remote_alive: boolean;
     _gain: number;
@@ -30,9 +31,15 @@ export declare class BasicBinauralDecoder extends NativeNode {
 }
 export declare class AdvancedBinauralDecoder extends NativeNode {
     _htrk_id: number;
+    _ref_in: Bus;
+    _ref_out: Bus;
+    _xtc: XTCSettings;
+    setXTCSettings(xtc: XTCSettings): void;
     onRemotePrepared(): void;
     onRemoteAlive(): void;
-    constructor(name: string, order: number, headtracker_id: number);
+    constructor(name: string, order: number, headtracker_id: number, xtc: XTCSettings);
+    refIn(): Bus;
+    refOut(): Bus;
     remoteAttached(): void;
     setHeadtrackerId(id: number): Promise<import("./communication").Message>;
     getHeadtrackerId(): Promise<number>;
@@ -118,11 +125,13 @@ export declare class SimpleUsersModule extends Module {
     _usr: User;
     _decoder_id: number;
     _decoder: AdvancedBinauralDecoder;
+    _xtcsettings: XTCSettings;
     constructor(user: User);
     input(graph: Graph): Bus;
     output(graph: Graph): Bus;
     graphChanged(graph: Graph): void;
     setHeadtrackerId(id: number): void;
+    setXTCSettings(xtc: XTCSettings): void;
     build(graph: Graph): void;
     destroy(graph: Graph): void;
 }

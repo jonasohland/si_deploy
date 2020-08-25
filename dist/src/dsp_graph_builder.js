@@ -7,11 +7,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = require("./core");
 const communication_1 = require("./communication");
+const core_1 = require("./core");
 const dsp_modules_1 = require("./dsp_modules");
-const Logger = __importStar(require("./log"));
 const dsp_node_1 = require("./dsp_node");
+const Logger = __importStar(require("./log"));
 const log = Logger.get('DSPBLD');
 exports.GraphBuilderInputEvents = {
     FULL_REBUILD: 'rebuildgraph-full',
@@ -29,7 +29,8 @@ exports.GraphBuilderInputEvents = {
     ROOM_HIGHSHELF: 'roomhighshelf',
     ROOM_LOWSHELF: 'roomlowshelf',
     ASSIGN_HEADTRACKER: 'assignheadtracker',
-    SET_GAIN: 'setgain'
+    SET_GAIN: 'setgain',
+    MODIFY_XTC: 'modifyxtc'
 };
 exports.GraphBuilderOutputEvents = {};
 class NodeDSPGraphBuilder extends core_1.NodeModule {
@@ -61,7 +62,8 @@ class NodeDSPGraphBuilder extends core_1.NodeModule {
         this.handleModuleEvent(exports.GraphBuilderInputEvents.ROOM_SHAPE, this._dispatch_room_shape.bind(this));
         this.handleModuleEvent(exports.GraphBuilderInputEvents.ASSIGN_HEADTRACKER, this._dispatch_assign_headtracker.bind(this));
         this.handleModuleEvent(exports.GraphBuilderInputEvents.SET_GAIN, this._dispatch_set_gain.bind(this));
-        log.info("Remote node address", this.myNode().remote().remoteInfo());
+        this.handleModuleEvent(exports.GraphBuilderInputEvents.MODIFY_XTC, this._find_usermodule.bind(this));
+        log.info('Remote node address', this.myNode().remote().remoteInfo());
     }
     start(connection) {
     }
@@ -70,9 +72,11 @@ class NodeDSPGraphBuilder extends core_1.NodeModule {
     }
     _do_rebuild_graph_full() {
         if (this.is_building)
-            log.error("Currently rebuilding graph.");
+            log.error('Currently rebuilding graph.');
         this.is_building = true;
-        this.dsp().resetGraph().then(() => {
+        this.dsp()
+            .resetGraph()
+            .then(() => {
             this.user_modules = {};
             this.basic_spatializers = {};
             this.room_spatializers = {};
@@ -81,19 +85,20 @@ class NodeDSPGraphBuilder extends core_1.NodeModule {
                 this._build_user_modules();
             }
             catch (err) {
-                log.error("Failed to build modules: ", err);
+                log.error('Failed to build modules: ', err);
             }
             this.dsp().syncGraph().then(() => {
                 this.is_building = false;
             });
-        }).catch(err => {
-            log.error("Could not reset graph: " + err);
+        })
+            .catch(err => {
+            log.error('Could not reset graph: ' + err);
         });
     }
     _build_spatializer_modules() {
         this.nodeUsers().listUsers().forEach(user => {
             let userdata = user.get();
-            log.verbose("Build input modules for user " + userdata.name);
+            log.verbose('Build input modules for user ' + userdata.name);
             this.basic_spatializers[userdata.id] = {};
             this.room_spatializers[userdata.id] = {};
             this.nodeUsers().getUsersInputs(userdata.id).forEach(input => {
@@ -175,7 +180,7 @@ class NodeDSPGraphBuilder extends core_1.NodeModule {
         this._find_spatializers_for_room(roomid).forEach(sp => sp.setRoomLowshelf(room));
     }
     _dispatch_assign_headtracker(userid, headtrackerid) {
-        log.info("Assign headtracker " + headtrackerid + "to user " + userid);
+        log.info(`Assign headtracker ${headtrackerid} to user ${userid}`);
         let headtracker = this.headtrackers().getHeadtracker(headtrackerid);
         if (headtracker) {
             try {
@@ -188,6 +193,14 @@ class NodeDSPGraphBuilder extends core_1.NodeModule {
         if (this.user_modules[userid]) {
             this.user_modules[userid].setHeadtrackerId(headtrackerid);
         }
+    }
+    _dispatch_modify_xtc(userid, settings) {
+        log.info(`Modify xtc settings ${settings.enabled_st ? '(stereo on)' : '(stereo off)'} ${settings.enabled_bin ? '(binaural on)' : 'binaural off'}`);
+        let usermodule = this._find_usermodule(userid);
+        if (usermodule)
+            usermodule.setXTCSettings(settings);
+        else
+            log.error(`Could not find user for id ${userid}`);
     }
     _dispatch_set_gain(userid, spid, gain) {
         let sp = this._find_spatializer(userid, spid);
@@ -214,11 +227,15 @@ class NodeDSPGraphBuilder extends core_1.NodeModule {
         let spatializers = [];
         for (let userid of Object.keys(this.room_spatializers)) {
             for (let spatializerid of Object.keys(this.room_spatializers[userid])) {
-                if (this.room_spatializers[userid][spatializerid].room() === room)
+                if (this.room_spatializers[userid][spatializerid].room()
+                    === room)
                     spatializers.push(this.room_spatializers[userid][spatializerid]);
             }
         }
         return spatializers;
+    }
+    _find_usermodule(userid) {
+        return this.user_modules[userid];
     }
     getRooms() {
         return this.myNode().rooms;
@@ -242,19 +259,19 @@ class NodeDSPGraphBuilder extends core_1.NodeModule {
 exports.NodeDSPGraphBuilder = NodeDSPGraphBuilder;
 class DSPGraphController extends core_1.ServerModule {
     constructor() {
-        super("graph-controller");
+        super('graph-controller');
     }
     init() {
         this.handleGlobalWebInterfaceEvent('committodsp', (socket, data) => {
             this.server.nodes(communication_1.NODE_TYPE.DSP_NODE).forEach(node => {
                 if (node.type() == communication_1.NODE_TYPE.DSP_NODE) {
-                    log.info("Rebuild graph on node " + node.name());
+                    log.info('Rebuild graph on node ' + node.name());
                     this.emitToModule(node.id(), dsp_node_1.DSPModuleNames.GRAPH_BUILDER, exports.GraphBuilderInputEvents.FULL_REBUILD);
                 }
             });
         });
         this.handleWebInterfaceEvent('committnodeodsp', (socket, node) => {
-            log.warn("REBUILD " + node.name());
+            log.warn('REBUILD ' + node.name());
             this.emitToModule(node.id(), dsp_node_1.DSPModuleNames.GRAPH_BUILDER, exports.GraphBuilderInputEvents.FULL_REBUILD);
         });
         this.handleWebInterfaceEvent('rebuildgraph', (socket, node) => {

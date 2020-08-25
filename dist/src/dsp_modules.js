@@ -34,7 +34,7 @@ function normalizeIEMStWidthDegs(value) {
 }
 class GainNode extends dsp_graph_1.NativeNode {
     constructor(name, ty) {
-        super(name, "gain_node");
+        super(name, 'gain_node');
         this._remote_alive = false;
         this._gain = 0;
         this.addInputBus(dsp_graph_1.Bus.createMain(1, ty));
@@ -47,7 +47,8 @@ class GainNode extends dsp_graph_1.NativeNode {
     }
     onRemotePrepared() {
         this._remote_alive = true;
-        this.remote.set('gain', this._gain).catch(err => log.error(`Could not set gain for gain-node ${err}`));
+        this.remote.set('gain', this._gain)
+            .catch(err => log.error(`Could not set gain for gain-node ${err}`));
     }
     onRemoteAlive() {
     }
@@ -109,22 +110,39 @@ class BasicBinauralDecoder extends dsp_graph_1.NativeNode {
 }
 exports.BasicBinauralDecoder = BasicBinauralDecoder;
 class AdvancedBinauralDecoder extends dsp_graph_1.NativeNode {
-    constructor(name, order, headtracker_id) {
+    constructor(name, order, headtracker_id, xtc) {
         super(name, 'advanced_binaural_decoder');
         this._htrk_id = -1;
         this.addInputBus(dsp_graph_1.AmbiBus.createMainForOrder(order, 1));
         this.addOutputBus(dsp_graph_1.Bus.createMainStereo(1));
+        this._ref_in = dsp_graph_1.Bus.createStereo('ref', 1);
+        this._ref_out = dsp_graph_1.Bus.createStereo('ref', 1);
+        this.addInputBus(this._ref_in);
+        this.addOutputBus(this._ref_out);
         this._htrk_id = headtracker_id;
+        this._xtc = xtc;
+    }
+    setXTCSettings(xtc) {
+        this._xtc = xtc;
+        if (this.remote)
+            this.remote.set('xtc', xtc);
     }
     onRemotePrepared() {
     }
     onRemoteAlive() {
         if (this._htrk_id != -1) {
             this.setHeadtrackerId(this._htrk_id).catch(err => {
-                log.error("Could not set headtracker id");
+                log.error('Could not set headtracker id');
             });
         }
         this.remote.set('mute', false);
+        this.remote.set('xtc', this._xtc);
+    }
+    refIn() {
+        return this._ref_in;
+    }
+    refOut() {
+        return this._ref_out;
     }
     remoteAttached() {
     }
@@ -227,7 +245,8 @@ class MultiSpatializer extends dsp_graph_1.NativeNode {
     onRemotePrepared() {
         log.info('MultiSpatializer remote prepared');
         this._apply_all_parameters().catch(err => {
-            log.error("Could not apply all parameters for Spatializer " + this.id + " " + err);
+            log.error('Could not apply all parameters for Spatializer '
+                + this.id + ' ' + err);
         });
     }
     remoteAttached() {
@@ -286,8 +305,9 @@ class RoomSpatializer extends dsp_graph_1.NativeNode {
     onRemotePrepared() {
         this._remote_alive = true;
         this.panSource(this._cached_source);
-        this._set_roomdata().catch(err => log.error("Could not set roomdata " + err));
-        this.remote.set('gain', this._gain).catch(err => log.error("Could not set gain " + err));
+        this._set_roomdata().catch(err => log.error('Could not set roomdata ' + err));
+        this.remote.set('gain', this._gain)
+            .catch(err => log.error('Could not set gain ' + err));
     }
     panSource(source) {
         this._cached_source = source;
@@ -300,7 +320,7 @@ class RoomSpatializer extends dsp_graph_1.NativeNode {
     }
     setRoomData(room) {
         this._roomdata = room;
-        this._set_roomdata().catch(err => log.error("Could not set roomdata " + err));
+        this._set_roomdata().catch(err => log.error('Could not set roomdata ' + err));
     }
     setRoomEnabled(room) {
         this._roomdata = room;
@@ -366,6 +386,7 @@ class SimpleUsersModule extends dsp_graph_1.Module {
     constructor(user) {
         super();
         this._usr = user;
+        this._xtcsettings = user.get().xtc;
     }
     input(graph) {
         return graph.getNode(this._decoder_id).getMainInputBus();
@@ -376,14 +397,18 @@ class SimpleUsersModule extends dsp_graph_1.Module {
     graphChanged(graph) {
     }
     setHeadtrackerId(id) {
-        this._decoder;
+        this._decoder.setHeadtrackerId(id);
+    }
+    setXTCSettings(xtc) {
+        this._xtcsettings = xtc;
+        if (this._decoder)
+            this._decoder.setXTCSettings(this._xtcsettings);
     }
     build(graph) {
-        this._decoder = new AdvancedBinauralDecoder(this._usr.get().name, 3, this._usr.get().headtracker || -1);
+        this._decoder = new AdvancedBinauralDecoder(this._usr.get().name, 3, this._usr.get().headtracker || -1, this._xtcsettings);
         this._decoder_id = graph.addNode(this._decoder);
         let spatializers = graph.modules.filter(module => module instanceof SpatializationModule);
-        let my_spatializers = spatializers.filter(sp => sp.userId()
-            === this._usr.get().id);
+        let my_spatializers = spatializers.filter(sp => sp.userId() === this._usr.get().id);
         let output_start = this._usr.get().channel;
         my_spatializers.forEach(spatializer => {
             spatializer.outputBuses(graph).forEach(bus => {
@@ -392,7 +417,7 @@ class SimpleUsersModule extends dsp_graph_1.Module {
                     graph.addConnection(con);
             });
             spatializer.stereoRefBuses().forEach(bus => {
-                let con = bus.connectOtherIdx(graph.graphExitBus(), output_start + 2);
+                let con = bus.connect(this._decoder.refIn());
                 if (con)
                     graph.addConnection(con);
             });
@@ -403,7 +428,15 @@ class SimpleUsersModule extends dsp_graph_1.Module {
             });
         });
         let output_con = this._decoder.getMainOutputBus().connectOtherIdx(graph.graphExitBus(), this._usr.get().channel);
-        graph.addConnection(output_con);
+        let output_con_ref = this._decoder.refOut().connectOtherIdx(graph.graphExitBus(), output_start + 2);
+        if (output_con)
+            graph.addConnection(output_con);
+        else
+            log.error("Could not connect binaural signal to graph output");
+        if (output_con_ref)
+            graph.addConnection(output_con_ref);
+        else
+            log.error("Could not connect stereo reference output to graph output");
     }
     destroy(graph) {
         if (graph.removeNode(this._decoder_id))
@@ -514,14 +547,15 @@ class RoomSpatializerModule extends SpatializationModule {
         let sourcechcount = dsp_defs_1.SourceUtils[sourcetype].channels;
         let firstchannel = this._input.findSourceChannel();
         if (dsp_defs_1.isAmbi(sourcetype)) {
-            this._gain_node = new GainNode("GainNode " + this._input.get().id, sourcetype);
+            this._gain_node
+                = new GainNode('GainNode ' + this._input.get().id, sourcetype);
             this._gain_node.setGain(this._gain);
             this._encoder_nids.push(graph.addNode(this._gain_node));
             let connection = graph.graphRootBus().connectIdx(this._gain_node.getMainInputBus(), firstchannel);
             if (connection)
                 graph.addConnection(connection);
             else
-                log.error("Could not connect gain node for output");
+                log.error('Could not connect gain node for output');
         }
         else {
             for (let i = 0; i < sourcechcount; ++i) {
@@ -609,7 +643,7 @@ class MultiSpatializerModule extends SpatializationModule {
     build(graph) {
         let node;
         if (this._ambi) {
-            node = new GainNode("AmbiSource Gain " + this._input.get().id, this._input.findSourceType());
+            node = new GainNode('AmbiSource Gain ' + this._input.get().id, this._input.findSourceType());
             this._gain_node = node;
             node.setGain(this._cached_gain);
         }
