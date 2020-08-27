@@ -1,4 +1,3 @@
-import {lchmodSync} from 'fs';
 import _ from 'lodash';
 
 export interface Port {

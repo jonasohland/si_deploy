@@ -652,13 +652,13 @@
         "affectsGlobalScope": false
       },
       "../src/rrcs_defs.ts": {
-        "version": "cdf15113230c37093c3446417523757d31bad8a3b9c2b4351a5f3253635d1720",
+        "version": "82ef55ef2ed4c2a7660a47e879649701efefdffd874a325a562db0f072ac7342",
         "signature": "f60f5b258483dd5a86c67d3b7582eab4bb8da3d8bf86c481165265b457321a1b",
         "affectsGlobalScope": false
       },
       "../src/users_defs.ts": {
-        "version": "52fa8c50cdd2c7270a5d0972f6811c5c835b5490419287c3047950fe88fcad36",
-        "signature": "23ec96effd33d76d9efda53cdc0a21c3733619be7608bcff41fbf276300f204b",
+        "version": "5d531850ec7c76d47fcee48260a3c838245cf887d84c528c038d13c2c338267e",
+        "signature": "a9b81770778de014997b2b421806f2ed9c067f69572a2c72b913ece7f9987591",
         "affectsGlobalScope": false
       },
       "../src/dsp_modules.ts": {
@@ -692,8 +692,8 @@
         "affectsGlobalScope": false
       },
       "../src/validation.ts": {
-        "version": "3d27fd61ab47b11413ab74bb8f27fadf793cb0cd12bf8eb06adfe592387add72",
-        "signature": "b55c76bd37515ef73ae13a0d7effbfce253d8534fe9a4d81afe2216cdd71972f",
+        "version": "35d2fad6e57afec60b51e3928d3ebab130ef4a37327bf0f9783f879511656e50",
+        "signature": "7782da1a4f8bdad52739991b2acf09acd061ab540ce24681a103c87bf5edc5a8",
         "affectsGlobalScope": false
       },
       "../src/rrcs_node.ts": {
@@ -712,8 +712,8 @@
         "affectsGlobalScope": false
       },
       "../src/users.ts": {
-        "version": "9c2dcc8b0757179cde95471f3540e763be9a2dedf102f15fec3eb95c6a32d3c8",
-        "signature": "c0fdc537442761632f24ce4768c3762e586704fb01850a9f631e76c744110de6",
+        "version": "af4f19eaf6df2a1c62600e4cedfd099013470ec69e6eb0c5ca31eb48273e9ad6",
+        "signature": "2432f6acd502887dfb0180ecb99f5528dd014117217d213b61b60f2f0d0fc18e",
         "affectsGlobalScope": false
       },
       "../src/dsp_node.ts": {
@@ -3186,6 +3186,7 @@
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts",
         "../node_modules/@types/node/util.d.ts",
+        "../node_modules/ajv/lib/ajv.d.ts",
         "../src/communication.ts",
         "../src/core.ts",
         "../src/dsp_defs.ts",
@@ -3194,7 +3195,8 @@
         "../src/inputs.ts",
         "../src/log.ts",
         "../src/users_defs.ts",
-        "../src/util.ts"
+        "../src/util.ts",
+        "../src/validation.ts"
       ],
       "../src/users_defs.ts": [
         "../node_modules/@types/node/fs.d.ts",
@@ -3226,7 +3228,8 @@
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts",
         "../node_modules/@types/node/util.d.ts",
-        "../node_modules/ajv/lib/ajv.d.ts"
+        "../node_modules/ajv/lib/ajv.d.ts",
+        "../src/log.ts"
       ],
       "../src/vst.ts": [
         "../node_modules/@types/node/fs.d.ts",
@@ -4950,6 +4953,7 @@
         "../src/instance.ts"
       ],
       "../src/users.ts": [
+        "../node_modules/ajv/lib/ajv.d.ts",
         "../node_modules/winston/index.d.ts",
         "../src/communication.ts",
         "../src/core.ts",

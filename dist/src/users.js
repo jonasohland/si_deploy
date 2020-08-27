@@ -37,6 +37,7 @@ const dsp_node_1 = require("./dsp_node");
 const Logger = __importStar(require("./log"));
 const users_defs_1 = require("./users_defs");
 const util_1 = require("./util");
+const Validation = __importStar(require("./validation"));
 const log = Logger.get('USERSM');
 class User extends core_1.ManagedNodeStateObject {
     constructor(data, manager) {
@@ -182,7 +183,7 @@ class NodeUsersManager extends core_1.NodeModule {
             throw 'Input already assigned';
         let newinput = users_defs_1.basicSpatializedInput(input.get().id, userid, util_1.ensurePortTypeEnum(input.get().type));
         let userdata = user.get();
-        if (userdata.room != null)
+        if (userdata.room != null && userdata.room.length)
             newinput.room = userdata.room;
         userdata.inputs.push(newinput.id);
         user.set(userdata);
@@ -285,6 +286,7 @@ exports.NodeUsersManager = NodeUsersManager;
 class UsersManager extends core_1.ServerModule {
     constructor() {
         super('users');
+        this.validate_userdata = Validation.getValidator(Validation.Validators.UserData);
     }
     joined(socket, topic) {
         log.verbose(`Socket joined user-topic ${topic}`);
@@ -322,11 +324,17 @@ class UsersManager extends core_1.ServerModule {
     }
     init() {
         this.handleWebInterfaceEvent('add.user', (socket, node, data) => {
-            if (data.channel != null) {
-                node.users.addUser(data);
+            if (!this.validate_userdata(data)) {
+                this.webif.broadcastError(node.name(), `Could not add new user '${data.name}': Missing data.`);
+                log.error("Missing: ");
+                if (this.validate_userdata.errors)
+                    this.validate_userdata.errors.forEach(err => {
+                        log.error("    " + err.dataPath + "  " + err.message);
+                    });
+                return;
             }
-            else
-                this.webif.broadcastWarning(node.name(), 'Could not add user: Missing data');
+            node.users.addUser(data);
+            this.webif.broadcastNodeNotification(node, `Added new user '${data.name}'`);
         });
         this.handleWebInterfaceEvent('user.add.inputs', (socket, node, data) => {
             data.inputs.forEach(input => {

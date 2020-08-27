@@ -28,10 +28,34 @@
             "first_device_channel"
           ],
           "type": "object"
+        },
+        "user_panel": {
+          "$ref": "#/definitions/Port"
         }
       },
       "required": [
-        "settings"
+        "settings",
+        "user_panel"
+      ],
+      "type": "object"
+    },
+    "Port": {
+      "additionalProperties": false,
+      "properties": {
+        "IsInput": {
+          "type": "boolean"
+        },
+        "Node": {
+          "type": "number"
+        },
+        "Port": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "Node",
+        "Port",
+        "IsInput"
       ],
       "type": "object"
     },
@@ -71,7 +95,6 @@
         "id",
         "channel",
         "headtracker",
-        "room",
         "xtc",
         "artist",
         "inputs"

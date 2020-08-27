@@ -5,6 +5,7 @@ import { PortTypes, SourceParameterSet } from './dsp_defs';
 import { DSPNode } from './dsp_node';
 import * as Inputs from './inputs';
 import { SpatializedInputData, UserData } from './users_defs';
+import { ValidateFunction } from 'ajv';
 export declare class User extends ManagedNodeStateObject<UserData> {
     data: UserData;
     _man: NodeUsersManager;
@@ -62,6 +63,7 @@ export declare class NodeUsersManager extends NodeModule {
     getUsersInputs(userid: string): SpatializedInput[];
 }
 export declare class UsersManager extends ServerModule {
+    validate_userdata: ValidateFunction;
     constructor();
     joined(socket: SocketIO.Socket, topic: string): void;
     left(socket: SocketIO.Socket, topic: string): void;
