@@ -1,4 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,14 +27,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.RRCSNode = exports.RRCSServerModule = void 0;
+const communication_1 = require("./communication");
 const core_1 = require("./core");
 const Logger = __importStar(require("./log"));
 const rrcs_defs_1 = require("./rrcs_defs");
@@ -166,6 +180,9 @@ class RRCSNodeModule extends core_1.NodeModule {
             });
         }
     }
+    artistNodes() {
+        return this._cached.artist_nodes;
+    }
     start(remote) {
         this.rrcs = remote.getRequester('rrcs');
         this.syncs.setRemote(this.rrcs);
@@ -274,8 +291,23 @@ class RRCSServerModule extends core_1.ServerModule {
         });
     }
     joined(socket, topic) {
+        if (topic === 'artist-nodes')
+            this._update_webif_room(socket);
     }
     left(socket, topic) {
+    }
+    _update_webif_room(socket) {
+        let anodes = [];
+        for (let node of this.server.nodes(communication_1.NODE_TYPE.RRCS_NODE)) {
+            for (let anode of node.rrcs.artistNodes()) {
+                if (anodes.findIndex(n => n.id === anode.id) == -1)
+                    anodes.push(anode);
+            }
+        }
+        if (socket)
+            socket.emit('rrcs.artist-nodes', anodes);
+        else
+            this.publish('artist-nodes', 'rrcs.artist-nodes', anodes);
     }
 }
 exports.RRCSServerModule = RRCSServerModule;

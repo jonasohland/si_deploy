@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.serverRoomName = exports.nodeRoomName = exports.webifResponseEvent = void 0;
 function webifResponseEvent(nodeid, modulename, event) {
     return `${nodeid}.${modulename}.${event}`;
 }

@@ -1,7 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.basicUserData = exports.basicXTCData = exports.basicSpatializedInput = exports.basicArtistSyncSettings = void 0;
 const uuid_1 = require("uuid");
 const dsp_defs_1 = require("./dsp_defs");
+function basicArtistSyncSettings(panel) {
+    return {
+        settings: {
+            node: -1,
+            first_port: 0,
+            last_port: 0,
+            first_device_channel: 0
+        },
+        user_panel: panel
+    };
+}
+exports.basicArtistSyncSettings = basicArtistSyncSettings;
 function basicSpatializedInput(inputid, userid, type) {
     let defaultSource = dsp_defs_1.SourceUtils[type].defaults();
     return {
@@ -27,7 +40,7 @@ function basicXTCData() {
     };
 }
 exports.basicXTCData = basicXTCData;
-function basicUserData(name, channel) {
+function basicUserData(name, channel, panel) {
     return {
         name,
         channel,
@@ -35,7 +48,8 @@ function basicUserData(name, channel) {
         headtracker: -1,
         inputs: [],
         room: null,
-        xtc: basicXTCData()
+        xtc: basicXTCData(),
+        artist: basicArtistSyncSettings(panel)
     };
 }
 exports.basicUserData = basicUserData;

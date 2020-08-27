@@ -97,7 +97,7 @@ export class NodeDSPGraphBuilder extends NodeModule {
         this.handleModuleEvent(GraphBuilderInputEvents.SET_GAIN,
                                this._dispatch_set_gain.bind(this));
         this.handleModuleEvent(GraphBuilderInputEvents.MODIFY_XTC,
-                               this._find_usermodule.bind(this));
+                               this._dispatch_modify_xtc.bind(this));
 
         log.info('Remote node address',
                  (<SIServerWSSession>this.myNode().remote()).remoteInfo());
@@ -149,7 +149,7 @@ export class NodeDSPGraphBuilder extends NodeModule {
             let userdata = user.get();
             
             log.verbose('Build input modules for user ' + userdata.name);
-            
+
             this.basic_spatializers[userdata.id] = {};
             this.room_spatializers[userdata.id]  = {};
 
@@ -174,6 +174,7 @@ export class NodeDSPGraphBuilder extends NodeModule {
             });
 
             let usermod = new SimpleUsersModule(user);
+            this.user_modules[userdata.id] = usermod;
             this.graph().addModule(usermod);
         });
     }

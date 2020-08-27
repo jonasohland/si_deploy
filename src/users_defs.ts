@@ -2,6 +2,7 @@ import { v4 as uniqueId } from 'uuid';
 import { NodeAudioInputDescription } from "./inputs_defs";
 import { PortTypes, SourceUtils } from './dsp_defs';
 import { NumberFormatDefinition } from 'ajv';
+import { Port } from './rrcs_defs';
 
 export interface SpatializedInputData {
     id: string,
@@ -32,6 +33,7 @@ export interface UserData {
     headtracker: number;
     room: string;
     xtc: XTCSettings;
+    artist: ArtistSyncSettings;
     inputs: string[];
 }
 
@@ -68,6 +70,37 @@ export interface UserInputGainChangeMessage {
     user: string
 }
 
+export interface UserModifyXTCMessage {
+    xtc: XTCSettings,
+    user: string
+}
+
+export interface ManagedPort {
+    port: Port;
+    input: SpatializedInputData
+}
+
+export interface ArtistSyncSettings {
+    settings: {
+        node: number,
+        first_port: number,
+        last_port: number,
+        first_device_channel: number
+    }
+    user_panel: Port
+}
+
+export function basicArtistSyncSettings(panel?: Port): ArtistSyncSettings {
+    return {
+        settings: {
+            node: -1,
+            first_port: 0,
+            last_port: 0,
+            first_device_channel: 0
+        },
+        user_panel: panel
+    }
+}
 
 export function basicSpatializedInput(inputid: string, userid: string, type: PortTypes): SpatializedInputData {
     let defaultSource = SourceUtils[type].defaults();
@@ -95,7 +128,7 @@ export function basicXTCData()
     }
 }
 
-export function basicUserData(name: string, channel: number): UserData {
+export function basicUserData(name: string, channel: number, panel?: Port): UserData {
     return {
         name,
         channel,
@@ -103,6 +136,7 @@ export function basicUserData(name: string, channel: number): UserData {
         headtracker: -1,
         inputs: [],
         room: null,
-        xtc: basicXTCData()
+        xtc: basicXTCData(),
+        artist: basicArtistSyncSettings(panel)
     }
 }

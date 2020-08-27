@@ -2,7 +2,7 @@
 import { ValidateFunction } from 'ajv';
 import { Connection, NodeIdentification, Requester } from './communication';
 import { ManagedNodeStateMapRegister, ManagedNodeStateObject, Node, NodeModule, ServerModule } from './core';
-import { ArtistState } from './rrcs';
+import { ArtistState, ArtistNodeInfo } from './rrcs';
 import { AddCrosspointVolumeTargetMessage, CrosspointSync, CrosspointVolumeTarget } from './rrcs_defs';
 declare class Sync extends ManagedNodeStateObject<CrosspointSync> {
     data: CrosspointSync;
@@ -34,6 +34,7 @@ declare class RRCSNodeModule extends NodeModule {
     removeXPSync(id: string): void;
     addSlaveToSync(msg: AddCrosspointVolumeTargetMessage): void;
     removeSlaveFromSync(msg: AddCrosspointVolumeTargetMessage): void;
+    artistNodes(): ArtistNodeInfo[];
     start(remote: Connection): void;
     joined(socket: SocketIO.Socket, topic: string): void;
     left(socket: SocketIO.Socket, topic: string): void;
@@ -56,6 +57,7 @@ export declare class RRCSServerModule extends ServerModule {
     init(): void;
     joined(socket: SocketIO.Socket, topic: string): void;
     left(socket: SocketIO.Socket, topic: string): void;
+    _update_webif_room(socket?: SocketIO.Socket): void;
 }
 export declare class RRCSNode extends Node {
     rrcs: RRCSNodeModule;

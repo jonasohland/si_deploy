@@ -20,7 +20,7 @@ export interface ArtistState {
     artist: boolean;
     artist_nodes: ArtistNodeInfo[];
 }
-interface ArtistNodeInfo {
+export interface ArtistNodeInfo {
     id: number;
     ports: ArtistPortInfo[];
 }

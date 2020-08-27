@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.DSPHost = void 0;
 class DSPHost {
     constructor(con) {
         this.remote = con.getRequester('dsp');

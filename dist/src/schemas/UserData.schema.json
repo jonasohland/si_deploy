@@ -2,9 +2,45 @@
   "$ref": "#/definitions/UserData",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
+    "ArtistSyncSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "settings": {
+          "additionalProperties": false,
+          "properties": {
+            "first_device_channel": {
+              "type": "number"
+            },
+            "first_port": {
+              "type": "number"
+            },
+            "last_port": {
+              "type": "number"
+            },
+            "node": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "node",
+            "first_port",
+            "last_port",
+            "first_device_channel"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "settings"
+      ],
+      "type": "object"
+    },
     "UserData": {
       "additionalProperties": false,
       "properties": {
+        "artist": {
+          "$ref": "#/definitions/ArtistSyncSettings"
+        },
         "channel": {
           "type": "number"
         },
@@ -37,6 +73,7 @@
         "headtracker",
         "room",
         "xtc",
+        "artist",
         "inputs"
       ],
       "type": "object"

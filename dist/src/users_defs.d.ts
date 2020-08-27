@@ -1,5 +1,6 @@
 import { NodeAudioInputDescription } from "./inputs_defs";
 import { PortTypes } from './dsp_defs';
+import { Port } from './rrcs_defs';
 export interface SpatializedInputData {
     id: string;
     inputid: string;
@@ -26,6 +27,7 @@ export interface UserData {
     headtracker: number;
     room: string;
     xtc: XTCSettings;
+    artist: ArtistSyncSettings;
     inputs: string[];
 }
 export interface UserAddInputsMessage {
@@ -55,6 +57,24 @@ export interface UserInputGainChangeMessage {
     id: string;
     user: string;
 }
+export interface UserModifyXTCMessage {
+    xtc: XTCSettings;
+    user: string;
+}
+export interface ManagedPort {
+    port: Port;
+    input: SpatializedInputData;
+}
+export interface ArtistSyncSettings {
+    settings: {
+        node: number;
+        first_port: number;
+        last_port: number;
+        first_device_channel: number;
+    };
+    user_panel: Port;
+}
+export declare function basicArtistSyncSettings(panel?: Port): ArtistSyncSettings;
 export declare function basicSpatializedInput(inputid: string, userid: string, type: PortTypes): SpatializedInputData;
 export declare function basicXTCData(): {
     enabled_bin: boolean;
@@ -64,4 +84,4 @@ export declare function basicXTCData(): {
     dist_ears: number;
     dist_listener: number;
 };
-export declare function basicUserData(name: string, channel: number): UserData;
+export declare function basicUserData(name: string, channel: number, panel?: Port): UserData;

@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.withDestinationAsDestinationWildcard = exports.withDestinationeAsSourceWildcard = exports.withSourceAsDestinationWildcard = exports.withSourceAsSourceWildcard = exports.sourcePortIsWildcard = exports.destinationPortIsWildcard = exports.isWildcardXP = exports.isWildcardPort = exports.makeWildcardPort = exports.xpvtid = exports.__xpid = exports.xpVtEqual = exports.xpEqual = exports.portEqual = exports.isLoopbackXP = exports.CrosspointSyncType = void 0;
 const lodash_1 = __importDefault(require("lodash"));
 var CrosspointSyncType;
 (function (CrosspointSyncType) {
