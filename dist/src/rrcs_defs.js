@@ -3,15 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withDestinationAsDestinationWildcard = exports.withDestinationeAsSourceWildcard = exports.withSourceAsDestinationWildcard = exports.withSourceAsSourceWildcard = exports.sourcePortIsWildcard = exports.destinationPortIsWildcard = exports.isWildcardXP = exports.isWildcardPort = exports.makeWildcardPort = exports.xpvtid = exports.__xpid = exports.xpVtEqual = exports.xpEqual = exports.portEqual = exports.isLoopbackXP = exports.CrosspointSyncType = void 0;
+exports.withDestinationAsDestinationWildcard = exports.withDestinationeAsSourceWildcard = exports.withSourceAsDestinationWildcard = exports.withSourceAsSourceWildcard = exports.sourcePortIsWildcard = exports.destinationPortIsWildcard = exports.isWildcardXP = exports.isWildcardPort = exports.makeWildcardPort = exports.xpvtid = exports.__xpid = exports.xpVtEqual = exports.xpEqual = exports.portEqual = exports.getLoopbackXPForWildcard = exports.isLoopbackXP = exports.CrosspointSyncType = void 0;
 const lodash_1 = __importDefault(require("lodash"));
 var CrosspointSyncType;
 (function (CrosspointSyncType) {
     CrosspointSyncType[CrosspointSyncType["SINGLE"] = 0] = "SINGLE";
     CrosspointSyncType[CrosspointSyncType["WILDCARD_SRC"] = 1] = "WILDCARD_SRC";
     CrosspointSyncType[CrosspointSyncType["WILDCARD_DST"] = 2] = "WILDCARD_DST";
-    CrosspointSyncType[CrosspointSyncType["WILDCARD_RANGE_SRC"] = 3] = "WILDCARD_RANGE_SRC";
-    CrosspointSyncType[CrosspointSyncType["WILDCARD_RANGE_DST"] = 4] = "WILDCARD_RANGE_DST";
 })(CrosspointSyncType = exports.CrosspointSyncType || (exports.CrosspointSyncType = {}));
 function isLoopbackXP(xp) {
     return xp.Source.Port === xp.Destination.Port
@@ -19,6 +17,19 @@ function isLoopbackXP(xp) {
         && xp.Source.IsInput != xp.Destination.IsInput;
 }
 exports.isLoopbackXP = isLoopbackXP;
+function getLoopbackXPForWildcard(xp) {
+    if (isWildcardPort(xp.Source))
+        return {
+            Source: lodash_1.default.cloneDeep(xp.Destination),
+            Destination: lodash_1.default.cloneDeep(xp.Destination)
+        };
+    else
+        return {
+            Source: lodash_1.default.cloneDeep(xp.Source),
+            Destination: lodash_1.default.cloneDeep(xp.Source)
+        };
+}
+exports.getLoopbackXPForWildcard = getLoopbackXPForWildcard;
 function portEqual(lhs, rhs) {
     return lhs.Node === rhs.Node && lhs.Port === rhs.Port
         && lhs.IsInput === rhs.IsInput;

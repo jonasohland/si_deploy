@@ -21,6 +21,12 @@
     "CrosspointSync": {
       "additionalProperties": false,
       "properties": {
+        "exclude": {
+          "items": {
+            "$ref": "#/definitions/Crosspoint"
+          },
+          "type": "array"
+        },
         "master": {
           "$ref": "#/definitions/CrosspointVolumeSource"
         },
@@ -33,6 +39,9 @@
         "state": {
           "type": "boolean"
         },
+        "type": {
+          "$ref": "#/definitions/CrosspointSyncType"
+        },
         "vol": {
           "type": "number"
         }
@@ -40,10 +49,22 @@
       "required": [
         "state",
         "vol",
+        "type",
         "master",
-        "slaves"
+        "slaves",
+        "exclude"
       ],
       "type": "object"
+    },
+    "CrosspointSyncType": {
+      "enum": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "type": "number"
     },
     "CrosspointVolumeSource": {
       "additionalProperties": false,

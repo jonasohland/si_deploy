@@ -37,17 +37,18 @@ export interface XPSyncModifySlavesMessage {
 export declare enum CrosspointSyncType {
     SINGLE = 0,
     WILDCARD_SRC = 1,
-    WILDCARD_DST = 2,
-    WILDCARD_RANGE_SRC = 3,
-    WILDCARD_RANGE_DST = 4
+    WILDCARD_DST = 2
 }
 export interface CrosspointSync {
     state: boolean;
     vol: number;
+    type: CrosspointSyncType;
     master: CrosspointVolumeSource;
     slaves: CrosspointVolumeTarget[];
+    exclude: Crosspoint[];
 }
 export declare function isLoopbackXP(xp: Crosspoint): boolean;
+export declare function getLoopbackXPForWildcard(xp: Crosspoint): Crosspoint;
 export declare function portEqual(lhs: Port, rhs: Port): boolean;
 export declare function xpEqual(lhs: Crosspoint, rhs: Crosspoint): boolean;
 export declare function xpVtEqual(lhs: CrosspointVolumeTarget, rhs: CrosspointVolumeTarget): boolean;

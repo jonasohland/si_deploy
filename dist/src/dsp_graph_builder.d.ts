@@ -54,7 +54,7 @@ export declare class NodeDSPGraphBuilder extends NodeModule {
     _dispatch_modify_xtc(userid: string, settings: XTCSettings): void;
     _dispatch_set_gain(userid: string, spid: string, gain: number): void;
     _build_user_modules(): void;
-    _find_spatializer(userid: string, spid: string): MultiSpatializerModule | RoomSpatializerModule;
+    _find_spatializer(userid: string, spid: string): RoomSpatializerModule | MultiSpatializerModule;
     _find_spatializers_for_room(room: string): RoomSpatializerModule[];
     _find_usermodule(userid: string): SimpleUsersModule;
     getRooms(): import("./rooms").NodeRooms;

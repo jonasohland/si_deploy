@@ -150,6 +150,7 @@ class AdvancedBinauralDecoder extends dsp_graph_1.NativeNode {
         }
         this.remote.set('mute', false);
         this.remote.set('xtc', this._xtc);
+        this.remote.on('cbcount', (cnt) => console.log(cnt));
     }
     refIn() {
         return this._ref_in;
