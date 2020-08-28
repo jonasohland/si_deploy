@@ -23,4 +23,5 @@ Object.defineProperty(exports, "destinationPortIsWildcard", { enumerable: true, 
 Object.defineProperty(exports, "sourcePortIsWildcard", { enumerable: true, get: function () { return rrcs_defs_1.sourcePortIsWildcard; } });
 Object.defineProperty(exports, "makeWildcardPort", { enumerable: true, get: function () { return rrcs_defs_1.makeWildcardPort; } });
 Object.defineProperty(exports, "getLoopbackXPForWildcard", { enumerable: true, get: function () { return rrcs_defs_1.getLoopbackXPForWildcard; } });
+Object.defineProperty(exports, "CrosspointSyncType", { enumerable: true, get: function () { return rrcs_defs_1.CrosspointSyncType; } });
 //# sourceMappingURL=index.js.map

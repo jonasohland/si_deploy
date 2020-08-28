@@ -1057,8 +1057,8 @@
         "affectsGlobalScope": false
       },
       "../src/index.ts": {
-        "version": "54427c8b7b5f3cccd243e1a6ce2dda70e080b2fe978aacb81565cbab0323d249",
-        "signature": "3e3bb12526aeeab21517ecf7ad251bcab0c5a9777c51fb31f760468aa9e06cf7",
+        "version": "815ab66c67dae708bd80fd2181066f134981b4f2d8f1e776d788724ab58f6fe6",
+        "signature": "772f6e429ea25e717520581a774a9617042061c7862bc09567770704f264413b",
         "affectsGlobalScope": false
       },
       "../src/install_service.ts": {
@@ -1165,7 +1165,6 @@
           "typings/*"
         ]
       },
-      "watch": true,
       "configFilePath": "../tsconfig.json"
     },
     "referencedMap": {
