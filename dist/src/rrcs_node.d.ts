@@ -2,7 +2,7 @@
 import { ValidateFunction } from 'ajv';
 import { Connection, NodeIdentification, Requester } from './communication';
 import { ManagedNodeStateMapRegister, ManagedNodeStateObject, Node, NodeModule, ServerModule } from './core';
-import { ArtistState, ArtistNodeInfo } from './rrcs';
+import { ArtistNodeInfo, ArtistState } from './rrcs';
 import { AddCrosspointVolumeTargetMessage, CrosspointSync, CrosspointVolumeTarget } from './rrcs_defs';
 declare class Sync extends ManagedNodeStateObject<CrosspointSync> {
     data: CrosspointSync;
@@ -28,6 +28,7 @@ declare class RRCSNodeModule extends NodeModule {
     syncs: SyncList;
     _xpstates: Record<string, boolean>;
     _cached: ArtistState;
+    _config_syncs: CrosspointSync[];
     constructor();
     init(): void;
     addXpSync(sync: CrosspointSync): void;
@@ -44,6 +45,7 @@ declare class RRCSNodeModule extends NodeModule {
     _gateway_online(): void;
     _gateway_offline(): void;
     _config_changed(): void;
+    _refresh_config_syncs(): Promise<void>;
     _xp_states_changed(msg: any): void;
     _reload_artist_state(): void;
     _set_sync_list(): void;

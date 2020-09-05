@@ -1,8 +1,8 @@
 /// <reference types="node" />
 import { EventEmitter2 } from 'eventemitter2';
 import xmlrpc from 'xmlrpc';
-import { Crosspoint, CrosspointState, CrosspointSync, CrosspointVolumeSource, CrosspointVolumeSourceState, CrosspointVolumeTarget, XPSyncModifySlavesMessage } from './rrcs_defs';
-interface ArtistPortInfo {
+import { Crosspoint, CrosspointState, CrosspointSync, CrosspointVolumeSource, CrosspointVolumeSourceState, CrosspointVolumeTarget, Port, XPSyncModifySlavesMessage } from './rrcs_defs';
+export interface ArtistPortInfo {
     Input: boolean;
     KeyCount: number;
     Label: string;
@@ -13,6 +13,8 @@ interface ArtistPortInfo {
     PageCount: number;
     Port: number;
     PortType: string;
+    Subtitle?: string;
+    Alias?: string;
     HasSecondChannel?: boolean;
 }
 export interface ArtistState {
@@ -58,11 +60,14 @@ export declare abstract class RRCSServer extends EventEmitter2 {
     abstract onXpsChanged(xps: CrosspointState[]): void;
     abstract xpsToListenTo(): Crosspoint[];
     abstract onArtistOnline(): Promise<void>;
-    constructor(rrcs_host: string, rrcs_port: number);
+    constructor(options: any);
     rrcsAvailable(): void;
     getArtistNode(id: number): ArtistNode;
     getAllNodes(): ArtistNodeInfo[];
     getArtistState(): ArtistState;
+    getObjectPropertyNames(objectid: number): Promise<unknown>;
+    getObjectProperty(id: number, name: string): Promise<unknown>;
+    getPortAlias(port: Port): Promise<unknown>;
     getGatewayState(): Promise<unknown>;
     setStateWorking(): Promise<unknown>;
     setStateStandby(): Promise<unknown>;
@@ -92,6 +97,7 @@ export declare abstract class RRCSServer extends EventEmitter2 {
     private _get_trs_key;
 }
 export declare class RRCSService extends RRCSServer {
+    _synced_ex: Record<string, CrosspointSync>;
     _synced: Record<string, CrosspointSync>;
     xpsToListenTo(): Crosspoint[];
     setXPSyncs(syncs: CrosspointSync[]): void;

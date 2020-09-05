@@ -65,7 +65,8 @@ function merge(cmd_opts) {
     let interface_ = cmd_opts.interface || _config_file.network.interface;
     let webif_opt = cmd_opts.webInterface || _config_file.network.web_interface
         || cmd_opts.interface || _config_file.network.interface;
-    output.rrcs = cmd_opts.rrcs || _config_file.artist.rrcs;
+    output.rrcs = cmd_opts.gateway || _config_file.artist.gateway || '127.0.0.1';
+    output.rrcs_port = cmd_opts.gatewayPort || _config_file.artist.port || 8193;
     output.rrcs_osc_host = cmd_opts.rrcsOscHost || _config_file.artist.rrcs_osc_host || '127.0.0.1';
     output.rrcs_osc_port = cmd_opts.rrcsOscPort || _config_file.artist.rrcs_osc_port || 9955;
     output.rrcs_osc_port = Number.parseInt(output.rrcs_osc_port);

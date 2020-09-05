@@ -38,9 +38,9 @@ class DummyMessageHandler extends communication_1.NodeMessageHandler {
     }
 }
 class RRCSMessageInterceptor extends communication_1.NodeMessageInterceptor {
-    constructor(rrcs_host, rrcs_port) {
+    constructor(options) {
         super();
-        this.rrcs = new rrcs_1.RRCSService(rrcs_host, rrcs_port);
+        this.rrcs = new rrcs_1.RRCSService(options);
         this.rrcs.onAny((evt, arg) => {
             this.event(evt, arg);
         });
@@ -84,7 +84,7 @@ function default_1(options) {
     let handler = new DummyMessageHandler();
     let client = new communication_1.SINodeWSClient(config, handler, type);
     const state = new core_1.NodeDataStorage(config, options, type);
-    const rrcs = new RRCSMessageInterceptor(config.rrcs, 8193);
+    const rrcs = new RRCSMessageInterceptor(config);
     client.addWSInterceptor(state);
     client.addWSInterceptor(rrcs);
 }

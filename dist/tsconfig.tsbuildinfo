@@ -687,8 +687,13 @@
         "affectsGlobalScope": false
       },
       "../src/rrcs.ts": {
-        "version": "be2a0fe9d50315d0b9dbdd4770c2c79dfc961c2f3c00e9447fee201791bfc49c",
-        "signature": "77a11f869b5e38feba21a8df9907f785f8857117667a30d1178f83dc217bcb31",
+        "version": "d243caf7750c6bc0c873462a161fffd9bca55a96e7e9b408cc6d8df5a486995b",
+        "signature": "1c72a5bf34f3b7598664404657a49692325fd7653d6e59d2c264f8bf084b4300",
+        "affectsGlobalScope": false
+      },
+      "../src/rrcs_lex.ts": {
+        "version": "2255e6ae3ded34d2494176ae16e516750da6b23792ff45f521197a1e39eb773c",
+        "signature": "c2d237d48f97773c9fd7a2159cb2bcb28b43cf2483a20118184d6c872543220c",
         "affectsGlobalScope": false
       },
       "../src/validation.ts": {
@@ -697,8 +702,8 @@
         "affectsGlobalScope": false
       },
       "../src/rrcs_node.ts": {
-        "version": "f8d8ca604b2a62d0431696c3ad8f8313e9b518b638577bde610e2188dec616d9",
-        "signature": "f9e73ef366fda21b5e3de8a6f88ef94ce8c17364894b62e49a20d6c7cbab29b9",
+        "version": "aaf7177f3a3792e08febe58d5821f98dce785d63b1ede1f32caa956568bd379d",
+        "signature": "412b671756d4887993a35e2a363803434b565f7e51b452f8c7c8f161bcf03961",
         "affectsGlobalScope": false
       },
       "../src/server.ts": {
@@ -708,7 +713,7 @@
       },
       "../src/dsp_graph_builder.ts": {
         "version": "3c1e2e0feb5af677452b7c05e4372fb20d28c8606f8229416ab6e7b279c4a236",
-        "signature": "325738cca409521f7daffaca1ef1554ba605a818b6eb632575a7f054ea9cc5c4",
+        "signature": "d3539a8345bfe18b363d526b10621d8600b95f35eddd0ef5eaabf28bc9dd373b",
         "affectsGlobalScope": false
       },
       "../src/users.ts": {
@@ -1047,8 +1052,8 @@
         "affectsGlobalScope": false
       },
       "../src/server_config.ts": {
-        "version": "621787f91fa48b310e359574c3157182f61ca67eaf19b6280a332c2e09950471",
-        "signature": "2cd39fc44ada1dbc74f43545b532389beb21b37c3b0215078def401a2f78dadc",
+        "version": "39c176ee4d062e00b947ddac3b1e72de0e347fec38e5d80a983c4df931ddf204",
+        "signature": "b4c2e06fc4c51c046b7142f71325b4ede826c2038c3f9a8fa14e6f8d4daf30bf",
         "affectsGlobalScope": false
       },
       "../src/headtracker_mode.ts": {
@@ -1057,7 +1062,7 @@
         "affectsGlobalScope": false
       },
       "../src/index.ts": {
-        "version": "815ab66c67dae708bd80fd2181066f134981b4f2d8f1e776d788724ab58f6fe6",
+        "version": "769c5da99464903721796ca28d05f19fb98b8e380256da8303c45467b7c7801a",
         "signature": "772f6e429ea25e717520581a774a9617042061c7862bc09567770704f264413b",
         "affectsGlobalScope": false
       },
@@ -1077,7 +1082,7 @@
         "affectsGlobalScope": false
       },
       "../src/rrcs_node_mode.ts": {
-        "version": "a264e4cb7c63942cf0cfd5ab5bc90e7561dabad8a8894310dd1555c52c932dbd",
+        "version": "9a2a1394e1d75154ecac0138ef1b4f892968bfbc0cbf880b4516de1651a77df2",
         "signature": "ad015745dadccdbcfad819c08bb54af1e4ce899f015b108ee0c6d3b45f55f988",
         "affectsGlobalScope": false
       },
@@ -1092,7 +1097,7 @@
         "affectsGlobalScope": false
       },
       "../src/si.ts": {
-        "version": "92d424acf966e140c0e3383717dfe73387fcb9521ecd8a9dda2d7190b68de4c7",
+        "version": "cfad82e5fb5d5b1b87dd31bdd644429f7f592a43643f98b0a7d38d2197b9e0e0",
         "signature": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881",
         "affectsGlobalScope": false
       },
@@ -1165,6 +1170,7 @@
           "typings/*"
         ]
       },
+      "watch": true,
       "configFilePath": "../tsconfig.json"
     },
     "referencedMap": {
@@ -3063,6 +3069,7 @@
       ],
       "../src/rrcs.ts": [
         "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/perf_hooks.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -3079,6 +3086,15 @@
         "../node_modules/@types/node/ts3.2/util.d.ts",
         "../node_modules/@types/node/util.d.ts"
       ],
+      "../src/rrcs_lex.ts": [
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/fs.d.ts",
+        "../node_modules/@types/node/ts3.2/util.d.ts",
+        "../node_modules/@types/node/util.d.ts",
+        "../src/log.ts",
+        "../src/rrcs.ts",
+        "../src/rrcs_defs.ts"
+      ],
       "../src/rrcs_node.ts": [
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
@@ -3090,6 +3106,7 @@
         "../src/log.ts",
         "../src/rrcs.ts",
         "../src/rrcs_defs.ts",
+        "../src/rrcs_lex.ts",
         "../src/util.ts",
         "../src/validation.ts"
       ],
@@ -4921,6 +4938,10 @@
         "../node_modules/eventemitter2/eventemitter2.d.ts",
         "../src/rrcs_defs.ts"
       ],
+      "../src/rrcs_lex.ts": [
+        "../src/rrcs.ts",
+        "../src/rrcs_defs.ts"
+      ],
       "../src/rrcs_node.ts": [
         "../node_modules/ajv/lib/ajv.d.ts",
         "../src/communication.ts",
@@ -5202,6 +5223,7 @@
       "../src/rooms_defs.ts",
       "../src/rrcs.ts",
       "../src/rrcs_defs.ts",
+      "../src/rrcs_lex.ts",
       "../src/rrcs_node.ts",
       "../src/rrcs_node_mode.ts",
       "../src/server.ts",

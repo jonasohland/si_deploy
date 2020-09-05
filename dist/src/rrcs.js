@@ -34,6 +34,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RRCSService = exports.RRCSServer = void 0;
 const eventemitter2_1 = require("eventemitter2");
 const fs = __importStar(require("fs"));
+const perf_hooks_1 = require("perf_hooks");
 const xmlrpc_1 = __importDefault(require("xmlrpc"));
 const files_1 = require("./files");
 const Logger = __importStar(require("./log"));
@@ -90,6 +91,9 @@ function crosspointToParams(xp, net) {
         xp.Destination.Port
     ];
 }
+function portToParams(p, net) {
+    return [net - 1, p.Node, p.Port];
+}
 function crosspointFromParams(params) {
     return {
         Source: { Node: params[1], Port: params[2], IsInput: true },
@@ -101,7 +105,7 @@ function pad(num, size) {
     return s.substr(s.length - size);
 }
 class RRCSServer extends eventemitter2_1.EventEmitter2 {
-    constructor(rrcs_host, rrcs_port) {
+    constructor(options) {
         super();
         this._artist_online = false;
         this._gateway_online = false;
@@ -110,10 +114,16 @@ class RRCSServer extends eventemitter2_1.EventEmitter2 {
         this._trs_cnt = 0;
         this._nodes = [];
         log.info('Server start listen');
-        this._srv = xmlrpc_1.default.createServer({ host: '0.0.0.0', port: this._local_port }, () => {
+        if (options.interface == null) {
+            log.error('\'interface\' option has to be specified');
+            process.exit(1);
+        }
+        this._local_ip = options.interface;
+        log.info(`Using local interface ${this._local_ip}`);
+        this._srv = xmlrpc_1.default.createServer({ host: this._local_ip, port: this._local_port }, () => {
             log.info('RRCS Server listening');
-            this._cl = xmlrpc_1.default.createClient({ host: rrcs_host, port: rrcs_port });
-            log.info(`Client connecting to ${rrcs_host}:${rrcs_port}`);
+            this._cl = xmlrpc_1.default.createClient({ host: options.rrcs, port: options.rrcs_port });
+            log.info(`Client connecting to ${options.rrcs}:${options.rrcs_port}`);
             this._load_cached();
             this._ping_artist();
         });
@@ -172,6 +182,21 @@ class RRCSServer extends eventemitter2_1.EventEmitter2 {
             artist_nodes: this.getAllNodes()
         };
     }
+    getObjectPropertyNames(objectid) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._perform_method_call('GetObjectPropertyNames', this._get_trs_key(), objectid);
+        });
+    }
+    getObjectProperty(id, name) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._perform_method_call('GetObjectProperty', this._get_trs_key(), id, name);
+        });
+    }
+    getPortAlias(port) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this._perform_method_call('GetPortAlias', this._get_trs_key(), ...portToParams(port, 2));
+        });
+    }
     getGatewayState() {
         return __awaiter(this, void 0, void 0, function* () {
             return this._perform_method_call('GetState', this._get_trs_key());
@@ -202,6 +227,9 @@ class RRCSServer extends eventemitter2_1.EventEmitter2 {
         return __awaiter(this, void 0, void 0, function* () {
             log.debug(`Set XP volume (${(single == null) ? 'single'
                 : (single ? 'single' : 'conf')}) ${rrcs_defs_1.__xpid(xp)} - ${((volume === 0) ? 'mute' : ((volume - 230) / 2) + 'dB')}`);
+            console.log(xp);
+            console.log(single);
+            console.log(conf);
             this._perform_method_call('SetXPVolume', this._get_trs_key(), ...crosspointToParams(xp, 2), (single == null) ? true : single, conf || false, volume);
         });
     }
@@ -247,13 +275,17 @@ class RRCSServer extends eventemitter2_1.EventEmitter2 {
     }
     _perform_method_call(method, ...params) {
         return __awaiter(this, void 0, void 0, function* () {
+            let timet = perf_hooks_1.performance.now();
             logArtistCall(method, params.length);
             return new Promise((res, rej) => {
                 this._cl.methodCall(method, params, (err, value) => {
-                    if (err)
+                    let time_fin = perf_hooks_1.performance.now() - timet;
+                    if (err) {
+                        log.debug(`Error after ${time_fin} ms`);
                         rej(err);
+                    }
                     else {
-                        artlog.debug(`Call to ${method} returned with ${value.length} args`);
+                        artlog.debug(`Call to ${method} returned with ${value.length} args after ${time_fin} ms`);
                         res(value);
                     }
                 });
@@ -377,7 +409,16 @@ class RRCSServer extends eventemitter2_1.EventEmitter2 {
             let data = yield this._perform_method_call('GetAllPorts', this._get_trs_key());
             let ports = data[1];
             this._nodes.forEach(node => node.destroy());
-            this._nodes = [];
+            for (let p of ports) {
+                try {
+                    p.Subtitle = (yield (this.getObjectProperty(p.ObjectID, 'Subtitle')))
+                        .Subtitle;
+                    p.Alias = (yield this.getPortAlias(p))[2];
+                }
+                catch (err) {
+                    log.error(`Could not retrieve subtitle for port ${p.Name}: ${err}`);
+                }
+            }
             ports.forEach((port) => {
                 // console.log(`input: ${port.Input} output: ${port.Output} -
                 // ${port.Name}`);
@@ -419,6 +460,7 @@ exports.RRCSServer = RRCSServer;
 class RRCSService extends RRCSServer {
     constructor() {
         super(...arguments);
+        this._synced_ex = {};
         this._synced = {};
     }
     xpsToListenTo() {
@@ -605,16 +647,10 @@ class RRCSService extends RRCSServer {
             let updated = [];
             for (let xpstate of xps) {
                 // ignore the Sidetone/Loopback XP
-                // if (isLoopbackXP(xpstate.xp))
-                //     continue;
+                if (rrcs_defs_1.isLoopbackXP(xpstate.xp))
+                    continue;
                 this.trySyncCrosspointForMaster(rrcs_defs_1.xpvtid({ xp: xpstate.xp, conf: false }), xpstate, updated);
                 this.trySyncCrosspointForMaster(rrcs_defs_1.xpvtid({ xp: xpstate.xp, conf: true }), xpstate, updated);
-                /* await this.trySyncCrosspointForWildcardMaster(
-                    xpvtid({
-                        xp : withDestinationAsDestinationWildcard(xpstate.xp),
-                        conf : false
-                    }),
-                    xpstate, updated); */
                 yield this.trySyncCrosspointForWildcardMaster(rrcs_defs_1.xpvtid({
                     xp: rrcs_defs_1.withDestinationeAsSourceWildcard(xpstate.xp),
                     conf: false
@@ -623,12 +659,6 @@ class RRCSService extends RRCSServer {
                     xp: rrcs_defs_1.withSourceAsDestinationWildcard(xpstate.xp),
                     conf: false
                 }), xpstate, updated);
-                /* await this.trySyncCrosspointForWildcardMaster(
-                    xpvtid({
-                        xp : withSourceAsSourceWildcard(xpstate.xp),
-                        conf : false
-                    }),
-                    xpstate, updated); */
             }
             if (updated.length) {
                 this.emit('xp-states-changed', updated);
@@ -693,8 +723,7 @@ class RRCSService extends RRCSServer {
                     Destination: sync.master.xp.Source
                 });
                 wildcard_actives.push(...xps.filter(xp => rrcs_defs_1.portEqual(xp.Source, sync.master.xp.Source)
-                    && sync.exclude.filter(excl => rrcs_defs_1.xpEqual(excl, xp)).length
-                        == 0));
+                    && !rrcs_defs_1.isLoopbackXP(xp)));
             }
             if (rrcs_defs_1.sourcePortIsWildcard(sync.master.xp)) {
                 let xps = yield this.getXpsInRange({
@@ -702,8 +731,7 @@ class RRCSService extends RRCSServer {
                     Destination: sync.master.xp.Destination
                 });
                 wildcard_actives.push(...xps.filter(xp => rrcs_defs_1.portEqual(xp.Destination, sync.master.xp.Destination)
-                    && sync.exclude.filter(excl => rrcs_defs_1.xpEqual(excl, xp)).length
-                        == 0));
+                    && !rrcs_defs_1.isLoopbackXP(xp)));
             }
             if (wildcard_actives.length) {
                 log.debug(`Wildcard master ${rrcs_defs_1.xpvtid(sync.master)} still has ${wildcard_actives.length} XPs`);
