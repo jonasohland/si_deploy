@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.basicUserData = exports.basicXTCData = exports.basicSpatializedInput = exports.basicArtistSyncSettings = void 0;
 const uuid_1 = require("uuid");
 const dsp_defs_1 = require("./dsp_defs");
 function basicArtistSyncSettings(panel) {

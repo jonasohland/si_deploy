@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withDestinationAsDestinationWildcard = exports.withDestinationeAsSourceWildcard = exports.withSourceAsDestinationWildcard = exports.withSourceAsSourceWildcard = exports.sourcePortIsWildcard = exports.destinationPortIsWildcard = exports.isWildcardXP = exports.isWildcardPort = exports.makeWildcardPort = exports.xpvtid = exports.__xpid = exports.xpVtEqual = exports.xpEqual = exports.portEqual = exports.getLoopbackXPForWildcard = exports.isLoopbackXP = exports.CrosspointSyncType = void 0;
 const lodash_1 = __importDefault(require("lodash"));
 var CrosspointSyncType;
 (function (CrosspointSyncType) {
@@ -46,7 +45,7 @@ function xpVtEqual(lhs, rhs) {
 }
 exports.xpVtEqual = xpVtEqual;
 function __xpid(xp) {
-    return `${xp.Source.Node}-${xp.Source.Port}-|${xp.Destination.Node}-${xp.Destination.Port}`;
+    return `${xp.Source.Node}.${xp.Source.Port}x${xp.Destination.Node}.${xp.Destination.Port}`;
 }
 exports.__xpid = __xpid;
 function xpvtid(xp_vt) {

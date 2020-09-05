@@ -120,6 +120,7 @@ export declare class RRCSService extends RRCSServer {
     syncCrosspointsForWildcardMaster(sync: CrosspointSync, newstate: boolean): Promise<boolean>;
     refreshAllXPs(): Promise<void>;
     private _do_update_xp;
+    private _find_volume_master;
     private _clear_all_xpstates;
     private _set_sync_state_on;
     private _try_set_xp;

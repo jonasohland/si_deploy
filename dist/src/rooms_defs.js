@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.defaultRoom = void 0;
 function defaultRoom(letter) {
     return {
         letter: letter,

@@ -1,23 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -27,8 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RRCSNode = exports.RRCSServerModule = void 0;
 const communication_1 = require("./communication");
 const core_1 = require("./core");
 const Logger = __importStar(require("./log"));
@@ -210,22 +197,26 @@ class RRCSNodeModule extends core_1.NodeModule {
     }
     _artist_online() {
         this._server._webif.broadcastNotification('RRCS', 'Artist online');
+        this._config_syncs.length = 0;
         this._reload_artist_state();
         this._cached.artist = true;
         this._webif_update_connection();
     }
     _artist_offline() {
         this._server._webif.broadcastError('RRCS', 'Artist offline');
+        this._config_syncs.length = 0;
         this._cached.artist = false;
         this._webif_update_connection();
     }
     _gateway_online() {
         this._server._webif.broadcastNotification('RRCS', 'RRCS Gateway online');
+        this._config_syncs.length = 0;
         this._cached.gateway = true;
         this._webif_update_connection();
     }
     _gateway_offline() {
         this._server._webif.broadcastError('RRCS', 'RRCS Gateway offline');
+        this._config_syncs.length = 0;
         this._cached.gateway = false;
         this._webif_update_connection();
     }

@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Headtracker = exports.HeadtrackerDataPacket = exports.HeadtrackerConfigPacket = exports.Quaternion = exports.EulerAngles = exports.addrToString = exports.stringToAddr = exports.HeadtrackerStateFlags = exports.HeadtrackerNetworkFlags = exports.HeadtrackerConfigFlags = exports.HTRKDevState = void 0;
 const events_1 = __importDefault(require("events"));
 var HTRKDevState;
 (function (HTRKDevState) {

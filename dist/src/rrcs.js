@@ -1,23 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -27,11 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RRCSService = exports.RRCSServer = void 0;
 const eventemitter2_1 = require("eventemitter2");
 const fs = __importStar(require("fs"));
 const perf_hooks_1 = require("perf_hooks");
@@ -225,11 +212,8 @@ class RRCSServer extends eventemitter2_1.EventEmitter2 {
     }
     setXPVolume(xp, volume, single, conf) {
         return __awaiter(this, void 0, void 0, function* () {
-            log.debug(`Set XP volume (${(single == null) ? 'single'
+            log.verbose(`Set XP volume (${(single == null) ? 'single'
                 : (single ? 'single' : 'conf')}) ${rrcs_defs_1.__xpid(xp)} - ${((volume === 0) ? 'mute' : ((volume - 230) / 2) + 'dB')}`);
-            console.log(xp);
-            console.log(single);
-            console.log(conf);
             this._perform_method_call('SetXPVolume', this._get_trs_key(), ...crosspointToParams(xp, 2), (single == null) ? true : single, conf || false, volume);
         });
     }
@@ -263,13 +247,13 @@ class RRCSServer extends eventemitter2_1.EventEmitter2 {
     }
     setXP(xp) {
         return __awaiter(this, void 0, void 0, function* () {
-            log.debug(`Set XP ${rrcs_defs_1.__xpid(xp)}`);
+            log.verbose(`Set XP ${rrcs_defs_1.__xpid(xp)}`);
             return this._perform_method_call('SetXp', this._get_trs_key(), ...crosspointToParams(xp, 2));
         });
     }
     killXP(xp) {
         return __awaiter(this, void 0, void 0, function* () {
-            log.debug(`Kill XP ${rrcs_defs_1.__xpid(xp)}`);
+            log.verbose(`Kill XP ${rrcs_defs_1.__xpid(xp)}`);
             return this._perform_method_call('KillXp', this._get_trs_key(), ...crosspointToParams(xp, 2));
         });
     }
@@ -646,6 +630,19 @@ class RRCSService extends RRCSServer {
         return __awaiter(this, void 0, void 0, function* () {
             let updated = [];
             for (let xpstate of xps) {
+                if (xpstate.state) {
+                    let conf_vol_master = this._find_volume_master(xpstate.xp, false);
+                    let sing_vol_master = this._find_volume_master(xpstate.xp, true);
+                    try {
+                        if (conf_vol_master)
+                            yield this.setXPVolume(xpstate.xp, conf_vol_master.vol, false, true);
+                        if (sing_vol_master)
+                            yield this.setXPVolume(xpstate.xp, sing_vol_master.vol, true, false);
+                    }
+                    catch (err) {
+                        log.error(`Could not set slave XP volume: ${err}`);
+                    }
+                }
                 // ignore the Sidetone/Loopback XP
                 if (rrcs_defs_1.isLoopbackXP(xpstate.xp))
                     continue;
@@ -814,6 +811,15 @@ class RRCSService extends RRCSServer {
             }
         });
     }
+    _find_volume_master(xp, single) {
+        for (let sync_key of Object.keys(this._synced)) {
+            let sync = this._synced[sync_key];
+            for (let slave of sync.slaves) {
+                if (slave.single === single && rrcs_defs_1.xpEqual(slave.xp, xp))
+                    return sync;
+            }
+        }
+    }
     _clear_all_xpstates() {
         for (let key of Object.keys(this._synced))
             this._synced[key].state = false;
@@ -826,14 +832,14 @@ class RRCSService extends RRCSServer {
         return __awaiter(this, void 0, void 0, function* () {
             let isset = yield this.getXpStatus(xp);
             if (isset)
-                log.debug(`XP ${rrcs_defs_1.__xpid(xp)} already set`);
+                log.verbose(`XP ${rrcs_defs_1.__xpid(xp)} already set`);
             else
                 yield this.setXP(xp);
         });
     }
     _try_kill_xp(xp) {
         return __awaiter(this, void 0, void 0, function* () {
-            log.debug(`Try killing XP ${rrcs_defs_1.__xpid(xp)}`);
+            log.verbose(`Try killing XP ${rrcs_defs_1.__xpid(xp)}`);
             let still_set_by = [];
             for (let masterid of Object.keys(this._synced)) {
                 const sync = this._synced[masterid];
@@ -853,8 +859,8 @@ class RRCSService extends RRCSServer {
                     break;
             }
             if (still_set_by.length) {
-                log.debug(`Wont kill XP because it is still set by ${still_set_by.length} masters`);
-                still_set_by.forEach(mid => log.debug(`    still set by: ${mid}`));
+                log.verbose(`Wont kill XP because it is still set by ${still_set_by.length} masters`);
+                still_set_by.forEach(mid => log.verbose(`    still set by: ${mid}`));
             }
             else {
                 try {

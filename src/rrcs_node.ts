@@ -271,6 +271,7 @@ class RRCSNodeModule extends NodeModule {
     _artist_online()
     {
         this._server._webif.broadcastNotification('RRCS', 'Artist online');
+        this._config_syncs.length = 0;
         this._reload_artist_state();
         this._cached.artist = true;
         this._webif_update_connection();
@@ -279,6 +280,7 @@ class RRCSNodeModule extends NodeModule {
     _artist_offline()
     {
         this._server._webif.broadcastError('RRCS', 'Artist offline');
+        this._config_syncs.length = 0;
         this._cached.artist = false;
         this._webif_update_connection();
     }
@@ -287,6 +289,7 @@ class RRCSNodeModule extends NodeModule {
     {
         this._server._webif.broadcastNotification(
             'RRCS', 'RRCS Gateway online');
+        this._config_syncs.length = 0;
         this._cached.gateway = true;
         this._webif_update_connection();
     }
@@ -294,6 +297,7 @@ class RRCSNodeModule extends NodeModule {
     _gateway_offline()
     {
         this._server._webif.broadcastError('RRCS', 'RRCS Gateway offline');
+        this._config_syncs.length = 0;
         this._cached.gateway = false;
         this._webif_update_connection();
     }
