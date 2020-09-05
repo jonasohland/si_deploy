@@ -101,11 +101,11 @@ class RRCSServer extends eventemitter2_1.EventEmitter2 {
         this._trs_cnt = 0;
         this._nodes = [];
         log.info('Server start listen');
-        if (options.interface == null) {
-            log.error('\'interface\' option has to be specified');
+        if (options.rrcs_server == null) {
+            log.error('\'server-interface\' option has to be specified');
             process.exit(1);
         }
-        this._local_ip = options.interface;
+        this._local_ip = options.rrcs_server;
         log.info(`Using local interface ${this._local_ip}`);
         this._srv = xmlrpc_1.default.createServer({ host: this._local_ip, port: this._local_port }, () => {
             log.info('RRCS Server listening');

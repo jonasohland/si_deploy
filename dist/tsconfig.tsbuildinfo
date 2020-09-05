@@ -550,7 +550,7 @@
         "signature": "0f471f60179daaee4768a5cc4426708e4299a3c741e4f95cda952efac922ef07"
       },
       "../src/rrcs.ts": {
-        "version": "86bcf500039840adb808b62b8221246df0365f44a9fbe6459d795f9a726960cc",
+        "version": "00d978a579d71659e1e53e89f01f481d9f4f096399020bd34a5a0d9b81a3de83",
         "signature": "dcc61fc46e317c05f13d467e685da94c1ee99074fe5304afff4e2da93af40847"
       },
       "../src/rrcs_lex.ts": {
@@ -842,8 +842,8 @@
         "signature": "3cc26d1f94c768ae2896d3900ffa268e0657a332b399e94c1fb52da1f9e07625"
       },
       "../src/server_config.ts": {
-        "version": "39c176ee4d062e00b947ddac3b1e72de0e347fec38e5d80a983c4df931ddf204",
-        "signature": "b4c2e06fc4c51c046b7142f71325b4ede826c2038c3f9a8fa14e6f8d4daf30bf"
+        "version": "f70c01712d0aaa746c04e72e8b8b300a1a285faaccdee46a9e54e270752eb5c7",
+        "signature": "fbd9bc60f0f29fd18e02c7d94fa9c136a77bb2dce5136341427da8d453c6a3c5"
       },
       "../src/headtracker_mode.ts": {
         "version": "6f97d31e988c2d608501b3659765a87b8891e6e3de10f2201ebbd016e036adfd",
@@ -878,7 +878,7 @@
         "signature": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
       },
       "../src/si.ts": {
-        "version": "cfad82e5fb5d5b1b87dd31bdd644429f7f592a43643f98b0a7d38d2197b9e0e0",
+        "version": "c89e341c638be19dba7f1cb1180e79ea596272ae6980280f0fa75d49b7eaee31",
         "signature": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
       },
       "../src/sources.ts": {
@@ -4911,6 +4911,7 @@
       "../src/rooms_defs.ts",
       "../src/rooms.ts",
       "../node_modules/ajv/lib/ajv.d.ts",
+      "../src/rrcs_defs.ts",
       "../src/users_defs.ts",
       "../src/dsp_modules.ts",
       "../src/headtracker.ts",
@@ -4999,7 +5000,6 @@
       "../src/rrcs_node_mode.ts",
       "../src/server_mode.ts",
       "../src/showfiles.ts",
-      "../src/si.ts",
       "../src/sources.ts",
       "../node_modules/@types/bonjour/index.d.ts",
       "../node_modules/@types/checksum/index.d.ts",
@@ -5010,7 +5010,7 @@
       "../node_modules/@types/minimist/index.d.ts",
       "../node_modules/@types/normalize-package-data/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/rrcs_defs.ts"
+      "../src/si.ts"
     ]
   },
   "version": "3.7.3"

@@ -11,4 +11,5 @@ export declare function merge(cmd_opts: commander.Command): {
     rrcs_port?: number;
     rrcs_osc_host?: string;
     rrcs_osc_port?: number;
+    rrcs_server?: string;
 };

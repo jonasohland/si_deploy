@@ -185,12 +185,12 @@ export abstract class RRCSServer extends EventEmitter2 {
         super();
         log.info('Server start listen');
 
-        if (options.interface == null) {
-            log.error('\'interface\' option has to be specified');
+        if (options.rrcs_server == null) {
+            log.error('\'server-interface\' option has to be specified');
             process.exit(1);
         }
 
-        this._local_ip = options.interface;
+        this._local_ip = options.rrcs_server;
         log.info(`Using local interface ${this._local_ip}`);
 
         this._srv = xmlrpc.createServer(
