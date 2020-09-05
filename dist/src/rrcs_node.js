@@ -189,7 +189,7 @@ class RRCSNodeModule extends core_1.NodeModule {
     }
     joined(socket, topic) {
         socket.emit(`${this.myNodeId()}.rrcs.artists`, this._cached);
-        socket.emit(`${this.myNodeId()}.rrcs.syncs`, this.syncs.allSyncs());
+        this._webif_update_sync_list(socket);
     }
     left(socket, topic) {
     }
@@ -267,7 +267,8 @@ class RRCSNodeModule extends core_1.NodeModule {
                 }
             }
             for (let osync of this._config_syncs) {
-                let nidx = newsyncs.findIndex(syn => rrcs_defs_1.xpvtid(syn.master) === rrcs_defs_1.xpvtid(osync.master));
+                let nidx = newsyncs.findIndex(syn => rrcs_defs_1.xpvtid(syn.master)
+                    === rrcs_defs_1.xpvtid(osync.master));
                 if (nidx != -1) {
                     let nsync = newsyncs[nidx];
                     for (let slave of osync.slaves) {
@@ -323,8 +324,16 @@ class RRCSNodeModule extends core_1.NodeModule {
     _set_sync_list() {
         this.rrcs.set('xp-syncs', this.syncs.allSyncs());
     }
-    _webif_update_sync_list() {
-        this.publish('all', `${this.myNodeId()}.rrcs.syncs`, this.syncs.allSyncs());
+    _webif_update_sync_list(socket) {
+        let list = [];
+        for (let s of this._config_syncs)
+            list.push(s);
+        for (let s of this.syncs.allSyncs())
+            list.push(s);
+        if (socket)
+            socket.emit(`${this.myNodeId()}.rrcs.syncs`, list);
+        else
+            this.publish('all', `${this.myNodeId()}.rrcs.syncs`, list);
     }
     _webif_update_connection() {
         this.publish('all', `${this.myNodeId()}.rrcs.connection`, this._cached.gateway, this._cached.artist);

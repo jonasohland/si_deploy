@@ -49,7 +49,7 @@ declare class RRCSNodeModule extends NodeModule {
     _xp_states_changed(msg: any): void;
     _reload_artist_state(): void;
     _set_sync_list(): void;
-    _webif_update_sync_list(): void;
+    _webif_update_sync_list(socket?: SocketIO.Socket): void;
     _webif_update_connection(): void;
 }
 export declare class RRCSServerModule extends ServerModule {

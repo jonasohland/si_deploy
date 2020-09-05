@@ -494,11 +494,11 @@
         "signature": "fa3d0b7539b8afcda5a3131885a1799f3a298bdd5b72864d4073f2fda15d94ac"
       },
       "../src/inputs_defs.ts": {
-        "version": "863895bf45a449e72f5bcb2a92585cde33b141835925d1f79d1e7e1ce91ac183",
-        "signature": "938966c16b25054dcb37972f64607a3370df6c28e95501846e1d0f846a523099"
+        "version": "d0c9b9573c9a6e287ab4b8adefb950f9b92c4c43962885cf9692f6dbf8e02bb4",
+        "signature": "6cb38f0a5cffe9eb6d825473823fabd5af4a94743e0ec3786c38624242f919a9"
       },
       "../src/inputs.ts": {
-        "version": "92929dc30fd58fa119173fe3224bf12b20005dc486ae317d85e83fafdcfc57bb",
+        "version": "c8d597b7ef624baa1574a2f6505435577040ce5bb59204b410ef7008d52fe776",
         "signature": "40959a66fe3b81d12744acb1ae7af498b4ff5c5d611a8aac43dbf94d21f280af"
       },
       "../node_modules/@types/event-to-promise/index.d.ts": {
@@ -562,8 +562,8 @@
         "signature": "7782da1a4f8bdad52739991b2acf09acd061ab540ce24681a103c87bf5edc5a8"
       },
       "../src/rrcs_node.ts": {
-        "version": "1af9cf9ba1dbc2a003cd891f8d880395aa2bde342b7a9e70ccaa0c5b25cf35de",
-        "signature": "412b671756d4887993a35e2a363803434b565f7e51b452f8c7c8f161bcf03961"
+        "version": "7faf6279d22437bd248e936baaff9e06991fc9ac1a0ad875860b14861c4af7ab",
+        "signature": "fbade5cbb44b871dc7101d975037d7bfc68300f0c6c02f2a9d1255faf26f4cdd"
       },
       "../src/server.ts": {
         "version": "8875b3ea536381dd084501d6fa57203ef3e296bc3525f5dfd722ce68675948dc",
@@ -571,7 +571,7 @@
       },
       "../src/dsp_graph_builder.ts": {
         "version": "3c1e2e0feb5af677452b7c05e4372fb20d28c8606f8229416ab6e7b279c4a236",
-        "signature": "325738cca409521f7daffaca1ef1554ba605a818b6eb632575a7f054ea9cc5c4"
+        "signature": "d3539a8345bfe18b363d526b10621d8600b95f35eddd0ef5eaabf28bc9dd373b"
       },
       "../src/users.ts": {
         "version": "af4f19eaf6df2a1c62600e4cedfd099013470ec69e6eb0c5ca31eb48273e9ad6",
@@ -1990,14 +1990,10 @@
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
       "../src/inputs.ts": [
-        "../src/audio_devices.ts",
         "../src/core.ts",
-        "../src/dsp_defs.ts",
         "../src/dsp_node.ts",
         "../src/inputs_defs.ts",
-        "../src/instance.ts",
         "../src/log.ts",
-        "../src/web_interface.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -4904,16 +4900,10 @@
       "../node_modules/@types/body-parser/index.d.ts",
       "../node_modules/@types/express/index.d.ts",
       "../src/web_interface_defs.ts",
-      "../src/inputs_defs.ts",
-      "../src/inputs.ts",
       "../node_modules/@types/event-to-promise/index.d.ts",
-      "../src/dsp_process.ts",
       "../src/rooms_defs.ts",
-      "../src/rooms.ts",
       "../node_modules/ajv/lib/ajv.d.ts",
       "../src/rrcs_defs.ts",
-      "../src/users_defs.ts",
-      "../src/dsp_modules.ts",
       "../src/headtracker.ts",
       "../src/headtracker_network.ts",
       "../src/headtracking.ts",
@@ -4922,19 +4912,11 @@
       "../src/rrcs_lex.ts",
       "../src/validation.ts",
       "../src/rrcs_node.ts",
-      "../src/server.ts",
-      "../src/dsp_graph_builder.ts",
-      "../src/users.ts",
-      "../src/dsp_node.ts",
-      "../src/rest.ts",
       "../src/web_interface.ts",
-      "../src/core.ts",
-      "../src/vst.ts",
       "../src/dsp_graph.ts",
       "../src/dsp_defs.ts",
       "../src/util.ts",
       "../src/communication.ts",
-      "../src/audio_devices.ts",
       "../src/instance.ts",
       "../src/ipc.ts",
       "../src/audio.ts",
@@ -4993,13 +4975,12 @@
       "../node_modules/@types/ini/index.d.ts",
       "../src/server_config.ts",
       "../src/headtracker_mode.ts",
-      "../src/index.ts",
       "../src/install_service.ts",
       "../src/modules.ts",
       "../src/node_mode.ts",
       "../src/rrcs_node_mode.ts",
-      "../src/server_mode.ts",
       "../src/showfiles.ts",
+      "../src/si.ts",
       "../src/sources.ts",
       "../node_modules/@types/bonjour/index.d.ts",
       "../node_modules/@types/checksum/index.d.ts",
@@ -5010,7 +4991,22 @@
       "../node_modules/@types/minimist/index.d.ts",
       "../node_modules/@types/normalize-package-data/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/si.ts"
+      "../src/inputs_defs.ts",
+      "../src/index.ts",
+      "../src/users_defs.ts",
+      "../src/inputs.ts",
+      "../src/dsp_process.ts",
+      "../src/rooms.ts",
+      "../src/dsp_modules.ts",
+      "../src/server.ts",
+      "../src/dsp_graph_builder.ts",
+      "../src/users.ts",
+      "../src/dsp_node.ts",
+      "../src/rest.ts",
+      "../src/core.ts",
+      "../src/vst.ts",
+      "../src/audio_devices.ts",
+      "../src/server_mode.ts"
     ]
   },
   "version": "3.7.3"

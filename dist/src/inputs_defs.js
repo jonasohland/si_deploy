@@ -9,7 +9,8 @@ function basicNodeAudioInputDescription(name, channel, type) {
         id: uuid_1.v4(),
         default_roomencode: false,
         default_encodingorder: 3,
-        default_gain: 1.
+        default_gain: 1.,
+        multich_count: 1
     };
 }
 exports.basicNodeAudioInputDescription = basicNodeAudioInputDescription;
