@@ -5,7 +5,7 @@ export interface SpatializedInputData {
     id: string;
     inputid: string;
     userid: string;
-    room: string;
+    room?: string;
     azm: number;
     elv: number;
     gain: number;

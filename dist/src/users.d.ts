@@ -20,6 +20,7 @@ export declare class SpatializedInput extends ManagedNodeStateObject<Spatialized
     constructor(data: SpatializedInputData, inputsModule: Inputs.NodeAudioInputManager);
     set(val: SpatializedInputData): Promise<void>;
     get(): SpatializedInputData;
+    findSource(): Inputs.NodeAudioInput;
     findSourceType(): PortTypes.Any | PortTypes;
     findSourceChannel(): number;
     params(): SourceParameterSet;

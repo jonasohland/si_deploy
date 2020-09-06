@@ -433,11 +433,11 @@ class SimpleUsersModule extends dsp_graph_1.Module {
         if (output_con)
             graph.addConnection(output_con);
         else
-            log.error("Could not connect binaural signal to graph output");
+            log.error('Could not connect binaural signal to graph output');
         if (output_con_ref)
             graph.addConnection(output_con_ref);
         else
-            log.error("Could not connect stereo reference output to graph output");
+            log.error('Could not connect stereo reference output to graph output');
     }
     destroy(graph) {
         if (graph.removeNode(this._decoder_id))
@@ -656,8 +656,14 @@ class MultiSpatializerModule extends SpatializationModule {
         this._node_id = graph.addNode(node);
         if (this._spatializer_node)
             this._spatializer_node.pan(this._params_cached);
-        let mainInputConnection = graph.graphRootBus().connectIdx(node.getMainInputBus(), this._input.findSourceChannel());
-        graph.addConnection(mainInputConnection);
+        let source = this._input.findSource();
+        if (source) {
+            for (let i = 0; i < source.get().multich_count; ++i) {
+                let mainInputConnection = graph.graphRootBus().connectIdx(node.getMainInputBus(), this._input.findSourceChannel() + node.getMainInputBus().channelCount() * i);
+                if (mainInputConnection)
+                    graph.addConnection(mainInputConnection);
+            }
+        }
     }
     destroy(graph) {
         if (graph.removeNode(this._node_id))

@@ -46,7 +46,7 @@ function basicUserData(name, channel, panel) {
         id: uuid_1.v4(),
         headtracker: -1,
         inputs: [],
-        room: "null",
+        room: null,
         xtc: basicXTCData(),
         artist: basicArtistSyncSettings(panel)
     };

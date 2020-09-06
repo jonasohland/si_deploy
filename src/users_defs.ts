@@ -8,7 +8,7 @@ export interface SpatializedInputData {
     id: string,
     inputid: string,
     userid: string,
-    room: string,
+    room?: string,
     azm: number,
     elv:  number,
     gain: number,
@@ -135,7 +135,7 @@ export function basicUserData(name: string, channel: number, panel?: Port): User
         id: uniqueId(),
         headtracker: -1,
         inputs: [],
-        room: "null",
+        room: null,
         xtc: basicXTCData(),
         artist: basicArtistSyncSettings(panel)
     }

@@ -59,6 +59,9 @@ class SpatializedInput extends core_1.ManagedNodeStateObject {
     get() {
         return this.data;
     }
+    findSource() {
+        return this.inputsModule.findInputForId(this.data.inputid);
+    }
     findSourceType() {
         let source = this.inputsModule.findInputForId(this.data.inputid);
         if (source)
