@@ -3,6 +3,10 @@ export interface DSPNodeStats {
     num_connections: number;
     num_ports: number;
     num_renderops: number;
+    fail_sense: {
+        input: number;
+        output: number;
+    };
 }
 export declare enum PortTypes {
     Any = 0,

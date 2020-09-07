@@ -238,7 +238,8 @@ class DSPController extends core_1.NodeModule {
                     num_connections: graph.connections.map(con => con.channelCount())
                         .reduce((prev, current) => prev + current, 0),
                     num_ports: graph.connections.length,
-                    num_renderops: graph.nodes.length * 2 - 1
+                    num_renderops: graph.nodes.length * 2 - 1,
+                    fail_sense: this._fail_sense
                 };
                 this._publish_dspstats();
                 self._remote_graph.request('set', graph)
