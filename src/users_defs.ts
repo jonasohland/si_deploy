@@ -31,7 +31,7 @@ export interface UserData {
     id: string;
     channel: number;
     headtracker: number;
-    room?: string;
+    room?: string|null;
     xtc: XTCSettings;
     artist: ArtistSyncSettings;
     inputs: string[];

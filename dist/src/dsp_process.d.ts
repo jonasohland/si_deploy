@@ -1,10 +1,10 @@
 /// <reference types="socket.io" />
-import { NodeMessageInterceptor, Message, Requester, Connection } from './communication';
-import { IPCServer } from './ipc';
+import { Connection, Message, NodeMessageInterceptor, Requester } from './communication';
 import { NodeModule } from './core';
-import { Graph } from './dsp_graph';
-import { VSTScanner } from './vst';
 import { DSPNodeStats } from './dsp_defs';
+import { Graph } from './dsp_graph';
+import { IPCServer } from './ipc';
+import { VSTScanner } from './vst';
 export declare class LocalNodeController extends NodeMessageInterceptor {
     private _autorestart;
     private _exec_known;
@@ -13,6 +13,7 @@ export declare class LocalNodeController extends NodeMessageInterceptor {
     private _stderr_rl;
     private _cp;
     private _ipc;
+    private _failsense;
     constructor(options: any, ipc: IPCServer);
     target(): string;
     handleMessage(msg: Message, from_ipc: boolean): Promise<unknown>;
@@ -37,6 +38,10 @@ export declare class DSPController extends NodeModule {
     _vst: VSTScanner;
     _connection: Connection;
     _dspstats: DSPNodeStats;
+    _fail_sense: {
+        input: number;
+        output: number;
+    };
     constructor(vst: VSTScanner);
     _publish_dspstats(): void;
     syncGraph(): Promise<void>;

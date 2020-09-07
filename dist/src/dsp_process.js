@@ -8,6 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -15,26 +18,24 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const child_process_1 = require("child_process");
-const readline_1 = require("readline");
-const Logger = __importStar(require("./log"));
-const os = __importStar(require("os"));
-const fs = __importStar(require("fs"));
-const communication_1 = require("./communication");
-const util_1 = require("./util");
 // i will have to write this myself
 const event_to_promise_1 = __importDefault(require("event-to-promise"));
+const fs = __importStar(require("fs"));
+const os = __importStar(require("os"));
+const readline_1 = require("readline");
+const communication_1 = require("./communication");
 const core_1 = require("./core");
 const dsp_graph_1 = require("./dsp_graph");
 const dsp_node_1 = require("./dsp_node");
-const log = Logger.get("DSPROC");
+const Logger = __importStar(require("./log"));
+const util_1 = require("./util");
+const log = Logger.get('DSPROC');
 class LocalNodeController extends communication_1.NodeMessageInterceptor {
     constructor(options, ipc) {
         super();
+        this._failsense = { input: 0, output: 0 };
         this._exec_location = options.dspExecutable;
         this._ipc = ipc;
         this._autorestart = true;
@@ -51,50 +52,52 @@ class LocalNodeController extends communication_1.NodeMessageInterceptor {
                 this._exec_known = false;
         }
         catch (err) {
-            log.warn("Could not find executable: " + err);
+            log.warn('Could not find executable: ' + err);
             this._exec_known = false;
+        }
+        if (options.failsense_input) {
+            log.info('Fail sense channel enabled');
+            log.info(`Fail sense channels: ${options.failsense_input} -> ${options.failsense_output}`);
+            this._failsense.input = options.failsense_input;
+            this._failsense.output = options.failsense_output;
         }
     }
     target() {
-        return "dsp-controller";
+        return 'dsp-controller';
     }
     handleMessage(msg, from_ipc) {
         return __awaiter(this, void 0, void 0, function* () {
             if (from_ipc) {
-                util_1.ignore(log.error("Received a message from IPC. Thats not what we signed up for."));
-                throw "Unexpected message";
+                util_1.ignore(log.error('Received a message from IPC. Thats not what we signed up for.'));
+                throw 'Unexpected message';
             }
             switch (msg.field) {
-                case "is-started":
-                    return this._ipc._pipe != null;
-                case "restart":
-                    return this._restart();
-                case "await-start":
-                    return this._await_start(msg.data);
-                case "external":
-                    return this._exec_known == false;
-                default:
-                    throw "Unknown message";
+                case 'is-started': return this._ipc._pipe != null;
+                case 'restart': return this._restart();
+                case 'await-start': return this._await_start(msg.data);
+                case 'external': return this._exec_known == false;
+                case 'fail-sense': return this._failsense;
+                default: throw 'Unknown message';
             }
         });
     }
     getDSPExecutablePath() {
         let basepath = this._exec_location || process.env.SI_DSP_EXEC_LOCATION;
         if (!basepath) {
-            if (os.type() == "Darwin")
-                basepath = process.cwd() + "/sidsp.app";
-            else if (os.type() == "Windows_NT")
-                basepath = process.cwd() + "/sidsp.exe";
+            if (os.type() == 'Darwin')
+                basepath = process.cwd() + '/sidsp.app';
+            else if (os.type() == 'Windows_NT')
+                basepath = process.cwd() + '/sidsp.exe';
             else
-                basepath = process.cwd() + "/sidsp";
+                basepath = process.cwd() + '/sidsp';
         }
         return fs.realpathSync(basepath);
     }
     getDSPProcessCommmand() {
-        let base = this.getDSPExecutablePath() + "";
-        log.info("Looking for executable in " + base);
-        if (os.type() == "Darwin")
-            base += "/Contents/MacOS/sidsp";
+        let base = this.getDSPExecutablePath() + '';
+        log.info('Looking for executable in ' + base);
+        if (os.type() == 'Darwin')
+            base += '/Contents/MacOS/sidsp';
         return base;
     }
     _await_start(timeout = 10000) {
@@ -102,49 +105,46 @@ class LocalNodeController extends communication_1.NodeMessageInterceptor {
             if (this._ipc.connected())
                 return true;
             if (this._exec_known) {
-                log.info("Starting dsp process");
+                log.info('Starting dsp process');
                 this.start();
             }
             else
-                log.warn("Could not find DSP executable. Waiting for external start");
+                log.warn('Could not find DSP executable. Waiting for external start');
             return util_1.promisifyEventWithTimeout(this._ipc, 'open', timeout);
         });
     }
     _restart() {
         return __awaiter(this, void 0, void 0, function* () {
             if (!this._exec_known)
-                throw "DSP Process is running externally";
+                throw 'DSP Process is running externally';
             if (this._cp) {
                 this._autorestart = true;
                 yield this.kill();
                 yield event_to_promise_1.default(this._ipc, 'open');
-                return util_1.ignore(log.info("DSP process started"));
+                return util_1.ignore(log.info('DSP process started'));
             }
             else
-                throw "Not running";
+                throw 'Not running';
         });
     }
     kill() {
         return __awaiter(this, void 0, void 0, function* () {
             if (!this._exec_known)
-                throw "DSP Process is running externally";
-            log.info("Killing DSP process");
+                throw 'DSP Process is running externally';
+            log.info('Killing DSP process');
             this._cp.kill();
             yield util_1.promisifyEventWithTimeout(this._cp, 'close', 1000);
-            log.info("DSP process killed.");
+            log.info('DSP process killed.');
         });
     }
     start() {
         return __awaiter(this, void 0, void 0, function* () {
             if (!this._exec_known)
-                throw "Executable location unknown. DSP process must be started externally";
+                throw 'Executable location unknown. DSP process must be started externally';
             this._cp = child_process_1.spawn(this.getDSPProcessCommmand());
-            this._stdout_rl = readline_1.createInterface({
-                input: this._cp.stdout
-            });
-            this._stderr_rl = readline_1.createInterface({
-                input: this._cp.stderr
-            });
+            this._stdout_rl
+                = readline_1.createInterface({ input: this._cp.stdout });
+            this._stderr_rl = readline_1.createInterface({ input: this._cp.stderr });
             this._stdout_rl.on('line', line => {
                 log.info(line);
             });
@@ -155,16 +155,14 @@ class LocalNodeController extends communication_1.NodeMessageInterceptor {
                 log.error(`DSP process died. Return code: ${errc}  --- Restaring`);
                 if (this._autorestart) {
                     this.start().catch(err => {
-                        log.info("Could not restart DSP process: " + err);
+                        log.info('Could not restart DSP process: ' + err);
                     });
                 }
             });
-            this._cp.on("error", code => {
-                log.error("DSP process error: " + code);
+            this._cp.on('error', code => {
+                log.error('DSP process error: ' + code);
             });
-            this._cp.on("disconnect", () => {
-                log.error("DSP process disconnect: ");
-            });
+            this._cp.on('disconnect', () => { log.error('DSP process disconnect: '); });
         });
     }
 }
@@ -187,7 +185,7 @@ class DSPController extends core_1.NodeModule {
         this._remote = remote.getRequester('dsp-controller');
         this._remote_graph = remote.getRequester('graph');
         this._try_dsp_start().catch((err) => {
-            log.error("DSP startup failed");
+            log.error('DSP startup failed');
         });
         this._remote.on('dsp-started', () => {
             log.verbose('DSP startup event');
@@ -200,11 +198,18 @@ class DSPController extends core_1.NodeModule {
             this._running = true;
         });
         this._remote_graph.on('connect-failed', () => {
-            this._server._webif.broadcastWarning(this.myNode().name(), "Not all DSP objects could be connected correctly");
+            this._server._webif.broadcastWarning(this.myNode().name(), 'Not all DSP objects could be connected correctly');
         });
         this._connection = remote;
         this._graph.attachConnection(remote);
-        log.info("Graph service running");
+        this._remote.request('fail-sense')
+            .then(msg => {
+            this._fail_sense = msg.data;
+        })
+            .catch(err => {
+            log.error('Could not retreive fail sense settings from node ' + err);
+        });
+        log.info('Graph service running');
     }
     joined(socket, topic) {
         if (topic === 'dspstats')
@@ -220,10 +225,18 @@ class DSPController extends core_1.NodeModule {
             let self = this;
             return new Promise((resolve, reject) => {
                 log.info('Syncing graph with DSP process');
+                if (this._fail_sense) {
+                    if (this._fail_sense.input > 0 && this._fail_sense.output > 0) {
+                        let failsense_connection = this._graph.graphRootBus().connectIdxNIdx(this._graph.graphExitBus(), this._fail_sense.input - 1, 1, this._fail_sense.output - 1);
+                        if (failsense_connection)
+                            this._graph.addConnection(failsense_connection);
+                    }
+                }
                 let graph = this._graph._export_graph();
                 this._dspstats = {
                     num_dspobjects: graph.nodes.length,
-                    num_connections: graph.connections.map(con => con.channelCount()).reduce((prev, current) => prev + current, 0),
+                    num_connections: graph.connections.map(con => con.channelCount())
+                        .reduce((prev, current) => prev + current, 0),
                     num_ports: graph.connections.length,
                     num_renderops: graph.nodes.length * 2 - 1
                 };

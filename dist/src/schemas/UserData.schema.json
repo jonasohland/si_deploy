@@ -84,7 +84,10 @@
           "type": "string"
         },
         "room": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "xtc": {
           "$ref": "#/definitions/XTCSettings"

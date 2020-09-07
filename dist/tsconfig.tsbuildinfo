@@ -506,8 +506,8 @@
         "signature": "920efe3728fef8ce326928aee60297230ee31c4731feb21c17e4edf89d7128ea"
       },
       "../src/dsp_process.ts": {
-        "version": "12305ec6d5e2f18872b75ae7398c2877e22924306784bf2a846d8d844af41b73",
-        "signature": "9dc09f7692902b7b18c7d77ab37a8f796cf5339871a662a5084c5bb66542bedd"
+        "version": "0c9034e306e6915a0c4a65440d9d086895cc92e1803d50b90e8c2640ed9790e7",
+        "signature": "7023fc3a8ad2dd8b08e22f9302ba11d013855a46c42e3791dd45cc5d1532f35e"
       },
       "../src/rooms_defs.ts": {
         "version": "adf6502eebb363a81b9a4e753f4efeaf7879b264ea8713e150edb5fe4666d638",
@@ -526,8 +526,8 @@
         "signature": "48529204c840db566ffd57ec9537d8f246a172612546cea460a35bbbd7f3f26c"
       },
       "../src/users_defs.ts": {
-        "version": "af9bf9b1e04696025c2bdfc8e7d75989c9f5255b3f7bc017f506d8cb297eec26",
-        "signature": "d1f79f02b0538539f4fc2fb8d97554391261b3645d4044fe935b23a6ee27de91"
+        "version": "cadd2d479ac04364e4726538b4ca9e94d6c229205e81226e6bbb8d389137fa17",
+        "signature": "b7a26ec1a2c390cedb44eb2655b4f33be27cfdee076c2232c0b457dfa7aae880"
       },
       "../src/dsp_modules.ts": {
         "version": "c8edd4ca5cf530069d6b842cf2e1330c818f332cf78dec21cf5eed257134690e",
@@ -842,8 +842,8 @@
         "signature": "3cc26d1f94c768ae2896d3900ffa268e0657a332b399e94c1fb52da1f9e07625"
       },
       "../src/server_config.ts": {
-        "version": "f70c01712d0aaa746c04e72e8b8b300a1a285faaccdee46a9e54e270752eb5c7",
-        "signature": "fbd9bc60f0f29fd18e02c7d94fa9c136a77bb2dce5136341427da8d453c6a3c5"
+        "version": "cfaec0987ffb4b4af267308ce0a5d9949eba4c1203677f5379111d6b6a1aa2d2",
+        "signature": "3746e97abefff729f9360e10c74ffe981d20ac1209d7c90fcca04a11308fc492"
       },
       "../src/headtracker_mode.ts": {
         "version": "6f97d31e988c2d608501b3659765a87b8891e6e3de10f2201ebbd016e036adfd",
@@ -874,7 +874,7 @@
         "signature": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
       },
       "../src/si.ts": {
-        "version": "c89e341c638be19dba7f1cb1180e79ea596272ae6980280f0fa75d49b7eaee31",
+        "version": "a56f30e687b99067e27d128a9d8a109c0a4e2cb85bbf2b62c87c6703ec9a931e",
         "signature": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
       },
       "../src/sources.ts": {
@@ -2005,19 +2005,19 @@
       ],
       "../src/dsp_process.ts": [
         "../node_modules/@types/node/child_process.d.ts",
-        "../node_modules/@types/node/readline.d.ts",
-        "../src/log.ts",
-        "../node_modules/@types/node/os.d.ts",
-        "../node_modules/@types/node/fs.d.ts",
-        "../src/communication.ts",
-        "../src/ipc.ts",
-        "../src/util.ts",
         "../node_modules/@types/event-to-promise/index.d.ts",
+        "../node_modules/@types/node/fs.d.ts",
+        "../node_modules/@types/node/os.d.ts",
+        "../node_modules/@types/node/readline.d.ts",
+        "../src/communication.ts",
         "../src/core.ts",
-        "../src/dsp_graph.ts",
-        "../src/vst.ts",
-        "../src/dsp_node.ts",
         "../src/dsp_defs.ts",
+        "../src/dsp_graph.ts",
+        "../src/dsp_node.ts",
+        "../src/ipc.ts",
+        "../src/log.ts",
+        "../src/util.ts",
+        "../src/vst.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
@@ -4898,6 +4898,7 @@
       "../src/rooms.ts",
       "../node_modules/ajv/lib/ajv.d.ts",
       "../src/rrcs_defs.ts",
+      "../src/users_defs.ts",
       "../src/dsp_modules.ts",
       "../src/headtracker.ts",
       "../src/headtracker_network.ts",
@@ -4984,7 +4985,6 @@
       "../src/rrcs_node_mode.ts",
       "../src/server_mode.ts",
       "../src/showfiles.ts",
-      "../src/si.ts",
       "../src/sources.ts",
       "../node_modules/@types/bonjour/index.d.ts",
       "../node_modules/@types/checksum/index.d.ts",
@@ -4995,7 +4995,7 @@
       "../node_modules/@types/minimist/index.d.ts",
       "../node_modules/@types/normalize-package-data/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/users_defs.ts"
+      "../src/si.ts"
     ]
   },
   "version": "3.7.3"
