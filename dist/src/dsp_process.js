@@ -207,7 +207,8 @@ class DSPController extends core_1.NodeModule {
             this._fail_sense = msg.data;
         })
             .catch(err => {
-            log.error('Could not retreive fail sense settings from node ' + err);
+            log.error('Could not retreive fail sense settings from node '
+                + err);
         });
         log.info('Graph service running');
     }

@@ -506,7 +506,7 @@
         "signature": "920efe3728fef8ce326928aee60297230ee31c4731feb21c17e4edf89d7128ea"
       },
       "../src/dsp_process.ts": {
-        "version": "407303b7389a8d77885d3e27a243d318363bde4a79c4d895c5a6293df2bbce5d",
+        "version": "054c6de72b778d2fcab432627f8d3dd9bd27794ccc8ff7d28db78d5322e59a7a",
         "signature": "7023fc3a8ad2dd8b08e22f9302ba11d013855a46c42e3791dd45cc5d1532f35e"
       },
       "../src/rooms_defs.ts": {
@@ -850,8 +850,8 @@
         "signature": "59579e538b2a4792f8d29bca9e643913a705fa15cde80f828819d670bee1fb03"
       },
       "../src/index.ts": {
-        "version": "769c5da99464903721796ca28d05f19fb98b8e380256da8303c45467b7c7801a",
-        "signature": "772f6e429ea25e717520581a774a9617042061c7862bc09567770704f264413b"
+        "version": "ea8ef88286f648852282200432a13bb40310fdcbb249f9fb362c574bba308aef",
+        "signature": "a9e2c03913a959c31d850a54f552a10fe69cc829c710ebcebb83c4726c70bc59"
       },
       "../src/install_service.ts": {
         "version": "271bd5a312bafaf8ca946c0851f7cc9fc687de37f955cf8024f3092f93829f0e",
@@ -936,7 +936,6 @@
           "typings/*"
         ]
       },
-      "watch": true,
       "configFilePath": "../tsconfig.json"
     },
     "referencedMap": {
@@ -2919,6 +2918,7 @@
         "../src/users_defs.ts",
         "../src/web_interface_defs.ts",
         "../src/rrcs_defs.ts",
+        "../src/util.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -4705,7 +4705,8 @@
         "../src/inputs_defs.ts",
         "../src/users_defs.ts",
         "../src/web_interface_defs.ts",
-        "../src/rrcs_defs.ts"
+        "../src/rrcs_defs.ts",
+        "../src/util.ts"
       ],
       "../node_modules/@types/bonjour/index.d.ts": [
         "../node_modules/@types/node/ts3.2/index.d.ts",
@@ -4979,7 +4980,6 @@
       "../node_modules/@types/ini/index.d.ts",
       "../src/server_config.ts",
       "../src/headtracker_mode.ts",
-      "../src/index.ts",
       "../src/install_service.ts",
       "../src/node_mode.ts",
       "../src/rrcs_node_mode.ts",
@@ -4996,7 +4996,8 @@
       "../node_modules/@types/minimist/index.d.ts",
       "../node_modules/@types/normalize-package-data/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/dsp_process.ts"
+      "../src/dsp_process.ts",
+      "../src/index.ts"
     ]
   },
   "version": "3.7.3"

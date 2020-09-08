@@ -24,4 +24,6 @@ exports.sourcePortIsWildcard = rrcs_defs_1.sourcePortIsWildcard;
 exports.makeWildcardPort = rrcs_defs_1.makeWildcardPort;
 exports.getLoopbackXPForWildcard = rrcs_defs_1.getLoopbackXPForWildcard;
 exports.CrosspointSyncType = rrcs_defs_1.CrosspointSyncType;
+var util_1 = require("./util");
+exports.ensurePortTypeEnum = util_1.ensurePortTypeEnum;
 //# sourceMappingURL=index.js.map
