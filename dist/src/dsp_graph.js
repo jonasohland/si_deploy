@@ -319,15 +319,32 @@ class NativeNode extends Node {
 }
 exports.NativeNode = NativeNode;
 class Module {
+    sendNotification(title, message) {
+        log.verbose(`DSP Module notification: [${title}] ${message}`);
+        let webif = this.graph.webif();
+        if (webif)
+            webif.broadcastNotification(title, message);
+        else
+            log.warn("Could not deliver notification to Web Interface");
+    }
+    sendError(title, message) {
+        log.error(`DSP Module error: [${title}] ${message}`);
+        let webif = this.graph.webif();
+        if (webif)
+            webif.broadcastError(title, message);
+        else
+            log.warn("Could not deliver notification to Web Interface");
+    }
 }
 exports.Module = Module;
 class Graph {
-    constructor(vst) {
+    constructor(vst, webif) {
         this.nodes = [];
         this.connections = [];
         this.modules = [];
         this.node_count = 1;
         this.vst = vst;
+        this._webif = webif;
     }
     attachConnection(connection) {
         this.connection = connection;
@@ -390,6 +407,7 @@ class Graph {
     }
     addModule(mod) {
         ++this.node_count;
+        mod.graph = this;
         mod.build(this);
         mod.id = this.node_count;
         mod.graph = this;
@@ -410,6 +428,9 @@ class Graph {
     }
     rebuild() {
         this.modules.forEach(mod => mod.graphChanged(this));
+    }
+    webif() {
+        return this._webif;
     }
     _export_graph() {
         let out = {

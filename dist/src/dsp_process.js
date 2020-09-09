@@ -168,11 +168,11 @@ class LocalNodeController extends communication_1.NodeMessageInterceptor {
 }
 exports.LocalNodeController = LocalNodeController;
 class DSPController extends core_1.NodeModule {
-    constructor(vst) {
+    constructor(vst, webif) {
         super(dsp_node_1.DSPModuleNames.DSP_PROCESS);
         this._closed = false;
         this._vst = vst;
-        this._graph = new dsp_graph_1.Graph(vst);
+        this._graph = new dsp_graph_1.Graph(vst, webif);
         this._graph.setInputNode(128);
         this._graph.setOutputNode(128);
     }
@@ -287,8 +287,8 @@ class DSPController extends core_1.NodeModule {
         return __awaiter(this, void 0, void 0, function* () {
             // await this._remote_graph.request('reset')
             this._graph.clear();
-            this._graph.setInputNode(128);
-            this._graph.setOutputNode(128);
+            this._graph.setInputNode(224);
+            this._graph.setOutputNode(224);
         });
     }
 }

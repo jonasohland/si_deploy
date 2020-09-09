@@ -236,6 +236,15 @@ class MultiSpatializer extends dsp_graph_1.NativeNode {
         if (this.remote)
             this._apply_gain().catch(err => log.error(`Could not apply gain: ${err}`));
     }
+    setPlayStates(playstates) {
+        if (this.remote) {
+            this.remote.set('player', {
+                playid: "",
+                command: "set-playstates",
+                data: playstates
+            });
+        }
+    }
     pan(params) {
         this._params = params;
         if (this.remote)
@@ -245,6 +254,9 @@ class MultiSpatializer extends dsp_graph_1.NativeNode {
     }
     onRemotePrepared() {
         log.info('MultiSpatializer remote prepared');
+        this.remote.on('notification', msg => {
+            this.emit('notification', msg);
+        });
         this._apply_all_parameters().catch(err => {
             log.error('Could not apply all parameters for Spatializer '
                 + this.id + ' ' + err);
@@ -515,6 +527,10 @@ class RoomSpatializerModule extends SpatializationModule {
     setRoomLowshelf(room) {
         this._encoders.forEach(encoder => encoder.setRoomLowshelf(room));
     }
+    setTestSoundPlayState(playstates) {
+    }
+    resetTestSoundPlayState() {
+    }
     input(graph) {
         util_1.ignore(graph);
         return null;
@@ -636,6 +652,12 @@ class MultiSpatializerModule extends SpatializationModule {
     stereoRefBuses() {
         return [this._spatializer_node.stereoRefBus()];
     }
+    setTestSoundPlayState(playstates) {
+        if (this._spatializer_node)
+            this._spatializer_node.setPlayStates(playstates);
+    }
+    resetTestSoundPlayState() {
+    }
     graphChanged(graph) {
     }
     userId() {
@@ -650,6 +672,9 @@ class MultiSpatializerModule extends SpatializationModule {
         }
         else {
             node = new MultiSpatializer(`MultiSpatializer [${this._input.findSourceType()}]`, this._input.findSourceType());
+            node.on("notification", (msg) => {
+                this.sendNotification(msg.data.title, msg.data.message);
+            });
             this._spatializer_node = node;
             node.setGain(this._cached_gain);
         }

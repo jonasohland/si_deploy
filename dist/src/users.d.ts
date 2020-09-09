@@ -1,11 +1,11 @@
 /// <reference types="socket.io" />
-import { Connection } from './communication';
+import { ValidateFunction } from 'ajv';
+import { Connection, Requester } from './communication';
 import { ManagedNodeStateListRegister, ManagedNodeStateObject, NodeModule, ServerModule } from './core';
 import { PortTypes, SourceParameterSet } from './dsp_defs';
 import { DSPNode } from './dsp_node';
 import * as Inputs from './inputs';
 import { SpatializedInputData, UserData } from './users_defs';
-import { ValidateFunction } from 'ajv';
 export declare class User extends ManagedNodeStateObject<UserData> {
     data: UserData;
     _man: NodeUsersManager;
@@ -42,6 +42,7 @@ export declare class NodeUsersManager extends NodeModule {
     _users: UserList;
     _inputs: SpatializedInputsList;
     _inputs_module: Inputs.NodeAudioInputManager;
+    _audiofiles: Requester;
     constructor(inputsModule: Inputs.NodeAudioInputManager);
     addUser(userdata: UserData): void;
     modifyUser(userdata: UserData): void;
@@ -52,6 +53,7 @@ export declare class NodeUsersManager extends NodeModule {
     joined(socket: SocketIO.Socket, topic: string): void;
     left(socket: SocketIO.Socket, topic: string): void;
     init(): void;
+    setDefaultTestFile(file: string): void;
     updateWebInterfaces(): void;
     publishUserInputs(userid: string): void;
     listRawUsersData(): UserData[];

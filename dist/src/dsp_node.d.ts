@@ -8,6 +8,7 @@ import { NodeAudioDevices } from './audio_devices';
 import { NodeUsersManager } from './users';
 import { NodeRooms } from './rooms';
 import { NodeDSPGraphBuilder } from './dsp_graph_builder';
+import WebInterface from './web_interface';
 export declare const DSPModuleNames: {
     INPUTS: string;
     USERS: string;
@@ -29,5 +30,5 @@ export declare class DSPNode extends Node {
     dsp_graph_builder: NodeDSPGraphBuilder;
     dsp_process: DSPController;
     audio_devices: NodeAudioDevices;
-    constructor(id: NodeIdentification);
+    constructor(id: NodeIdentification, webif: WebInterface);
 }

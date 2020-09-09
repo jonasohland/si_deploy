@@ -23,6 +23,8 @@ export declare const GraphBuilderInputEvents: {
     ASSIGN_HEADTRACKER: string;
     SET_GAIN: string;
     MODIFY_XTC: string;
+    PLAYSTATES: string;
+    RESET_PLAYSTATES: string;
 };
 export declare const GraphBuilderOutputEvents: {};
 export declare class NodeDSPGraphBuilder extends NodeModule {
@@ -53,8 +55,10 @@ export declare class NodeDSPGraphBuilder extends NodeModule {
     _dispatch_assign_headtracker(userid: string, headtrackerid: number): void;
     _dispatch_modify_xtc(userid: string, settings: XTCSettings): void;
     _dispatch_set_gain(userid: string, spid: string, gain: number): void;
+    _dispatch_set_playstates(userid: string, sid: string, playstates: any[]): void;
+    _dispatch_reset_playstates(userid: string, sid: string): void;
     _build_user_modules(): void;
-    _find_spatializer(userid: string, spid: string): MultiSpatializerModule | RoomSpatializerModule;
+    _find_spatializer(userid: string, spid: string): RoomSpatializerModule | MultiSpatializerModule;
     _find_spatializers_for_room(room: string): RoomSpatializerModule[];
     _find_usermodule(userid: string): SimpleUsersModule;
     getRooms(): import("./rooms").NodeRooms;

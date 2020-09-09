@@ -2,7 +2,7 @@ import { PortTypes, Source, SourceParameterSet } from './dsp_defs';
 import { Bus, Connection, Graph, Module, NativeNode } from './dsp_graph';
 import { RoomData } from './rooms_defs';
 import { SpatializedInput, User } from './users';
-import { XTCSettings } from './users_defs';
+import { XTCSettings, PlayState } from './users_defs';
 export declare class GainNode extends NativeNode {
     _remote_alive: boolean;
     _gain: number;
@@ -71,6 +71,8 @@ export declare abstract class SpatializationModule extends Module {
     abstract outputBuses(graph: Graph): Bus[];
     abstract monoRefBuses(): Bus[];
     abstract stereoRefBuses(): Bus[];
+    abstract setTestSoundPlayState(playstates: PlayState[]): void;
+    abstract resetTestSoundPlayState(): void;
 }
 export declare class MultiSpatializer extends NativeNode {
     _chtype: PortTypes;
@@ -85,6 +87,7 @@ export declare class MultiSpatializer extends NativeNode {
     setElevation(elevation: number): void;
     setAzimuth(azimuth: number): void;
     setGain(gain: number): void;
+    setPlayStates(playstates: PlayState[]): void;
     pan(params: SourceParameterSet): void;
     onRemoteAlive(): void;
     onRemotePrepared(): void;
@@ -159,6 +162,8 @@ export declare class RoomSpatializerModule extends SpatializationModule {
     setRoomShape(room: RoomData): void;
     setRoomHighshelf(room: RoomData): void;
     setRoomLowshelf(room: RoomData): void;
+    setTestSoundPlayState(playstates: PlayState[]): void;
+    resetTestSoundPlayState(): void;
     input(graph: Graph): Bus;
     output(graph: Graph): Bus;
     outputBuses(graph: Graph): Bus[];
@@ -187,6 +192,8 @@ export declare class MultiSpatializerModule extends SpatializationModule {
     outputBuses(graph: Graph): Bus[];
     monoRefBuses(): Bus[];
     stereoRefBuses(): Bus[];
+    setTestSoundPlayState(playstates: PlayState[]): void;
+    resetTestSoundPlayState(): void;
     graphChanged(graph: Graph): void;
     userId(): string;
     build(graph: Graph): void;

@@ -30,7 +30,9 @@ exports.GraphBuilderInputEvents = {
     ROOM_LOWSHELF: 'roomlowshelf',
     ASSIGN_HEADTRACKER: 'assignheadtracker',
     SET_GAIN: 'setgain',
-    MODIFY_XTC: 'modifyxtc'
+    MODIFY_XTC: 'modifyxtc',
+    PLAYSTATES: 'playstates',
+    RESET_PLAYSTATES: 'reset-playstates'
 };
 exports.GraphBuilderOutputEvents = {};
 class NodeDSPGraphBuilder extends core_1.NodeModule {
@@ -63,6 +65,8 @@ class NodeDSPGraphBuilder extends core_1.NodeModule {
         this.handleModuleEvent(exports.GraphBuilderInputEvents.ASSIGN_HEADTRACKER, this._dispatch_assign_headtracker.bind(this));
         this.handleModuleEvent(exports.GraphBuilderInputEvents.SET_GAIN, this._dispatch_set_gain.bind(this));
         this.handleModuleEvent(exports.GraphBuilderInputEvents.MODIFY_XTC, this._dispatch_modify_xtc.bind(this));
+        this.handleModuleEvent(exports.GraphBuilderInputEvents.PLAYSTATES, this._dispatch_set_playstates.bind(this));
+        this.handleModuleEvent(exports.GraphBuilderInputEvents.RESET_PLAYSTATES, this._dispatch_reset_playstates.bind(this));
         log.info('Remote node address', this.myNode().remote().remoteInfo());
     }
     start(connection) {
@@ -209,6 +213,20 @@ class NodeDSPGraphBuilder extends core_1.NodeModule {
             sp.setGain(gain);
         else
             log.error(`Could not find spatializer for input user ${userid} input ${spid}`);
+    }
+    _dispatch_set_playstates(userid, sid, playstates) {
+        let sp = this._find_spatializer(userid, sid);
+        if (sp)
+            sp.setTestSoundPlayState(playstates);
+        else
+            log.error(`Could not find Spatializer for userid ${userid} input id ${sid}`);
+    }
+    _dispatch_reset_playstates(userid, sid) {
+        let sp = this._find_spatializer(userid, sid);
+        if (sp)
+            sp.resetTestSoundPlayState();
+        else
+            log.error(`Could not find Spatializer for userid ${userid} input id ${sid}`);
     }
     _build_user_modules() {
         this.nodeUsers().listRawUsersData().forEach((usr) => {

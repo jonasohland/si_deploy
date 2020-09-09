@@ -53,7 +53,7 @@ class SpatialIntercomServer extends core_1.Server {
     createNode(id) {
         switch (id.type) {
             case communication_1.NODE_TYPE.DSP_NODE:
-                return new dsp_node_1.DSPNode(id);
+                return new dsp_node_1.DSPNode(id, this.webif);
             case communication_1.NODE_TYPE.RRCS_NODE:
                 return new rrcs_node_1.RRCSNode(id);
         }

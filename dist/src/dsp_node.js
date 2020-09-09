@@ -27,13 +27,13 @@ exports.DSPModuleNames = {
     GRAPH_BUILDER: 'graph-builder',
 };
 class DSPNode extends core_1.Node {
-    constructor(id) {
+    constructor(id, webif) {
         super(id);
         this.inputs = new inputs_1.NodeAudioInputManager();
         this.users = new users_1.NodeUsersManager(this.inputs);
         this.rooms = new rooms_1.NodeRooms();
         this.vst = new vst_1.VSTScanner();
-        this.dsp_process = new dsp_process_1.DSPController(this.vst);
+        this.dsp_process = new dsp_process_1.DSPController(this.vst, webif);
         this.audio_devices = new audio_devices_1.NodeAudioDevices();
         this.dsp_graph_builder = new dsp_graph_builder_1.NodeDSPGraphBuilder();
         this.add(this.inputs);

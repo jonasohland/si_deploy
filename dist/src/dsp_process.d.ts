@@ -5,6 +5,7 @@ import { DSPNodeStats } from './dsp_defs';
 import { Graph } from './dsp_graph';
 import { IPCServer } from './ipc';
 import { VSTScanner } from './vst';
+import WebInterface from './web_interface';
 export declare class LocalNodeController extends NodeMessageInterceptor {
     private _autorestart;
     private _exec_known;
@@ -42,7 +43,7 @@ export declare class DSPController extends NodeModule {
         input: number;
         output: number;
     };
-    constructor(vst: VSTScanner);
+    constructor(vst: VSTScanner, webif: WebInterface);
     _publish_dspstats(): void;
     syncGraph(): Promise<void>;
     _try_dsp_start(): Promise<void>;

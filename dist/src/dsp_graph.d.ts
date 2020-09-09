@@ -3,6 +3,7 @@ import { EventEmitter } from 'events';
 import * as COM from './communication';
 import { PortTypes } from './dsp_defs';
 import { VSTScanner } from './vst';
+import WebInterface from './web_interface';
 export declare class AmbisonicsProperties {
     order: number;
     normalization: string;
@@ -124,6 +125,8 @@ export declare abstract class NativeNode extends Node {
 export declare abstract class Module {
     id: number;
     graph: Graph;
+    sendNotification(title: string, message: string): void;
+    sendError(title: string, message: string): void;
     abstract input(graph: Graph): Bus;
     abstract output(graph: Graph): Bus;
     abstract graphChanged(graph: Graph): void;
@@ -138,7 +141,8 @@ export declare class Graph {
     connection: COM.Connection;
     remote: COM.Requester;
     vst: VSTScanner;
-    constructor(vst: VSTScanner);
+    _webif: WebInterface;
+    constructor(vst: VSTScanner, webif: WebInterface);
     attachConnection(connection: COM.Connection): void;
     addNode(node: Node): number;
     addConnection(connection: Connection): void;
@@ -156,6 +160,7 @@ export declare class Graph {
     hasModule(mod: Module): boolean;
     removeModule(mod: Module): Module;
     rebuild(): void;
+    webif(): WebInterface;
     _export_graph(): {
         nodes: any[];
         connections: Connection[];

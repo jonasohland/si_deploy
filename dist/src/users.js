@@ -218,10 +218,31 @@ class NodeUsersManager extends core_1.NodeModule {
                 this._server._webif.error(err);
             }
         }
+        else if (topic == 'testfiles') {
+            let all_files;
+            this._audiofiles.request('list-files').then(msg => {
+                all_files = msg.data;
+                return this._audiofiles.request('default-file');
+            }).then(msg => {
+                socket.emit(`${this.myNodeId()}.testfiles`, { default: msg.data, all: all_files });
+            }).catch(err => {
+                log.error(`Could not retrieve testfile data: ${err}`);
+                this._server._webif.broadcastError("Testfiles", err);
+            });
+        }
     }
     left(socket, topic) {
     }
     init() {
+    }
+    setDefaultTestFile(file) {
+        console.log(file);
+        this._audiofiles.set('default-file', file).then(msg => {
+            this._server._webif.broadcastNodeNotification(this.myNode(), `Set default test file to ${file}`);
+        }).catch(err => {
+            log.error(`Failed to set default test file: ${err}`);
+            this._server._webif.broadcastError("Set Testfile", err);
+        });
     }
     updateWebInterfaces() {
         this.publish('users', 'node.users.update', this.myNodeId(), this.listRawUsersData());
@@ -252,6 +273,7 @@ class NodeUsersManager extends core_1.NodeModule {
             === id);
     }
     start(remote) {
+        this._audiofiles = remote.getRequester("audiofiles");
         this.save().catch(err => {
             log.error('Could write data to node ' + err);
         });
@@ -276,7 +298,8 @@ exports.NodeUsersManager = NodeUsersManager;
 class UsersManager extends core_1.ServerModule {
     constructor() {
         super('users');
-        this.validate_userdata = Validation.getValidator(Validation.Validators.UserData);
+        this.validate_userdata
+            = Validation.getValidator(Validation.Validators.UserData);
     }
     joined(socket, topic) {
         log.verbose(`Socket joined user-topic ${topic}`);
@@ -316,10 +339,10 @@ class UsersManager extends core_1.ServerModule {
         this.handleWebInterfaceEvent('add.user', (socket, node, data) => {
             if (!this.validate_userdata(data)) {
                 this.webif.broadcastError(node.name(), `Could not add new user '${data.name}': Missing data.`);
-                log.error("Missing: ");
+                log.error('Missing: ');
                 if (this.validate_userdata.errors)
                     this.validate_userdata.errors.forEach(err => {
-                        log.error("    " + err.dataPath + "  " + err.message);
+                        log.error('    ' + err.dataPath + '  ' + err.message);
                     });
                 return;
             }
@@ -398,6 +421,15 @@ class UsersManager extends core_1.ServerModule {
             }
             else
                 log.error('Could not find node for user ' + data.user);
+        });
+        this.handleWebInterfaceEvent('user.input.playstates', (socket, node, data) => {
+            node.emitToModule(dsp_node_1.DSPModuleNames.GRAPH_BUILDER, dsp_graph_builder_1.GraphBuilderInputEvents.PLAYSTATES, data.userid, data.inputid, data.states);
+        });
+        this.handleWebInterfaceEvent('user.input.reset-playstates', (socket, node) => {
+            node.emitToModule(dsp_node_1.DSPModuleNames.GRAPH_BUILDER, dsp_graph_builder_1.GraphBuilderInputEvents.RESET_PLAYSTATES);
+        });
+        this.handleWebInterfaceEvent('default-test-file', (socket, node, file) => {
+            node.users.setDefaultTestFile(file);
         });
     }
 }
