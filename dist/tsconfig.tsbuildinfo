@@ -522,8 +522,8 @@
         "signature": "5f6d601834242cddac299ba72536e6bef06ca385474710d4898e389448ba8faa"
       },
       "../src/rrcs_defs.ts": {
-        "version": "a3d6ee055ee0e38379be95e0a5a67e05591a0782eff0ee2c07e43face36ac694",
-        "signature": "48529204c840db566ffd57ec9537d8f246a172612546cea460a35bbbd7f3f26c"
+        "version": "ef6a29250b555d21dcecf0f5cd2b6c4987642a430a6eea0b4b948e7a5a100029",
+        "signature": "91d03ff15a673b82f2c298c7729d9d7abae9f2f41e4f91ec376560b3a40c9c3d"
       },
       "../src/users_defs.ts": {
         "version": "8d9a586e25f87f4c9262e826577c8a94229e8f7681610bb8bdc2f5bf356b5b67",
@@ -545,16 +545,16 @@
         "version": "43e4a9859008fc1059c1362fa2a3d2945ad30e050cc091d08c6123a9e1ad8b67",
         "signature": "c8ce637be3a2d879323623f1c9959d7d52b20605ef184b5648ebb5020e48bc8a"
       },
-      "../node_modules/@types/xmlrpc/index.d.ts": {
-        "version": "0f471f60179daaee4768a5cc4426708e4299a3c741e4f95cda952efac922ef07",
-        "signature": "0f471f60179daaee4768a5cc4426708e4299a3c741e4f95cda952efac922ef07"
+      "../node_modules/xmlrpc/index.d.ts": {
+        "version": "84efb306495a80612782ecc045801d8a5b2486263cce0ff02793cf259ba29daa",
+        "signature": "84efb306495a80612782ecc045801d8a5b2486263cce0ff02793cf259ba29daa"
       },
       "../src/rrcs.ts": {
-        "version": "00d978a579d71659e1e53e89f01f481d9f4f096399020bd34a5a0d9b81a3de83",
-        "signature": "dcc61fc46e317c05f13d467e685da94c1ee99074fe5304afff4e2da93af40847"
+        "version": "69c0a05ea3dd0445ae5a9bb131c019a6131eb1f694c7295ff46a44ad1c3dad5f",
+        "signature": "a93d233fc57cb54eb33042a728e08c9da1d38399d1b24ba87d1fd8b1697d6748"
       },
       "../src/rrcs_lex.ts": {
-        "version": "2255e6ae3ded34d2494176ae16e516750da6b23792ff45f521197a1e39eb773c",
+        "version": "9bc1151eb137b55c518698ed0e39fe90e36c7f1ec3bac5ad3b65dcc76e47b16c",
         "signature": "c2d237d48f97773c9fd7a2159cb2bcb28b43cf2483a20118184d6c872543220c"
       },
       "../src/validation.ts": {
@@ -571,7 +571,7 @@
       },
       "../src/dsp_graph_builder.ts": {
         "version": "46947d5a096e3bb9d08b20b6480c4ea5115b05cb4218f3fa6d039761e3538841",
-        "signature": "2bdce0902f1d5e9841917daf889bf18473fcb7a1de4252138794c50cea9c4d1c"
+        "signature": "14ddad6d0f760192f258cea5d582e7276c5fa3f958fba2f2244ab5564aff118e"
       },
       "../src/users.ts": {
         "version": "d9d0cdc8dfdb9f733365b37f0e497113ef20f72b4a6a86fb0f845d0dc4c5c52f",
@@ -842,8 +842,8 @@
         "signature": "3cc26d1f94c768ae2896d3900ffa268e0657a332b399e94c1fb52da1f9e07625"
       },
       "../src/server_config.ts": {
-        "version": "cfaec0987ffb4b4af267308ce0a5d9949eba4c1203677f5379111d6b6a1aa2d2",
-        "signature": "3746e97abefff729f9360e10c74ffe981d20ac1209d7c90fcca04a11308fc492"
+        "version": "21d4c6e6ca3da5930a8008f0597b859daa60b935a9a9a24e05dd04e868888f8c",
+        "signature": "fc45df9087ff299b5b113dbe3d86967dd558dd7c530e8f5bd5ed69dbcc8ae94f"
       },
       "../src/headtracker_mode.ts": {
         "version": "6f97d31e988c2d608501b3659765a87b8891e6e3de10f2201ebbd016e036adfd",
@@ -874,7 +874,7 @@
         "signature": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
       },
       "../src/si.ts": {
-        "version": "a56f30e687b99067e27d128a9d8a109c0a4e2cb85bbf2b62c87c6703ec9a931e",
+        "version": "39e6ed4287053b2ad2d121c8a8ead014f12656d7f602c75f7f7a48eb1fd1704c",
         "signature": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
       },
       "../src/sources.ts": {
@@ -936,7 +936,6 @@
           "typings/*"
         ]
       },
-      "watch": true,
       "configFilePath": "../tsconfig.json"
     },
     "referencedMap": {
@@ -2112,7 +2111,7 @@
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
-      "../node_modules/@types/xmlrpc/index.d.ts": [
+      "../node_modules/xmlrpc/index.d.ts": [
         "../node_modules/@types/node/events.d.ts",
         "../node_modules/@types/node/http.d.ts",
         "../node_modules/@types/node/https.d.ts",
@@ -2124,10 +2123,11 @@
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
       "../src/rrcs.ts": [
+        "../node_modules/@types/dnssd/index.d.ts",
         "../node_modules/eventemitter2/eventemitter2.d.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/perf_hooks.d.ts",
-        "../node_modules/@types/xmlrpc/index.d.ts",
+        "../node_modules/xmlrpc/index.d.ts",
         "../src/files.ts",
         "../src/log.ts",
         "../src/rrcs_defs.ts",
@@ -4119,7 +4119,7 @@
         "../src/web_interface.ts",
         "../src/core.ts"
       ],
-      "../node_modules/@types/xmlrpc/index.d.ts": [
+      "../node_modules/xmlrpc/index.d.ts": [
         "../node_modules/@types/node/events.d.ts",
         "../node_modules/@types/node/http.d.ts",
         "../node_modules/@types/node/https.d.ts",
@@ -4131,7 +4131,7 @@
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
       "../src/rrcs.ts": [
-        "../node_modules/@types/xmlrpc/index.d.ts",
+        "../node_modules/xmlrpc/index.d.ts",
         "../src/rrcs_defs.ts",
         "../node_modules/eventemitter2/eventemitter2.d.ts"
       ],
@@ -4907,12 +4907,12 @@
       "../src/rooms_defs.ts",
       "../src/rrcs_defs.ts",
       "../src/users_defs.ts",
+      "../src/dsp_modules.ts",
       "../src/headtracker.ts",
       "../src/headtracker_network.ts",
       "../src/headtracking.ts",
-      "../node_modules/@types/xmlrpc/index.d.ts",
+      "../node_modules/xmlrpc/index.d.ts",
       "../src/rrcs.ts",
-      "../src/rrcs_lex.ts",
       "../src/validation.ts",
       "../src/rrcs_node.ts",
       "../src/server.ts",
@@ -5003,7 +5003,7 @@
       "../node_modules/@types/minimist/index.d.ts",
       "../node_modules/@types/normalize-package-data/index.d.ts",
       "../../../node_modules/@types/blessed/index.d.ts",
-      "../src/dsp_modules.ts"
+      "../src/rrcs_lex.ts"
     ]
   },
   "version": "3.7.3"

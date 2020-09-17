@@ -47,6 +47,11 @@ export interface CrosspointSync {
     slaves: CrosspointVolumeTarget[];
     exclude: Crosspoint[];
 }
+export declare function makeSingleVolumeTarget(xp: Crosspoint): CrosspointVolumeTarget;
+export declare function makeConferenceVolumeTarget(xp: Crosspoint): CrosspointVolumeTarget;
+export declare function makeXPSetterTarget(xp: Crosspoint, single?: boolean, conf?: boolean): CrosspointVolumeTarget;
+export declare function makeXPVolumeSource(xp: Crosspoint, conf: boolean): CrosspointVolumeSource;
+export declare function makeXPSync(master: CrosspointVolumeSource): CrosspointSync;
 export declare function isLoopbackXP(xp: Crosspoint): boolean;
 export declare function getLoopbackXPForWildcard(xp: Crosspoint): Crosspoint;
 export declare function portEqual(lhs: Port, rhs: Port): boolean;

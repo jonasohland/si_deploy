@@ -10,6 +10,33 @@ var CrosspointSyncType;
     CrosspointSyncType[CrosspointSyncType["WILDCARD_SRC"] = 1] = "WILDCARD_SRC";
     CrosspointSyncType[CrosspointSyncType["WILDCARD_DST"] = 2] = "WILDCARD_DST";
 })(CrosspointSyncType = exports.CrosspointSyncType || (exports.CrosspointSyncType = {}));
+function makeSingleVolumeTarget(xp) {
+    return { xp, single: true, conf: false, set: false };
+}
+exports.makeSingleVolumeTarget = makeSingleVolumeTarget;
+function makeConferenceVolumeTarget(xp) {
+    return { xp, single: false, conf: true, set: false };
+}
+exports.makeConferenceVolumeTarget = makeConferenceVolumeTarget;
+function makeXPSetterTarget(xp, single = true, conf = true) {
+    return { xp, single, conf, set: true };
+}
+exports.makeXPSetterTarget = makeXPSetterTarget;
+function makeXPVolumeSource(xp, conf) {
+    return { xp, conf };
+}
+exports.makeXPVolumeSource = makeXPVolumeSource;
+function makeXPSync(master) {
+    return {
+        state: false,
+        vol: 0,
+        type: CrosspointSyncType.SINGLE,
+        master,
+        slaves: [],
+        exclude: []
+    };
+}
+exports.makeXPSync = makeXPSync;
 function isLoopbackXP(xp) {
     return xp.Source.Port === xp.Destination.Port
         && xp.Source.Node === xp.Destination.Node

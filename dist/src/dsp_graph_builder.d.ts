@@ -58,7 +58,7 @@ export declare class NodeDSPGraphBuilder extends NodeModule {
     _dispatch_set_playstates(userid: string, sid: string, playstates: any[]): void;
     _dispatch_reset_playstates(userid: string, sid: string): void;
     _build_user_modules(): void;
-    _find_spatializer(userid: string, spid: string): RoomSpatializerModule | MultiSpatializerModule;
+    _find_spatializer(userid: string, spid: string): MultiSpatializerModule | RoomSpatializerModule;
     _find_spatializers_for_room(room: string): RoomSpatializerModule[];
     _find_usermodule(userid: string): SimpleUsersModule;
     getRooms(): import("./rooms").NodeRooms;

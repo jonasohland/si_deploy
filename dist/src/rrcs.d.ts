@@ -55,6 +55,7 @@ export declare abstract class RRCSServer extends EventEmitter2 {
     _trs_cnt: number;
     _connect_retry_timeout: NodeJS.Timeout;
     _nodes: ArtistNode[];
+    _options: any;
     abstract onArtistConfigurationChanged(): void;
     abstract onXpValueChanged(crosspoint: Crosspoint, single?: number, conf?: number): void;
     abstract onXpsChanged(xps: CrosspointState[]): void;
@@ -94,6 +95,7 @@ export declare abstract class RRCSServer extends EventEmitter2 {
     private _reset;
     private _refresh_nodes;
     private _load_cached;
+    private _is_trs_key;
     private _get_trs_key;
 }
 export declare class RRCSService extends RRCSServer {

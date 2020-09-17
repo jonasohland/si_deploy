@@ -60,6 +60,7 @@ function merge(cmd_opts) {
     output.rrcs_osc_host = cmd_opts.rrcsOscHost || _config_file.artist.rrcs_osc_host || '127.0.0.1';
     output.rrcs_osc_port = cmd_opts.rrcsOscPort || _config_file.artist.rrcs_osc_port || 9955;
     output.rrcs_osc_port = Number.parseInt(output.rrcs_osc_port);
+    output.ignore_subtitles = cmd_opts.ignoreSubtitles || false;
     output.failsense_input = Number.parseInt(cmd_opts.failSenseInput || _config_file.dsp.failsense_input || 0);
     output.failsense_output = Number.parseInt(cmd_opts.failSenseOutput || _config_file.dsp.failsense_output || 0);
     if (output.failsense_input && output.failsense_output < 1) {

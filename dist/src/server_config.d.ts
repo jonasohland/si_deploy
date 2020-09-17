@@ -14,4 +14,5 @@ export declare function merge(cmd_opts: commander.Command): {
     rrcs_server?: string;
     failsense_input?: number;
     failsense_output?: number;
+    ignore_subtitles?: boolean;
 };

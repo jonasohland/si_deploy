@@ -33,49 +33,74 @@ function parsePorts(ports) {
             continue;
         }
         let masterxp = {
-            Source: { Node: srcid.port.Node, Port: srcid.port.Port, IsInput: true },
-            Destination: { Node: destid.port.Node, Port: destid.port.Port, IsInput: false }
-        };
-        let xpsync = {
-            state: false,
-            vol: 0,
-            type: rrcs_defs_1.CrosspointSyncType.SINGLE,
-            exclude: [],
-            slaves: [],
-            master: {
-                xp: masterxp,
-                conf: tgt.conf
+            Source: {
+                Node: srcid.port.Node,
+                Port: srcid.port.Port,
+                IsInput: true
+            },
+            Destination: {
+                Node: destid.port.Node,
+                Port: destid.port.Port,
+                IsInput: false
             }
         };
         let slavesrc = findPortForID(ids, tgt.fromxp_src, true);
         if (slavesrc == null) {
             log.error(`Could not find source port for volume target XP`);
+            return;
         }
-        let slave = {
-            xp: {
-                Source: {
-                    Node: slavesrc.port.Node,
-                    Port: slavesrc.port.Port,
-                    IsInput: true
-                },
-                Destination: {
-                    Node: tgt.port.Node,
-                    Port: tgt.port.Port,
-                    IsInput: false
-                }
+        let slavexp = {
+            Source: {
+                Node: slavesrc.port.Node,
+                Port: slavesrc.port.Port,
+                IsInput: true
             },
-            set: false,
-            single: !tgt.use_conf,
-            conf: tgt.use_conf
+            Destination: { Node: tgt.port.Node, Port: tgt.port.Port, IsInput: false }
         };
-        let newmasterid = rrcs_defs_1.xpvtid(xpsync.master);
-        let oldmasteridx = masters.findIndex(ms => rrcs_defs_1.xpvtid(ms.master) === newmasterid);
-        if (oldmasteridx != -1) {
-            mergeslaves(masters[oldmasteridx], [slave]);
+        let confmaster = rrcs_defs_1.makeXPSync(rrcs_defs_1.makeXPVolumeSource(masterxp, true));
+        let singlemaster = rrcs_defs_1.makeXPSync(rrcs_defs_1.makeXPVolumeSource(masterxp, false));
+        if (tgt.use_conf && tgt.use_single) {
+            if (tgt.single && tgt.conf) {
+                confmaster.slaves.push(rrcs_defs_1.makeConferenceVolumeTarget(slavexp));
+                singlemaster.slaves.push(rrcs_defs_1.makeSingleVolumeTarget(slavexp));
+            }
+            else {
+                if (tgt.single) {
+                    confmaster.slaves.push(rrcs_defs_1.makeSingleVolumeTarget(slavexp));
+                    singlemaster.slaves.push(rrcs_defs_1.makeSingleVolumeTarget(slavexp));
+                }
+                else if (tgt.conf) {
+                    confmaster.slaves.push(rrcs_defs_1.makeConferenceVolumeTarget(slavexp));
+                    singlemaster.slaves.push(rrcs_defs_1.makeConferenceVolumeTarget(slavexp));
+                }
+            }
+            masters.push(confmaster, singlemaster);
         }
-        else {
-            xpsync.slaves.push(slave);
-            masters.push(xpsync);
+        else if (tgt.use_conf) {
+            if (tgt.single && tgt.conf) {
+                confmaster.slaves.push(rrcs_defs_1.makeConferenceVolumeTarget(slavexp));
+                confmaster.slaves.push(rrcs_defs_1.makeSingleVolumeTarget(slavexp));
+            }
+            else {
+                if (tgt.single)
+                    confmaster.slaves.push(rrcs_defs_1.makeSingleVolumeTarget(slavexp));
+                else if (tgt.conf)
+                    confmaster.slaves.push(rrcs_defs_1.makeConferenceVolumeTarget(slavexp));
+            }
+            masters.push(confmaster);
+        }
+        else if (tgt.use_single) {
+            if (tgt.single && tgt.conf) {
+                singlemaster.slaves.push(rrcs_defs_1.makeConferenceVolumeTarget(slavexp));
+                singlemaster.slaves.push(rrcs_defs_1.makeSingleVolumeTarget(slavexp));
+            }
+            else {
+                if (tgt.single)
+                    singlemaster.slaves.push(rrcs_defs_1.makeSingleVolumeTarget(slavexp));
+                else if (tgt.conf)
+                    singlemaster.slaves.push(rrcs_defs_1.makeConferenceVolumeTarget(slavexp));
+            }
+            masters.push(singlemaster);
         }
     }
     return masters;
@@ -110,10 +135,8 @@ function _exprs_add_voltgt(exprs, origin, char, expr) {
     let fromxp_tgt = expr.split('/');
     let fromxp = fromxp_tgt[0];
     let vsource;
-    if (char === '&')
-        exprobj.use_conf = true;
-    else
-        exprobj.use_conf = false;
+    exprobj.use_conf = char === '&' || char === '~';
+    exprobj.use_single = char === '+' || char === '~';
     if (fromxp == null) {
         log.error(`Error lexing rrcs expressions in config: Could not extract XPVolume target XP source port from string '${expr}'`);
         return;
@@ -129,29 +152,47 @@ function _exprs_add_voltgt(exprs, origin, char, expr) {
             exprobj.conf = true;
             exprobj.single = false;
         }
+        else if (fromxp_tgt[1].indexOf('~') != -1) {
+            vsource = fromxp_tgt[1].split('~');
+            exprobj.single = true;
+            exprobj.conf = true;
+        }
     }
-    if (vsource == null || vsource.length != 2) {
+    if (vsource == null || vsource.length < 1) {
         log.error(`Error lexing rrcs expressions in config: Could not extract XPVolume source from string ${expr}`);
         return;
     }
     exprobj.fromxp_src = fromxp;
-    exprobj.volsrc_src = vsource[0];
-    exprobj.volsrc_dest = vsource[1];
+    if (vsource[0] == '') {
+        exprobj.volsrc_src = fromxp;
+        exprobj.volsrc_dest = vsource[1];
+    }
+    else if (vsource[0].length > 0) {
+        exprobj.volsrc_src = vsource[0];
+        exprobj.volsrc_dest = vsource[1];
+    }
+    else {
+        log.error(`Could not extract volume sync target from string ${expr}`);
+        return;
+    }
     exprobj.type = RRCSExpressions.SYNC_VOLUME_TARGET;
     log.debug(`Found [${RRCSExpressions[RRCSExpressions.SYNC_VOLUME_TARGET]}] expression in [${RRCSExpressionSource[origin.source]}] of port [${exprobj.port.Name}]. Target XP src: '${exprobj.fromxp_src}' Source XP: (${exprobj.volsrc_src}/${exprobj.volsrc_dest})`);
     exprs.push(exprobj);
 }
-function _exprs_add_id(exprs, origin, expr) {
+function _exprs_add_id(exprs, origin, expr, sec_ch) {
     let exprobj = origin;
     exprobj.id = expr;
     exprobj.type = RRCSExpressions.PORT_ID;
-    log.debug(`Found [${RRCSExpressions[RRCSExpressions.PORT_ID]}]            expression in [${RRCSExpressionSource[origin.source]}] of port [${origin.port.Name}]: ${exprobj.id}`);
+    if (exprobj.port.HasSecondChannel && sec_ch)
+        exprobj.port.Port++;
+    log.debug(`Found [${RRCSExpressions[RRCSExpressions.PORT_ID]}]            expression in [${RRCSExpressionSource[origin.source]}] of port [${origin.port.Name}]: ${exprobj.id} ${(sec_ch && exprobj.port.HasSecondChannel) ? '(applies to 2nd channel)'
+        : ''}`);
     exprs.push(exprobj);
 }
 function parseRRCSExpressions(exprlist, source, str, port) {
     let exprs = str.split(' ');
-    let origin = { port, str, source, type: RRCSExpressions.ANY };
     exprs.forEach(ex => {
+        let origin = { port, str, source, type: RRCSExpressions.ANY };
         switch (ex.charAt(0)) {
             case '!':
                 _exprs_add_setxp(exprlist, origin, ex.substr(1));
@@ -162,8 +203,14 @@ function parseRRCSExpressions(exprlist, source, str, port) {
             case '&':
                 _exprs_add_voltgt(exprlist, origin, '&', ex.substr(1));
                 break;
+            case '~':
+                _exprs_add_voltgt(exprlist, origin, '~', ex.substr(1));
+                break;
             case '$':
-                _exprs_add_id(exprlist, origin, ex.substr(1));
+                _exprs_add_id(exprlist, origin, ex.substr(1), false);
+                break;
+            case '%':
+                _exprs_add_id(exprlist, origin, ex.substr(1), true);
                 break;
         }
     });

@@ -101,6 +101,7 @@ class RRCSServer extends eventemitter2_1.EventEmitter2 {
         this._trs_cnt = 0;
         this._nodes = [];
         log.info('Server start listen');
+        this._options = options;
         if (options.rrcs_server == null) {
             log.error('\'server-interface\' option has to be specified');
             process.exit(1);
@@ -148,6 +149,19 @@ class RRCSServer extends eventemitter2_1.EventEmitter2 {
             }
             this.onXpsChanged(out);
             cb(null, [params[0]]);
+        });
+        this._srv.on('NotFound', (method, params, cb) => {
+            if (params.length) {
+                let reqid = params[0];
+                if (this._is_trs_key(reqid, true)) {
+                    log.warn(`Received unknown event ${method} from RRCS. Transaction key was: ${reqid}`);
+                    cb(null, reqid);
+                }
+                else {
+                    log.warn(`Received unknown event ${method} from RRCS. The request did not contain a valid transaction key`);
+                    cb('NotFound', []);
+                }
+            }
         });
     }
     rrcsAvailable() {
@@ -395,12 +409,19 @@ class RRCSServer extends eventemitter2_1.EventEmitter2 {
             this._nodes.forEach(node => node.destroy());
             for (let p of ports) {
                 try {
-                    p.Subtitle = (yield (this.getObjectProperty(p.ObjectID, 'Subtitle')))
-                        .Subtitle;
-                    p.Alias = (yield this.getPortAlias(p))[2];
+                    if (!this._options.ignore_subtitles) {
+                        p.Subtitle = (yield (this.getObjectProperty(p.ObjectID, 'Subtitle')))
+                            .Subtitle;
+                    }
                 }
                 catch (err) {
                     log.error(`Could not retrieve subtitle for port ${p.Name}: ${err}`);
+                }
+                try {
+                    p.Alias = (yield this.getPortAlias(p))[2];
+                }
+                catch (err) {
+                    log.error(`Could not retrieve alias for port ${p.Name}: ${err}`);
                 }
             }
             ports.forEach((port) => {
@@ -435,6 +456,17 @@ class RRCSServer extends eventemitter2_1.EventEmitter2 {
                 });
             });
         }
+    }
+    _is_trs_key(key, from_rrcs) {
+        if (!(typeof key === 'string'))
+            return false;
+        if (!(key.length === 11))
+            return false;
+        if (from_rrcs && key.substr(0, 1) !== 'R')
+            return false;
+        if (isNaN(key.substr(1)))
+            return false;
+        return true;
     }
     _get_trs_key() {
         return 'X' + pad(++this._trs_cnt, 10);
@@ -905,7 +937,7 @@ exports.RRCSService = RRCSService;
                   }
 
                   this.local_sock.send(toBuffer(msg),
-   this.config.rrcs_osc_port, this.config.rrcs_osc_host);
+    this.config.rrcs_osc_port, this.config.rrcs_osc_host);
               });
     }
 
